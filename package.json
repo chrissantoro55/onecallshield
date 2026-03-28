@@ -1,0 +1,8 @@
+{
+  "name": "onecallshield",
+  "version": "1.0.0",
+  "description": "OneCallShield insurance lead generation",
+  "dependencies": {
+    "stripe": "^14.0.0"
+  }
+}
