@@ -1,0 +1,740 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Agent Portal — OneCallShield</title>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300;0,9..144,600;0,9..144,700;1,9..144,400&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+:root{--navy:#0d1f3c;--navy-mid:#1a3460;--gold:#c9973a;--gold-light:#e8b96a;--cream:#f8f4ee;--cream-dark:#ede7dc;--white:#fff;--text:#1a1a2e;--text-muted:#5a6480;--green:#2d7a4f;--green-light:#e8f5ee;--red:#c0392b;--red-light:#fdf0ef;}
+*{margin:0;padding:0;box-sizing:border-box;}
+body{font-family:'DM Sans',sans-serif;background:var(--cream);color:var(--text);}
+
+/* LOGIN */
+.login-screen{position:fixed;inset:0;background:var(--navy);display:flex;align-items:center;justify-content:center;z-index:1000;}
+.login-card{background:rgba(255,255,255,0.05);border:1px solid rgba(201,151,58,0.25);border-radius:20px;padding:2.5rem;width:380px;text-align:center;}
+.login-card h2{font-family:'Fraunces',serif;color:#fff;font-size:1.6rem;margin-bottom:0.3rem;}
+.login-card p.sub{color:rgba(255,255,255,0.5);font-size:0.88rem;margin-bottom:2rem;}
+.login-card input{background:rgba(255,255,255,0.07);border:1px solid rgba(255,255,255,0.15);border-radius:8px;padding:0.85rem 1rem;color:#fff;font-size:0.95rem;font-family:'DM Sans',sans-serif;outline:none;width:100%;margin-bottom:0.8rem;transition:border-color 0.2s;}
+.login-card input:focus{border-color:var(--gold);}
+.login-btn{width:100%;background:var(--gold);color:var(--navy);border:none;padding:0.95rem;border-radius:8px;font-size:1rem;font-weight:600;font-family:'DM Sans',sans-serif;cursor:pointer;margin-top:0.4rem;}
+.login-btn:hover{background:var(--gold-light);}
+.login-error{color:#f87171;font-size:0.83rem;margin-top:0.5rem;display:none;}
+
+/* MAIN */
+.main{display:none;min-height:100vh;}
+nav{background:var(--navy);padding:0 5%;height:68px;display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid rgba(201,151,58,0.2);position:sticky;top:0;z-index:50;}
+.nav-logo{font-family:'Fraunces',serif;font-size:1.2rem;font-weight:700;color:#fff;display:flex;align-items:center;gap:0.5rem;}
+.nav-logo span{color:var(--gold);}
+.agent-chip{background:rgba(201,151,58,0.15);color:var(--gold);font-size:0.8rem;font-weight:500;padding:0.3rem 0.8rem;border-radius:100px;}
+.logout-btn{color:rgba(255,255,255,0.4);font-size:0.82rem;cursor:pointer;background:none;border:none;font-family:'DM Sans',sans-serif;}
+.content{max-width:1100px;margin:0 auto;padding:2rem 5%;}
+
+/* WELCOME */
+.welcome-banner{background:linear-gradient(135deg,var(--navy),var(--navy-mid));border-radius:16px;padding:2rem;margin-bottom:2rem;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:1rem;border:1px solid rgba(201,151,58,0.2);}
+.welcome-text h2{font-family:'Fraunces',serif;color:#fff;font-size:1.5rem;margin-bottom:0.3rem;}
+.welcome-text p{color:rgba(255,255,255,0.55);font-size:0.9rem;}
+.welcome-stats{display:flex;gap:1.5rem;flex-wrap:wrap;}
+.welcome-stat{text-align:center;}
+.welcome-stat-num{font-family:'Fraunces',serif;font-size:1.8rem;font-weight:700;color:var(--gold);display:block;line-height:1;}
+.welcome-stat-num.green{color:#6dcf9b;}
+.welcome-stat-label{font-size:0.72rem;color:rgba(255,255,255,0.4);text-transform:uppercase;letter-spacing:0.06em;margin-top:0.2rem;}
+
+/* CALLBACKS ALERT */
+.callbacks-alert{background:#fff;border-radius:12px;border-left:4px solid var(--gold);padding:1rem 1.5rem;margin-bottom:1.5rem;display:none;}
+.callbacks-alert h4{font-family:'Fraunces',serif;color:var(--navy);font-size:1rem;margin-bottom:0.5rem;}
+.callback-item{display:flex;align-items:center;justify-content:space-between;padding:0.4rem 0;border-bottom:1px solid var(--cream-dark);font-size:0.88rem;}
+.callback-item:last-child{border-bottom:none;}
+.callback-name{font-weight:600;color:var(--navy);}
+.callback-time{color:var(--gold);font-weight:600;font-size:0.82rem;}
+
+/* TABS */
+.tabs{display:flex;gap:0.5rem;margin-bottom:1.5rem;background:var(--cream-dark);border-radius:10px;padding:0.3rem;flex-wrap:wrap;}
+.tab-btn{flex:1;padding:0.6rem;border-radius:7px;border:none;font-family:'DM Sans',sans-serif;font-size:0.85rem;font-weight:500;cursor:pointer;background:transparent;color:var(--text-muted);transition:all 0.2s;white-space:nowrap;}
+.tab-btn.active{background:var(--navy);color:#fff;}
+.tab-panel{display:none;}
+.tab-panel.active{display:block;}
+
+/* TABLE */
+.section-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:1.2rem;}
+.section-header h2{font-family:'Fraunces',serif;font-size:1.2rem;color:var(--navy);font-weight:600;}
+.table-wrap{background:var(--white);border-radius:16px;border:1px solid rgba(13,31,60,0.07);overflow:hidden;box-shadow:0 2px 12px rgba(13,31,60,0.05);margin-bottom:2rem;overflow-x:auto;}
+table{width:100%;border-collapse:collapse;min-width:700px;}
+thead{background:var(--cream);}
+th{padding:0.9rem 1rem;font-size:0.72rem;font-weight:600;color:var(--text-muted);text-transform:uppercase;letter-spacing:0.06em;text-align:left;border-bottom:1px solid rgba(13,31,60,0.08);}
+td{padding:0.9rem 1rem;font-size:0.87rem;color:var(--text);border-bottom:1px solid rgba(13,31,60,0.05);}
+tr:last-child td{border-bottom:none;}
+tr.lead-row{cursor:pointer;}
+tr.lead-row:hover td{background:rgba(201,151,58,0.04);}
+
+/* BADGES */
+.badge{display:inline-flex;align-items:center;padding:0.22rem 0.65rem;border-radius:100px;font-size:0.73rem;font-weight:600;}
+.badge-new{background:rgba(201,151,58,0.12);color:var(--gold);}
+.badge-contacted{background:var(--green-light);color:var(--green);}
+.badge-followup{background:#fef3c7;color:#d97706;}
+.badge-closed{background:rgba(13,31,60,0.08);color:var(--navy);}
+.badge-lost{background:var(--red-light);color:var(--red);}
+
+/* AGE INDICATOR */
+.age-fresh{color:var(--green);font-weight:600;font-size:0.78rem;}
+.age-warm{color:#d97706;font-weight:600;font-size:0.78rem;}
+.age-old{color:var(--red);font-weight:600;font-size:0.78rem;}
+
+/* COPY BTN */
+.copy-btn{background:none;border:1px solid rgba(13,31,60,0.15);border-radius:4px;padding:0.15rem 0.4rem;font-size:0.7rem;cursor:pointer;color:var(--text-muted);margin-left:0.3rem;font-family:'DM Sans',sans-serif;}
+.copy-btn:hover{background:var(--cream);color:var(--navy);}
+
+/* PROFILE */
+.profile-card{background:var(--white);border-radius:16px;padding:2rem;border:1px solid rgba(13,31,60,0.07);box-shadow:0 2px 12px rgba(13,31,60,0.05);margin-bottom:1.5rem;}
+.profile-card h2{font-family:'Fraunces',serif;font-size:1.2rem;color:var(--navy);font-weight:600;margin-bottom:1.2rem;}
+.profile-row{display:flex;justify-content:space-between;padding:0.7rem 0;border-bottom:1px solid var(--cream-dark);font-size:0.9rem;}
+.profile-row:last-child{border-bottom:none;}
+.profile-row span:first-child{color:var(--text-muted);}
+.profile-row span:last-child{color:var(--navy);font-weight:500;text-align:right;max-width:65%;}
+
+/* STATS CARDS */
+.stats-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:1rem;margin-bottom:1.5rem;}
+.stat-card{background:var(--white);border-radius:14px;padding:1.2rem;border:1px solid rgba(13,31,60,0.07);text-align:center;}
+.stat-card-num{font-family:'Fraunces',serif;font-size:1.8rem;font-weight:700;color:var(--navy);display:block;}
+.stat-card-num.gold{color:var(--gold);}
+.stat-card-num.green{color:var(--green);}
+.stat-card-label{font-size:0.75rem;color:var(--text-muted);text-transform:uppercase;letter-spacing:0.05em;margin-top:0.3rem;}
+
+/* EDIT SECTIONS */
+.edit-section{background:var(--white);border-radius:16px;padding:1.8rem;border:1px solid rgba(13,31,60,0.07);box-shadow:0 2px 12px rgba(13,31,60,0.05);margin-bottom:1.5rem;}
+.edit-section h3{font-family:'Fraunces',serif;font-size:1.05rem;color:var(--navy);font-weight:600;margin-bottom:0.5rem;}
+.edit-section p{font-size:0.85rem;color:var(--text-muted);margin-bottom:1rem;}
+.checkbox-grid{display:flex;flex-wrap:wrap;gap:0.4rem;margin-bottom:1rem;}
+.check-pill{display:inline-flex;align-items:center;gap:0.35rem;background:var(--cream);border:1.5px solid rgba(13,31,60,0.1);border-radius:8px;padding:0.4rem 0.7rem;cursor:pointer;font-size:0.82rem;color:var(--text-muted);transition:all 0.15s;}
+.check-pill input{width:13px;height:13px;accent-color:var(--gold);cursor:pointer;}
+.save-btn{width:100%;background:var(--gold);color:var(--navy);border:none;padding:0.85rem;border-radius:10px;font-size:0.95rem;font-weight:600;cursor:pointer;font-family:'DM Sans',sans-serif;}
+.save-btn:hover{background:var(--gold-light);}
+
+/* MODAL */
+.modal-overlay{position:fixed;inset:0;background:rgba(13,31,60,0.65);display:none;align-items:flex-start;justify-content:center;z-index:200;overflow-y:auto;padding:2rem 1rem;backdrop-filter:blur(4px);}
+.modal-overlay.open{display:flex;}
+.lead-modal{background:var(--white);border-radius:20px;width:100%;max-width:660px;overflow:hidden;animation:fadeUp 0.25s ease both;}
+@keyframes fadeUp{from{opacity:0;transform:translateY(16px)}to{opacity:1;transform:translateY(0)}}
+@keyframes pulse{0%,100%{box-shadow:0 0 0 0 rgba(201,151,58,0.4);}50%{box-shadow:0 0 0 8px rgba(201,151,58,0);}}
+@keyframes bounce{0%,100%{transform:translateY(0);}50%{transform:translateY(-4px);}}
+.modal-header{background:linear-gradient(135deg,var(--navy),var(--navy-mid));padding:1.5rem 2rem;display:flex;align-items:center;justify-content:space-between;}
+.modal-header h3{font-family:'Fraunces',serif;color:#fff;font-size:1.1rem;font-weight:600;flex:1;margin-right:1rem;}
+.modal-close{background:rgba(255,255,255,0.1);border:none;color:#fff;width:32px;height:32px;border-radius:50%;cursor:pointer;font-size:1rem;display:flex;align-items:center;justify-content:center;flex-shrink:0;}
+.modal-body{padding:1.5rem 2rem;max-height:75vh;overflow-y:auto;}
+.info-grid{display:grid;grid-template-columns:1fr 1fr;gap:0.8rem;margin-bottom:1.2rem;}
+.info-item{background:var(--cream);border-radius:10px;padding:0.9rem 1rem;}
+.info-label{font-size:0.7rem;color:var(--text-muted);text-transform:uppercase;letter-spacing:0.06em;margin-bottom:0.25rem;}
+.info-value{font-size:0.92rem;color:var(--navy);font-weight:600;}
+.info-value a{color:var(--gold);text-decoration:none;}
+.info-value.gold{color:var(--gold);}
+
+/* CALL BUTTON */
+.call-btn{display:block;width:100%;background:var(--green);color:#fff;border:none;padding:1rem;border-radius:10px;font-size:1rem;font-weight:700;cursor:pointer;font-family:'DM Sans',sans-serif;margin-bottom:1.2rem;text-align:center;text-decoration:none;letter-spacing:0.02em;}
+.call-btn:hover{background:#235f3f;}
+
+/* SCRIPT BOX */
+.script-box{background:rgba(13,31,60,0.03);border:1px solid rgba(13,31,60,0.1);border-radius:10px;padding:1rem 1.2rem;margin-bottom:1.2rem;}
+.script-box h5{font-family:'Fraunces',serif;color:var(--navy);font-size:0.9rem;font-weight:600;margin-bottom:0.5rem;}
+.script-box p{font-size:0.85rem;color:var(--text-muted);line-height:1.6;margin-bottom:0.5rem;}
+.script-box ul{padding-left:1.2rem;}
+.script-box ul li{font-size:0.83rem;color:var(--text-muted);line-height:1.7;}
+
+/* STATUS & CALLBACK */
+.status-row{display:flex;align-items:center;gap:0.8rem;margin-bottom:1rem;padding:0.9rem 1rem;background:var(--cream);border-radius:10px;}
+.status-row label{font-size:0.8rem;color:var(--text-muted);font-weight:500;white-space:nowrap;}
+.status-row select{flex:1;background:#fff;border:1.5px solid rgba(13,31,60,0.12);border-radius:8px;padding:0.55rem 0.8rem;font-size:0.9rem;font-family:'DM Sans',sans-serif;color:var(--navy);outline:none;}
+.callback-row{display:flex;align-items:center;gap:0.8rem;margin-bottom:1.2rem;padding:0.9rem 1rem;background:#fef3c7;border-radius:10px;border:1px solid #fcd34d;}
+.callback-row label{font-size:0.8rem;color:#92400e;font-weight:500;white-space:nowrap;}
+.callback-row input{flex:1;background:#fff;border:1.5px solid #fcd34d;border-radius:8px;padding:0.55rem 0.8rem;font-size:0.9rem;font-family:'DM Sans',sans-serif;color:var(--navy);outline:none;}
+
+/* RATING */
+.rating-row{display:flex;align-items:center;gap:0.8rem;margin-bottom:1.2rem;padding:0.9rem 1rem;background:var(--cream);border-radius:10px;}
+.rating-row label{font-size:0.8rem;color:var(--text-muted);font-weight:500;}
+.stars{display:flex;gap:0.3rem;}
+.star-btn{background:none;border:none;font-size:1.4rem;cursor:pointer;color:#d1d5db;transition:color 0.15s;line-height:1;}
+.star-btn.active{color:#f59e0b;}
+
+/* NOTES */
+.notes-wrap{margin-bottom:1.2rem;}
+.notes-wrap h4{font-family:'Fraunces',serif;font-size:1rem;color:var(--navy);font-weight:600;margin-bottom:0.8rem;}
+.notes-list{display:flex;flex-direction:column;gap:0.5rem;max-height:160px;overflow-y:auto;margin-bottom:0.8rem;}
+.note-item{background:var(--cream);border-radius:8px;padding:0.75rem 1rem;border-left:3px solid var(--gold);}
+.note-text{font-size:0.88rem;color:var(--text);line-height:1.5;}
+.note-meta{font-size:0.73rem;color:var(--text-muted);margin-top:0.25rem;}
+.note-input-row{display:flex;gap:0.6rem;}
+.note-input-row textarea{flex:1;background:var(--cream);border:1.5px solid rgba(13,31,60,0.12);border-radius:8px;padding:0.75rem;font-size:0.88rem;font-family:'DM Sans',sans-serif;color:var(--text);outline:none;resize:none;height:70px;}
+.note-input-row textarea:focus{border-color:var(--gold);}
+.add-note-btn{background:var(--navy);color:var(--gold);border:none;padding:0 1rem;border-radius:8px;font-size:0.85rem;font-weight:600;cursor:pointer;font-family:'DM Sans',sans-serif;white-space:nowrap;}
+
+.modal-footer{padding:1rem 2rem 1.5rem;display:flex;gap:0.8rem;}
+.modal-footer button{flex:1;padding:0.85rem;border-radius:10px;border:none;font-size:0.9rem;font-weight:600;cursor:pointer;font-family:'DM Sans',sans-serif;}
+.btn-save{background:var(--gold);color:var(--navy);}
+.btn-cancel{background:var(--cream-dark);color:var(--text);}
+
+/* CONFETTI */
+.confetti-container{position:fixed;inset:0;pointer-events:none;z-index:9999;overflow:hidden;}
+.confetti-piece{position:absolute;width:10px;height:10px;top:-10px;animation:confettiFall linear forwards;}
+@keyframes confettiFall{to{transform:translateY(110vh) rotate(720deg);opacity:0;}}
+
+@media(max-width:768px){
+  .welcome-banner{flex-direction:column;}
+  .stats-grid{grid-template-columns:1fr 1fr;}
+  .info-grid{grid-template-columns:1fr;}
+  .tabs{gap:0.3rem;}
+  .tab-btn{font-size:0.78rem;padding:0.5rem 0.3rem;}
+}
+</style>
+</head>
+<body>
+
+<!-- LOGIN -->
+<div class="login-screen" id="loginScreen">
+  <div class="login-card">
+    <svg width="50" height="62" viewBox="204 42 272 402" style="margin:0 auto 1rem;display:block;"><defs><linearGradient id="lg" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#243f6e"/><stop offset="100%" stop-color="#0a1828"/></linearGradient><linearGradient id="gg" x1="0" y1="0" x2="1" y2="1"><stop offset="0%" stop-color="#f5d285"/><stop offset="50%" stop-color="#c9973a"/><stop offset="100%" stop-color="#e8b96a"/></linearGradient></defs><path d="M340 42 L476 90 L476 276 Q476 378 340 442 Q204 378 204 276 L204 90 Z" fill="url(#gg)"/><path d="M340 58 L462 102 L462 274 Q462 364 340 422 Q218 364 218 274 L218 102 Z" fill="url(#lg)"/><g transform="translate(340,240)"><rect x="-26" y="-54" width="52" height="90" rx="10" fill="white"/><rect x="-19" y="-46" width="38" height="68" rx="6" fill="#0d1f3c"/><rect x="-7" y="-42" width="14" height="5" rx="2.5" fill="#060f1a"/><rect x="-10" y="28" width="20" height="3.5" rx="1.75" fill="rgba(201,151,58,0.9)"/></g><path d="M316,244 L328,258 L364,216" fill="none" stroke="url(#gg)" stroke-width="11" stroke-linecap="round" stroke-linejoin="round"/></svg>
+    <h2>Agent Portal</h2>
+    <p class="sub">Sign in to access your leads and account</p>
+    <input type="email" id="portalEmail" placeholder="Your email address" onkeydown="if(event.key==='Enter')doPortalLogin()">
+    <input type="password" id="portalPass" placeholder="Your portal password" onkeydown="if(event.key==='Enter')doPortalLogin()">
+    <button class="login-btn" onclick="doPortalLogin()">Sign In →</button>
+    <p class="login-error" id="loginError">Invalid email or password.</p>
+    <p style="color:rgba(255,255,255,0.25);font-size:0.78rem;margin-top:1rem;">Need help? Contact support at onecallshield.com</p>
+  </div>
+</div>
+
+<!-- MAIN PORTAL -->
+<div class="main" id="mainPortal">
+  <nav>
+    <div class="nav-logo">
+      <svg width="28" height="34" viewBox="204 42 272 402"><defs><linearGradient id="nlg" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#243f6e"/><stop offset="100%" stop-color="#0a1828"/></linearGradient><linearGradient id="ngg" x1="0" y1="0" x2="1" y2="1"><stop offset="0%" stop-color="#f5d285"/><stop offset="50%" stop-color="#c9973a"/><stop offset="100%" stop-color="#e8b96a"/></linearGradient></defs><path d="M340 42 L476 90 L476 276 Q476 378 340 442 Q204 378 204 276 L204 90 Z" fill="url(#ngg)"/><path d="M340 58 L462 102 L462 274 Q462 364 340 422 Q218 364 218 274 L218 102 Z" fill="url(#nlg)"/></svg>
+      OneCall<span>Shield</span>
+    </div>
+    <div style="display:flex;align-items:center;gap:1rem;">
+      <span class="agent-chip" id="agentChip">Agent</span>
+      <button class="logout-btn" onclick="doLogout()">Sign Out</button>
+    </div>
+  </nav>
+
+  <div class="content">
+
+    <!-- WELCOME -->
+    <div class="welcome-banner">
+      <div class="welcome-text">
+        <h2>Welcome back, <span id="agentFirstName">Agent</span>! 👋</h2>
+        <p>Click any lead to view details, add notes, set callbacks, and update status.</p>
+      </div>
+      <div class="welcome-stats">
+        <div class="welcome-stat"><span class="welcome-stat-num" id="statTotal">0</span><div class="welcome-stat-label">Total Leads</div></div>
+        <div class="welcome-stat"><span class="welcome-stat-num" id="statNew">0</span><div class="welcome-stat-label">New</div></div>
+        <div class="welcome-stat"><span class="welcome-stat-num" id="statContacted">0</span><div class="welcome-stat-label">Contacted</div></div>
+        <div class="welcome-stat"><span class="welcome-stat-num green" id="statClosed">0</span><div class="welcome-stat-label">Closed 🏆</div></div>
+        <div class="welcome-stat"><span class="welcome-stat-num green" id="statRate">0%</span><div class="welcome-stat-label">Close Rate</div></div>
+      </div>
+    </div>
+
+    <!-- CALLBACKS ALERT -->
+    <div class="callbacks-alert" id="callbacksAlert">
+      <h4>⏰ Callbacks Due Today</h4>
+      <div id="callbacksList"></div>
+    </div>
+
+    <!-- NEW LEAD ALERT -->
+    <div id="newLeadAlert" style="display:none;background:linear-gradient(135deg,#1a3460,#0d1f3c);border-radius:14px;padding:1.2rem 1.5rem;margin-bottom:1.5rem;border:2px solid var(--gold);animation:pulse 2s infinite;">
+      <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:0.8rem;">
+        <div style="display:flex;align-items:center;gap:0.8rem;">
+          <span style="font-size:1.8rem;animation:bounce 1s infinite;">🎯</span>
+          <div>
+            <div style="font-family:'Fraunces',serif;color:var(--gold);font-size:1rem;font-weight:700;" id="newLeadAlertTitle">You have a new lead!</div>
+            <div style="color:rgba(255,255,255,0.6);font-size:0.82rem;margin-top:0.1rem;" id="newLeadAlertSub">Click to view and contact now</div>
+          </div>
+        </div>
+        <button onclick="switchTab('leads',document.querySelector('.tab-btn'))" style="background:var(--gold);color:var(--navy);border:none;padding:0.6rem 1.2rem;border-radius:8px;font-size:0.88rem;font-weight:700;cursor:pointer;font-family:'DM Sans',sans-serif;white-space:nowrap;">View Lead Now →</button>
+      </div>
+    </div>
+
+    <!-- TABS -->
+    <div class="tabs">
+      <button class="tab-btn active" onclick="switchTab('leads',this)">📋 My Leads</button>
+      <button class="tab-btn" onclick="switchTab('stats',this)">📊 My Stats</button>
+      <button class="tab-btn" onclick="switchTab('profile',this)">👤 My Profile</button>
+      <button class="tab-btn" onclick="switchTab('licenses',this)">📝 Update Licenses</button>
+    </div>
+
+    <!-- LEADS TAB -->
+    <div class="tab-panel active" id="portal-leads">
+      <div class="section-header">
+        <h2>Leads Assigned to You</h2>
+        <span style="font-size:0.82rem;color:var(--text-muted);">Click a row to open full details</span>
+      </div>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>Consumer</th><th>Email</th><th>Insurance</th><th>Status</th><th>Lead Age</th><th>Callback</th><th>Rating</th><th>Notes</th></tr></thead>
+          <tbody id="leadsTable"><tr><td colspan="8" style="text-align:center;color:var(--text-muted);padding:3rem;">No leads yet — check back soon!</td></tr></tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- STATS TAB -->
+    <div class="tab-panel" id="portal-stats">
+      <div class="stats-grid">
+        <div class="stat-card"><span class="stat-card-num" id="s_total">0</span><div class="stat-card-label">Total Leads</div></div>
+        <div class="stat-card"><span class="stat-card-num gold" id="s_contacted">0</span><div class="stat-card-label">Contacted</div></div>
+        <div class="stat-card"><span class="stat-card-num green" id="s_closed">0</span><div class="stat-card-label">Policies Sold 🏆</div></div>
+        <div class="stat-card"><span class="stat-card-num green" id="s_rate">0%</span><div class="stat-card-label">Close Rate</div></div>
+      </div>
+      <div style="background:var(--white);border-radius:16px;padding:2rem;border:1px solid rgba(13,31,60,0.07);">
+        <h3 style="font-family:'Fraunces',serif;color:var(--navy);margin-bottom:1.2rem;">Lead Breakdown</h3>
+        <div id="statsBreakdown"></div>
+      </div>
+    </div>
+
+    <!-- PROFILE TAB -->
+    <div class="tab-panel" id="portal-profile">
+      <div class="profile-card">
+        <h2>Your Profile</h2>
+        <div class="profile-row"><span>Name</span><span id="pName">—</span></div>
+        <div class="profile-row"><span>Agency</span><span id="pAgency">—</span></div>
+        <div class="profile-row"><span>Email</span><span id="pEmail">—</span></div>
+        <div class="profile-row"><span>Phone</span><span id="pPhone">—</span></div>
+        <div class="profile-row"><span>Plan</span><span id="pPlan">—</span></div>
+        <div class="profile-row"><span>Status</span><span style="color:var(--green);font-weight:600;">✅ Approved</span></div>
+        <div class="profile-row"><span>Insurance Types</span><span id="pTypes">—</span></div>
+        <div class="profile-row"><span>Licensed States</span><span id="pStates">—</span></div>
+      </div>
+    </div>
+
+    <!-- LICENSES TAB -->
+    <div class="tab-panel" id="portal-licenses">
+      <div class="edit-section">
+        <h3>Update Your Insurance Licenses</h3>
+        <p>Check all insurance types you are currently licensed to sell.</p>
+        <div class="checkbox-grid" id="typeGrid"></div>
+        <button class="save-btn" onclick="saveMyTypes()">💾 Save Insurance Type Changes</button>
+      </div>
+      <div class="edit-section">
+        <h3>Update Your Licensed States</h3>
+        <p>Check all states where you hold an active insurance license.</p>
+        <div class="checkbox-grid" id="stateGrid" style="max-height:280px;overflow-y:auto;"></div>
+        <button class="save-btn" style="margin-top:0.8rem;" onclick="saveMyStates()">💾 Save State Changes</button>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<!-- LEAD DETAIL MODAL -->
+<div class="modal-overlay" id="leadModal">
+  <div class="lead-modal">
+    <div class="modal-header">
+      <h3 id="modalTitle">Lead Details</h3>
+      <button class="modal-close" onclick="closeModal()">✕</button>
+    </div>
+    <div class="modal-body">
+      <!-- Call Button -->
+      <a id="callBtn" href="#" class="call-btn">📞 Call Consumer Now</a>
+
+      <!-- Lead Info -->
+      <div class="info-grid" id="infoGrid"></div>
+
+      <!-- Script Box -->
+      <div class="script-box" id="scriptBox"></div>
+
+      <!-- Status -->
+      <div class="status-row">
+        <label>Status:</label>
+        <select id="statusSelect" onchange="checkConfetti()">
+          <option value="new">🆕 New</option>
+          <option value="contacted">📞 Contacted</option>
+          <option value="followup">🔄 Follow Up</option>
+          <option value="closed">✅ Closed — Policy Sold!</option>
+          <option value="lost">❌ Lost</option>
+        </select>
+      </div>
+
+      <!-- Callback -->
+      <div class="callback-row">
+        <label>⏰ Schedule Callback:</label>
+        <input type="datetime-local" id="callbackInput">
+      </div>
+
+      <!-- Rating -->
+      <div class="rating-row">
+        <label>Lead Quality:</label>
+        <div class="stars" id="starRating">
+          <button class="star-btn" onclick="setRating(1)">★</button>
+          <button class="star-btn" onclick="setRating(2)">★</button>
+          <button class="star-btn" onclick="setRating(3)">★</button>
+          <button class="star-btn" onclick="setRating(4)">★</button>
+          <button class="star-btn" onclick="setRating(5)">★</button>
+        </div>
+        <span id="ratingLabel" style="font-size:0.82rem;color:var(--text-muted);margin-left:0.5rem;"></span>
+      </div>
+
+      <!-- Notes -->
+      <div class="notes-wrap">
+        <h4>📝 Call Notes</h4>
+        <div class="notes-list" id="notesList"></div>
+        <div class="note-input-row">
+          <textarea id="noteInput" placeholder="Add a call note... e.g. 'Called at 2pm, left voicemail. Will try again tomorrow morning.'"></textarea>
+          <button class="add-note-btn" onclick="addNote()">+ Add Note</button>
+        </div>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn-cancel" onclick="closeModal()">Cancel</button>
+      <button class="btn-save" onclick="saveLeadChanges()">💾 Save All Changes</button>
+    </div>
+  </div>
+</div>
+
+<!-- CONFETTI CONTAINER -->
+<div class="confetti-container" id="confettiContainer"></div>
+
+<script>
+const ALL_STATES=['AL','AK','AZ','AR','CA','CO','CT','DE','FL','GA','HI','ID','IL','IN','IA','KS','KY','LA','ME','MD','MA','MI','MN','MS','MO','MT','NE','NV','NH','NJ','NM','NY','NC','ND','OH','OK','OR','PA','RI','SC','SD','TN','TX','UT','VT','VA','WA','WV','WI','WY'];
+const ALL_TYPES=['Auto Insurance','Homeowners Insurance','Renters Insurance','Life Insurance','Health Insurance','Medicare','Other'];
+
+const SCRIPTS = {
+  'Auto Insurance': {
+    opener: "Hi [Name], this is [Your Name] from [Agency]. I see you were looking for an auto insurance quote — I'm reaching out to make sure I can find you the best rate. Do you have about 5 minutes?",
+    questions: ['What vehicle(s) are you looking to insure?','Any recent accidents or violations in the last 3 years?','Are you currently insured? When does your policy renew?','Are you looking for liability only or full coverage?']
+  },
+  'Homeowners Insurance': {
+    opener: "Hi [Name], this is [Your Name] calling about your homeowners insurance quote request. I specialize in getting homeowners the best coverage at the best price. Is now a good time?",
+    questions: ['When did you purchase your home?','Do you have a mortgage lender requiring coverage?','Have you had any claims in the last 5 years?','Are you bundling with auto insurance?']
+  },
+  'Renters Insurance': {
+    opener: "Hi [Name], I'm calling about your renters insurance inquiry. Great news — renters insurance is very affordable and I can usually get people covered same day. Is this a good time?",
+    questions: ['How much personal property would you estimate you own?','Do you need liability coverage?','Does your landlord require a specific coverage amount?','Are you interested in bundling with auto?']
+  },
+  'Life Insurance': {
+    opener: "Hi [Name], this is [Your Name] — I specialize in life insurance and I'm reaching out about your inquiry. Protecting your family is one of the most important things you can do. Do you have a few minutes?",
+    questions: ['Are you looking for term or whole life?','What coverage amount are you considering?','Is this to protect income, pay off debts, or leave a legacy?','Have you had any major health changes recently?']
+  },
+  'Health Insurance': {
+    opener: "Hi [Name], I'm calling about your health insurance quote. I work with multiple carriers so I can shop the market for you to find the best plan for your situation. Is now a good time?",
+    questions: ['Is this for just yourself or your family?','Do you have any preferred doctors or medications to consider?','Are you looking for low monthly premium or low deductible?','Do you currently have any coverage?']
+  },
+  'Medicare': {
+    opener: "Hi [Name], this is [Your Name] — I'm a licensed Medicare specialist and I'm reaching out about your inquiry. I help people navigate Medicare options at absolutely no cost to them. Do you have a few minutes?",
+    questions: ['Are you turning 65 soon or already enrolled in Medicare?','Are you looking at Medicare Supplement or Medicare Advantage?','Do you have any preferred doctors or specialists?','Do you take any regular medications I should factor in?']
+  },
+  'Other': {
+    opener: "Hi [Name], this is [Your Name] calling about your insurance inquiry through OneCallShield. I want to make sure I understand exactly what you need so I can find the right coverage for you. Is now a good time?",
+    questions: ['Can you tell me more about what type of coverage you are looking for?','Have you had this type of insurance before?','Is there a specific timeline you are working with?','What is most important to you — price, coverage, or a specific carrier?']
+  }
+};
+
+const RATING_LABELS = {1:'Poor',2:'Fair',3:'Good',4:'Very Good',5:'Excellent'};
+let currentAgent=null, currentLeadId=null, myLeads=[], currentRating=0;
+
+// ─── LOGIN ────────────────────────────────────────────────────────────────────
+function doPortalLogin(){
+  const email=document.getElementById('portalEmail').value.trim().toLowerCase();
+  const pass=document.getElementById('portalPass').value.trim();
+  const err=document.getElementById('loginError');
+  err.style.display='none';
+  if(!email||!pass){err.textContent='Please enter your email and password.';err.style.display='block';return;}
+  const agents=[...JSON.parse(localStorage.getItem('ocs_agents')||'[]'),...JSON.parse(localStorage.getItem('ocs_applications')||'[]')];
+  const agent=agents.find(a=>a.email&&a.email.toLowerCase()===email&&a.portalPassword===pass&&a.status==='approved');
+  if(!agent){err.textContent='Invalid email or password. Contact OneCallShield if you need help.';err.style.display='block';return;}
+  currentAgent=agent;
+  document.getElementById('loginScreen').style.display='none';
+  document.getElementById('mainPortal').style.display='block';
+  loadPortal();
+}
+
+// ─── LOAD PORTAL ─────────────────────────────────────────────────────────────
+function loadPortal(){
+  const a=currentAgent;
+  document.getElementById('agentFirstName').textContent=a.firstName;
+  document.getElementById('agentChip').textContent=a.firstName+' '+a.lastName;
+  document.getElementById('pName').textContent=a.firstName+' '+a.lastName;
+  document.getElementById('pAgency').textContent=a.agency||'—';
+  document.getElementById('pEmail').textContent=a.email;
+  document.getElementById('pPhone').textContent=a.phone||'—';
+  document.getElementById('pPlan').textContent=a.plan==='monthly'?'Monthly Subscription':'Pay Per Lead';
+  document.getElementById('pTypes').textContent=(a.insuranceTypes||[]).join(', ')||'—';
+  document.getElementById('pStates').textContent=(a.states||[]).join(', ')||'—';
+
+  // Checkboxes
+  const at=a.insuranceTypes||[];
+  document.getElementById('typeGrid').innerHTML=ALL_TYPES.map(t=>`<label class="check-pill"><input type="checkbox" value="${t}" ${at.includes(t)?'checked':''}> ${t}</label>`).join('');
+  const as2=a.states||[];
+  document.getElementById('stateGrid').innerHTML=ALL_STATES.map(s=>`<label class="check-pill"><input type="checkbox" value="${s}" ${as2.includes(s)?'checked':''}> ${s}</label>`).join('');
+
+  // Leads
+  const allLeads=JSON.parse(localStorage.getItem('ocs_leads')||'[]');
+  myLeads=allLeads.filter(l=>l.matchedAgentId===a.id).reverse();
+  updateStats();
+  renderTable();
+  checkCallbacks();
+  checkNewLeads();
+}
+
+function checkNewLeads(){
+  const newLeads = myLeads.filter(l => !l.agentStatus || l.agentStatus === 'new');
+  const alert = document.getElementById('newLeadAlert');
+  const title = document.getElementById('newLeadAlertTitle');
+  const sub = document.getElementById('newLeadAlertSub');
+  if(!newLeads.length){ alert.style.display='none'; return; }
+  alert.style.display = 'block';
+  if(newLeads.length === 1){
+    title.textContent = '🎯 New lead waiting — ' + newLeads[0].firstName + ' ' + newLeads[0].lastName + ' needs ' + newLeads[0].insuranceType;
+    sub.textContent = 'Contact them now — leads go cold fast!';
+  } else {
+    title.textContent = '🎯 You have ' + newLeads.length + ' new leads waiting!';
+    sub.textContent = 'Contact them now — the sooner you call, the higher your close rate.';
+  }
+}
+
+// ─── STATS ────────────────────────────────────────────────────────────────────
+function updateStats(){
+  const total=myLeads.length;
+  const contacted=myLeads.filter(l=>l.agentStatus&&l.agentStatus!=='new'&&l.agentStatus!=='lost').length;
+  const closed=myLeads.filter(l=>l.agentStatus==='closed').length;
+  const rate=total>0?Math.round((closed/total)*100):0;
+
+  document.getElementById('statTotal').textContent=total;
+  document.getElementById('statNew').textContent=myLeads.filter(l=>!l.agentStatus||l.agentStatus==='new').length;
+  document.getElementById('statContacted').textContent=contacted;
+  document.getElementById('statClosed').textContent=closed;
+  document.getElementById('statRate').textContent=rate+'%';
+  document.getElementById('s_total').textContent=total;
+  document.getElementById('s_contacted').textContent=contacted;
+  document.getElementById('s_closed').textContent=closed;
+  document.getElementById('s_rate').textContent=rate+'%';
+
+  const breakdown=document.getElementById('statsBreakdown');
+  const statuses=['new','contacted','followup','closed','lost'];
+  const labels={new:'🆕 New',contacted:'📞 Contacted',followup:'🔄 Follow Up',closed:'✅ Closed',lost:'❌ Lost'};
+  breakdown.innerHTML=statuses.map(s=>{
+    const count=myLeads.filter(l=>(l.agentStatus||'new')===s).length;
+    const pct=total>0?Math.round((count/total)*100):0;
+    return `<div style="display:flex;align-items:center;gap:1rem;padding:0.6rem 0;border-bottom:1px solid var(--cream-dark);">
+      <span style="width:120px;font-size:0.88rem;color:var(--text-muted);">${labels[s]}</span>
+      <div style="flex:1;background:var(--cream);border-radius:100px;height:8px;overflow:hidden;">
+        <div style="width:${pct}%;background:var(--gold);height:100%;border-radius:100px;transition:width 0.5s;"></div>
+      </div>
+      <span style="font-family:'Fraunces',serif;font-size:1rem;font-weight:700;color:var(--navy);width:40px;text-align:right;">${count}</span>
+    </div>`;
+  }).join('');
+}
+
+// ─── CALLBACKS ────────────────────────────────────────────────────────────────
+function checkCallbacks(){
+  const now=new Date();
+  const today=now.toDateString();
+  const due=myLeads.filter(l=>{
+    if(!l.callbackDate)return false;
+    const cb=new Date(l.callbackDate);
+    return cb.toDateString()===today||cb<now;
+  });
+  const alert=document.getElementById('callbacksAlert');
+  if(!due.length){alert.style.display='none';return;}
+  alert.style.display='block';
+  document.getElementById('callbacksList').innerHTML=due.map(l=>`
+    <div class="callback-item" onclick="openLeadModal('${l.id}')" style="cursor:pointer;">
+      <span class="callback-name">${l.firstName} ${l.lastName} — ${l.insuranceType}</span>
+      <span class="callback-time">${new Date(l.callbackDate).toLocaleTimeString([],{hour:'2-digit',minute:'2-digit'})}</span>
+    </div>`).join('');
+}
+
+// ─── TABLE ────────────────────────────────────────────────────────────────────
+function leadAge(dateStr){
+  const diff=Date.now()-new Date(dateStr).getTime();
+  const hrs=Math.floor(diff/3600000);
+  const days=Math.floor(diff/86400000);
+  if(hrs<1)return{text:'Just now',cls:'age-fresh'};
+  if(hrs<6)return{text:hrs+'h ago',cls:'age-fresh'};
+  if(hrs<24)return{text:hrs+'h ago',cls:'age-warm'};
+  if(days<3)return{text:days+'d ago',cls:'age-warm'};
+  return{text:days+'d ago',cls:'age-old'};
+}
+
+function badge(s){
+  const cls={new:'badge-new',contacted:'badge-contacted',followup:'badge-followup',closed:'badge-closed',lost:'badge-lost'};
+  const lbl={new:'🆕 New',contacted:'📞 Contacted',followup:'🔄 Follow Up',closed:'✅ Closed',lost:'❌ Lost'};
+  return `<span class="badge ${cls[s]||'badge-new'}">${lbl[s]||'🆕 New'}</span>`;
+}
+
+function renderTable(){
+  const tb=document.getElementById('leadsTable');
+  if(!myLeads.length){tb.innerHTML='<tr><td colspan="8" style="text-align:center;color:var(--text-muted);padding:3rem;">No leads assigned yet — check back soon!</td></tr>';return;}
+  tb.innerHTML=myLeads.map(l=>{
+    const age=leadAge(l.matchedAt||l.submittedAt);
+    const stars='★'.repeat(l.agentRating||0)+'☆'.repeat(5-(l.agentRating||0));
+    const cb=l.callbackDate?new Date(l.callbackDate).toLocaleDateString():'—';
+    return `<tr class="lead-row" onclick="openLeadModal('${l.id}')">
+      <td><strong>${l.firstName} ${l.lastName}</strong><br><span style="font-size:0.75rem;color:var(--text-muted);">${l.zip} · Age ${l.age||'?'}</span></td>
+      <td style="font-size:0.82rem;">${l.email||'—'}<button class="copy-btn" onclick="event.stopPropagation();copyText('${l.email||''}')">Copy</button></td>
+      <td>${l.insuranceType}</td>
+      <td>${badge(l.agentStatus||'new')}</td>
+      <td class="${age.cls}">${age.text}</td>
+      <td style="font-size:0.82rem;color:var(--text-muted);">${cb}</td>
+      <td style="color:#f59e0b;font-size:0.85rem;">${stars}</td>
+      <td style="color:var(--text-muted);font-size:0.82rem;">${(l.agentNotes||[]).length?'📝 '+(l.agentNotes||[]).length:'—'}</td>
+    </tr>`;
+  }).join('');
+}
+
+function copyText(text){
+  if(!text)return;
+  navigator.clipboard.writeText(text).then(()=>alert('✅ Copied!')).catch(()=>{});
+}
+
+// ─── LEAD MODAL ───────────────────────────────────────────────────────────────
+function openLeadModal(id){
+  currentLeadId=id;
+  currentRating=0;
+  const l=myLeads.find(x=>x.id===id);
+  if(!l)return;
+
+  document.getElementById('modalTitle').textContent=l.firstName+' '+l.lastName+' — '+l.insuranceType;
+  document.getElementById('callBtn').href='tel:'+l.phone;
+  document.getElementById('callBtn').textContent='📞 Call '+l.firstName+' Now — '+l.phone;
+
+  document.getElementById('infoGrid').innerHTML=`
+    <div class="info-item"><div class="info-label">Full Name</div><div class="info-value">${l.firstName} ${l.lastName}</div></div>
+    <div class="info-item"><div class="info-label">Phone</div><div class="info-value"><a href="tel:${l.phone}">${l.phone}</a></div></div>
+    <div class="info-item"><div class="info-label">Email</div><div class="info-value" style="font-size:0.82rem;">${l.email||'—'} ${l.email?`<button class="copy-btn" onclick="copyText('${l.email}')">Copy</button>`:''}</div></div>
+    <div class="info-item"><div class="info-label">Age</div><div class="info-value">${l.age||'—'}</div></div>
+    <div class="info-item"><div class="info-label">ZIP Code</div><div class="info-value">${l.zip}</div></div>
+    <div class="info-item"><div class="info-label">Insurance Type</div><div class="info-value gold">${l.insuranceType}</div></div>
+    <div class="info-item"><div class="info-label">Best Contact Time</div><div class="info-value">${l.contactTime||'Anytime'}</div></div>
+    <div class="info-item"><div class="info-label">TCPA Consent</div><div class="info-value" style="font-size:0.8rem;color:var(--green);">✅ Consented ${new Date(l.submittedAt).toLocaleString()}</div></div>
+    ${l.lifeType?`<div class="info-item"><div class="info-label">Life Type</div><div class="info-value">${l.lifeType}</div></div><div class="info-item"><div class="info-label">Face Amount</div><div class="info-value">${l.faceAmount||'—'}</div></div><div class="info-item"><div class="info-label">Health Status</div><div class="info-value">${l.healthStatus||'—'}</div></div>`:''}
+  `;
+
+  // Script
+  const script=SCRIPTS[l.insuranceType]||SCRIPTS['Other'];
+  document.getElementById('scriptBox').innerHTML=`
+    <h5>💬 Suggested Opening Script</h5>
+    <p style="font-style:italic;">"${script.opener}"</p>
+    <h5 style="margin-top:0.8rem;">🎯 Key Questions to Ask</h5>
+    <ul>${script.questions.map(q=>`<li>${q}</li>`).join('')}</ul>
+  `;
+
+  document.getElementById('statusSelect').value=l.agentStatus||'new';
+  document.getElementById('callbackInput').value=l.callbackDate?new Date(l.callbackDate).toISOString().slice(0,16):'';
+
+  // Rating
+  currentRating=l.agentRating||0;
+  updateStars(currentRating);
+
+  renderNotes(l.agentNotes||[]);
+  document.getElementById('noteInput').value='';
+  document.getElementById('leadModal').classList.add('open');
+}
+
+function checkConfetti(){
+  if(document.getElementById('statusSelect').value==='closed') launchConfetti();
+}
+
+function launchConfetti(){
+  const container=document.getElementById('confettiContainer');
+  const colors=['#c9973a','#0d1f3c','#2d7a4f','#e8b96a','#ffffff','#f59e0b'];
+  for(let i=0;i<80;i++){
+    const piece=document.createElement('div');
+    piece.className='confetti-piece';
+    piece.style.cssText=`left:${Math.random()*100}%;background:${colors[Math.floor(Math.random()*colors.length)]};border-radius:${Math.random()>0.5?'50%':'2px'};width:${6+Math.random()*8}px;height:${6+Math.random()*8}px;animation-duration:${2+Math.random()*2}s;animation-delay:${Math.random()*0.5}s;`;
+    container.appendChild(piece);
+    setTimeout(()=>piece.remove(),4000);
+  }
+}
+
+function setRating(n){
+  currentRating=n;
+  updateStars(n);
+}
+
+function updateStars(n){
+  document.querySelectorAll('.star-btn').forEach((btn,i)=>{btn.classList.toggle('active',i<n);});
+  document.getElementById('ratingLabel').textContent=n?RATING_LABELS[n]:'Not rated';
+}
+
+function renderNotes(notes){
+  const nl=document.getElementById('notesList');
+  if(!notes.length){nl.innerHTML='<p style="color:var(--text-muted);font-size:0.85rem;text-align:center;padding:0.8rem;">No notes yet — add your first note below</p>';return;}
+  nl.innerHTML=notes.slice().reverse().map(n=>`<div class="note-item"><div class="note-text">${n.text}</div><div class="note-meta">${n.date}</div></div>`).join('');
+}
+
+function addNote(){
+  const text=document.getElementById('noteInput').value.trim();
+  if(!text)return;
+  const allLeads=JSON.parse(localStorage.getItem('ocs_leads')||'[]');
+  const idx=allLeads.findIndex(l=>l.id===currentLeadId);
+  if(idx===-1)return;
+  if(!allLeads[idx].agentNotes)allLeads[idx].agentNotes=[];
+  allLeads[idx].agentNotes.push({text,date:new Date().toLocaleString()});
+  localStorage.setItem('ocs_leads',JSON.stringify(allLeads));
+  myLeads=allLeads.filter(l=>l.matchedAgentId===currentAgent.id).reverse();
+  renderNotes(allLeads[idx].agentNotes);
+  document.getElementById('noteInput').value='';
+}
+
+function saveLeadChanges(){
+  const status=document.getElementById('statusSelect').value;
+  const callbackVal=document.getElementById('callbackInput').value;
+  const allLeads=JSON.parse(localStorage.getItem('ocs_leads')||'[]');
+  const idx=allLeads.findIndex(l=>l.id===currentLeadId);
+  if(idx===-1)return;
+  allLeads[idx].agentStatus=status;
+  allLeads[idx].callbackDate=callbackVal?new Date(callbackVal).toISOString():'';
+  allLeads[idx].agentRating=currentRating;
+  localStorage.setItem('ocs_leads',JSON.stringify(allLeads));
+  myLeads=allLeads.filter(l=>l.matchedAgentId===currentAgent.id).reverse();
+  if(status==='closed')launchConfetti();
+  closeModal();
+  renderTable();
+  updateStats();
+  checkCallbacks();
+  alert('✅ Lead updated!'+(status==='closed'?' 🎉 Congratulations on closing the deal!':''));
+}
+
+function closeModal(){
+  document.getElementById('leadModal').classList.remove('open');
+  currentLeadId=null;
+}
+document.getElementById('leadModal').addEventListener('click',e=>{if(e.target===document.getElementById('leadModal'))closeModal();});
+
+// ─── LICENSES ─────────────────────────────────────────────────────────────────
+function updateAgentInStorage(updates){
+  ['ocs_agents','ocs_applications'].forEach(key=>{
+    const arr=JSON.parse(localStorage.getItem(key)||'[]');
+    const idx=arr.findIndex(a=>a.id===currentAgent.id);
+    if(idx>-1){Object.assign(arr[idx],updates);localStorage.setItem(key,JSON.stringify(arr));}
+  });
+  Object.assign(currentAgent,updates);
+}
+function saveMyTypes(){
+  const checked=[...document.querySelectorAll('#typeGrid input:checked')].map(i=>i.value);
+  if(!checked.length){alert('Please select at least one insurance type.');return;}
+  updateAgentInStorage({insuranceTypes:checked});
+  document.getElementById('pTypes').textContent=checked.join(', ');
+  alert('✅ Insurance types updated!');
+}
+function saveMyStates(){
+  const checked=[...document.querySelectorAll('#stateGrid input:checked')].map(i=>i.value);
+  if(!checked.length){alert('Please select at least one state.');return;}
+  updateAgentInStorage({states:checked});
+  document.getElementById('pStates').textContent=checked.join(', ');
+  alert('✅ Licensed states updated!');
+}
+
+// ─── TABS & LOGOUT ────────────────────────────────────────────────────────────
+function switchTab(name,btn){
+  document.querySelectorAll('.tab-panel').forEach(p=>p.classList.remove('active'));
+  document.querySelectorAll('.tab-btn').forEach(b=>b.classList.remove('active'));
+  document.getElementById('portal-'+name).classList.add('active');
+  btn.classList.add('active');
+}
+function doLogout(){
+  currentAgent=null;
+  document.getElementById('mainPortal').style.display='none';
+  document.getElementById('loginScreen').style.display='flex';
+  document.getElementById('portalEmail').value='';
+  document.getElementById('portalPass').value='';
+}
+</script>
+</body>
+</html>
