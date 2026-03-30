@@ -159,6 +159,7 @@ exports.handler = async (event) => {
 
     // ── TYPE 2: Agent lead assignment ───────────────────────────────────────
     if (type === 'agent_lead') {
+      console.log('agent_lead called, agentEmail:', data.agentEmail, 'agentName:', data.agentName);
       const { agentName, agentEmail, agentFirstName, consumerFirstName, consumerLastName, consumerPhone, consumerEmail, consumerAge, consumerZip, insuranceType, contactTime, lifeType, faceAmount, healthStatus, leadId } = data;
 
       const html = `<!DOCTYPE html><html><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0">
