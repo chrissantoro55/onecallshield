@@ -1,0 +1,30 @@
+[build]
+  functions = "netlify/functions"
+
+[functions]
+  node_bundler = "esbuild"
+```
+
+5. Click **"Commit changes"**
+
+---
+
+## Step 3 — Create the 4 function files in GitHub
+
+For each one:
+1. Click **"Add file"** → **"Create new file"**
+2. In the name box type the full path including folders:
+```
+netlify/functions/send-consumer-email.js
+```
+
+GitHub creates the folders automatically when you include the `/` in the filename.
+
+3. Open the corresponding `.js` file I gave you → copy all the contents → paste into GitHub editor
+4. Click **"Commit changes"**
+
+Repeat for:
+```
+netlify/functions/send-admin-email.js
+netlify/functions/send-agent-email.js
+netlify/functions/send-application-email.js
