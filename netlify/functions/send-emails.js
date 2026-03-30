@@ -1,5 +1,5 @@
 const RESEND_KEY = 're_9ujjXVty_GKkeGYW6SeUZqVMUJRCUfryJ';
-const FROM = 'OneCallShield <chris@onecallshield.com>';
+const FROM = 'OneCallShield <noreply@onecallshield.com>';
 const ADMIN_EMAIL = 'chris.santoro55@gmail.com';
 
 async function sendEmail(to, subject, html) {
@@ -147,11 +147,11 @@ exports.handler = async (event) => {
 </table></td></tr></table></body></html>`;
 
       console.log('Sending admin email to:', ADMIN_EMAIL);
-      const adminResult = await sendEmail(ADMIN_EMAIL, `🎯 New ${insuranceType} Lead — ${firstName} ${lastName} | OneCallShield`, adminHtml);
+      const adminResult = await sendEmail(ADMIN_EMAIL, `New Lead: ${firstName} ${lastName} — ${insuranceType} | OneCallShield`, adminHtml);
       console.log('Admin email result:', JSON.stringify(adminResult));
 
       console.log('Sending consumer email to:', email);
-      const consumerResult = await sendEmail(email, `🛡️ You're all set, ${firstName} — Your OneCallShield request is confirmed`, consumerHtml);
+      const consumerResult = await sendEmail(email, `Your OneCallShield request is confirmed, ${firstName}`, consumerHtml);
       console.log('Consumer email result:', JSON.stringify(consumerResult));
 
       return { statusCode: 200, headers, body: JSON.stringify({ success: true, adminResult, consumerResult }) };
@@ -224,7 +224,7 @@ exports.handler = async (event) => {
 </td></tr>
 </table></td></tr></table></body></html>`;
 
-      await sendEmail(agentEmail, `🎯 New Lead Assigned — ${insuranceType} | OneCallShield`, html);
+      await sendEmail(agentEmail, `New Lead Assigned: ${insuranceType} | OneCallShield`, html);
       return { statusCode: 200, headers, body: JSON.stringify({ success: true }) };
     }
 
@@ -281,8 +281,8 @@ exports.handler = async (event) => {
 </div></div></body></html>`;
 
       await Promise.all([
-        sendEmail(email, '🎉 Application Received — OneCallShield Agent Network', agentHtml),
-        sendEmail(ADMIN_EMAIL, `👥 New Agent Application — ${firstName} ${lastName} | OneCallShield`, adminHtml)
+        sendEmail(email, 'Application Received — OneCallShield Agent Network', agentHtml),
+        sendEmail(ADMIN_EMAIL, `New Agent Application — ${firstName} ${lastName} | OneCallShield`, adminHtml)
       ]);
 
       return { statusCode: 200, headers, body: JSON.stringify({ success: true }) };
