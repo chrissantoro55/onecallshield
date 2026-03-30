@@ -1,5 +1,5 @@
 const RESEND_KEY = 're_9ujjXVty_GKkeGYW6SeUZqVMUJRCUfryJ';
-const FROM = 'OneCallShield <onboarding@resend.dev>';
+const FROM = 'OneCallShield <chris@onecallshield.com>';
 const ADMIN_EMAIL = 'chris.santoro55@gmail.com';
 
 async function sendEmail(to, subject, html) {
