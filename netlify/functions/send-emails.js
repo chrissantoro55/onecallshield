@@ -146,12 +146,15 @@ exports.handler = async (event) => {
 </td></tr>
 </table></td></tr></table></body></html>`;
 
-      await Promise.all([
-        sendEmail(ADMIN_EMAIL, `🎯 New ${insuranceType} Lead — ${firstName} ${lastName} | OneCallShield`, adminHtml),
-        sendEmail(email, `🛡️ You're all set, ${firstName} — Your OneCallShield request is confirmed`, consumerHtml)
-      ]);
+      console.log('Sending admin email to:', ADMIN_EMAIL);
+      const adminResult = await sendEmail(ADMIN_EMAIL, `🎯 New ${insuranceType} Lead — ${firstName} ${lastName} | OneCallShield`, adminHtml);
+      console.log('Admin email result:', JSON.stringify(adminResult));
 
-      return { statusCode: 200, headers, body: JSON.stringify({ success: true }) };
+      console.log('Sending consumer email to:', email);
+      const consumerResult = await sendEmail(email, `🛡️ You're all set, ${firstName} — Your OneCallShield request is confirmed`, consumerHtml);
+      console.log('Consumer email result:', JSON.stringify(consumerResult));
+
+      return { statusCode: 200, headers, body: JSON.stringify({ success: true, adminResult, consumerResult }) };
     }
 
     // ── TYPE 2: Agent lead assignment ───────────────────────────────────────
