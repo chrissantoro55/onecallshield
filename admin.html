@@ -1,0 +1,1361 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title>Admin — OneCallShield</title>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,600;0,9..144,700&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{
+  --navy:#0d1f3c;--navy-mid:#1a3460;--gold:#c9973a;--gold-light:#e8b96a;
+  --cream:#f8f4ee;--cream-dark:#ede7dc;--white:#fff;
+  --text:#1a1a2e;--text-muted:#5a6480;
+  --green:#2d7a4f;--green-light:#e8f5ee;
+  --red:#c0392b;--red-light:#fdf0ef;
+  --amber:#d97706;--amber-light:#fef3c7;
+  --sidebar:220px;
+}
+*{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent;}
+body{font-family:'DM Sans',sans-serif;background:var(--cream);color:var(--text);overscroll-behavior:none;}
+
+/* ─── LOGIN ──────────────────────────────────────────────────────────────── */
+.login-screen{position:fixed;inset:0;background:var(--navy);display:flex;align-items:center;justify-content:center;z-index:1000;padding:1rem;}
+.login-card{background:rgba(255,255,255,0.05);border:1px solid rgba(201,151,58,0.25);border-radius:24px;padding:2.5rem;width:100%;max-width:360px;text-align:center;}
+.login-card h2{font-family:'Fraunces',serif;color:#fff;font-size:1.6rem;margin-bottom:0.3rem;}
+.login-card p{color:rgba(255,255,255,0.45);font-size:0.88rem;margin-bottom:2rem;}
+.login-card input{background:rgba(255,255,255,0.07);border:1.5px solid rgba(255,255,255,0.15);border-radius:12px;padding:0.9rem 1rem;color:#fff;font-size:1rem;font-family:'DM Sans',sans-serif;outline:none;width:100%;margin-bottom:1rem;transition:border-color 0.2s;}
+.login-card input:focus{border-color:var(--gold);}
+.login-btn{width:100%;background:var(--gold);color:var(--navy);border:none;padding:1rem;border-radius:12px;font-size:1rem;font-weight:700;font-family:'DM Sans',sans-serif;cursor:pointer;transition:background 0.2s;}
+.login-btn:hover{background:var(--gold-light);}
+
+/* ─── LAYOUT ─────────────────────────────────────────────────────────────── */
+.app{display:flex;min-height:100vh;}
+
+/* ─── DESKTOP SIDEBAR ────────────────────────────────────────────────────── */
+.sidebar{width:var(--sidebar);background:var(--navy);min-height:100vh;position:fixed;left:0;top:0;display:flex;flex-direction:column;border-right:1px solid rgba(201,151,58,0.12);z-index:10;}
+.sidebar-logo{padding:1.2rem 1.5rem;border-bottom:1px solid rgba(201,151,58,0.12);display:flex;align-items:center;gap:0.6rem;font-family:'Fraunces',serif;font-size:1rem;font-weight:700;color:#fff;text-decoration:none;}
+.sidebar-logo span{color:var(--gold);}
+.sidebar-nav{padding:0.8rem 0;flex:1;}
+.nav-item{display:flex;align-items:center;gap:0.7rem;padding:0.75rem 1.5rem;color:rgba(255,255,255,0.5);font-size:0.88rem;cursor:pointer;transition:all 0.15s;border-left:3px solid transparent;user-select:none;}
+.nav-item:hover{color:rgba(255,255,255,0.85);background:rgba(255,255,255,0.04);}
+.nav-item.active{color:#fff;background:rgba(201,151,58,0.1);border-left-color:var(--gold);}
+.nav-icon{font-size:1rem;width:20px;text-align:center;}
+.nav-badge{margin-left:auto;font-size:0.68rem;padding:0.1rem 0.5rem;border-radius:100px;}
+.sidebar-footer{padding:1rem 1.5rem;border-top:1px solid rgba(201,151,58,0.12);font-size:0.73rem;color:rgba(255,255,255,0.2);}
+
+/* ─── DESKTOP MAIN ───────────────────────────────────────────────────────── */
+.main{margin-left:var(--sidebar);flex:1;display:flex;flex-direction:column;min-height:100vh;}
+.topbar{background:var(--white);border-bottom:1px solid rgba(13,31,60,0.08);padding:0 1.5rem;height:60px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:5;}
+.topbar-title{font-family:'Fraunces',serif;font-size:1.2rem;color:var(--navy);font-weight:700;}
+.admin-chip{background:var(--navy);color:var(--gold);font-size:0.75rem;font-weight:600;padding:0.3rem 0.8rem;border-radius:100px;}
+.content{padding:1.5rem;flex:1;}
+
+/* ─── MOBILE TOP BAR ─────────────────────────────────────────────────────── */
+.m-topbar{display:none;background:var(--navy);height:56px;padding:0 1rem;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:50;border-bottom:1px solid rgba(201,151,58,0.15);}
+.m-topbar-logo{font-family:'Fraunces',serif;font-size:1rem;font-weight:700;color:#fff;display:flex;align-items:center;gap:0.4rem;}
+.m-topbar-logo span{color:var(--gold);}
+.m-alert{background:var(--red);color:#fff;font-size:0.7rem;font-weight:700;padding:0.2rem 0.65rem;border-radius:100px;display:none;white-space:nowrap;}
+
+/* ─── STATS ──────────────────────────────────────────────────────────────── */
+.stats-row{display:grid;grid-template-columns:repeat(4,1fr);gap:1rem;margin-bottom:1.5rem;}
+.stat-card{background:var(--white);border-radius:16px;padding:1.2rem;border:1px solid rgba(13,31,60,0.07);box-shadow:0 2px 8px rgba(13,31,60,0.04);}
+.stat-label{font-size:0.7rem;color:var(--text-muted);text-transform:uppercase;letter-spacing:0.06em;margin-bottom:0.4rem;font-weight:600;}
+.stat-num{font-family:'Fraunces',serif;font-size:2rem;font-weight:700;color:var(--navy);line-height:1;}
+.stat-num.gold{color:var(--gold);}
+.stat-num.green{color:var(--green);}
+.stat-num.red{color:var(--red);}
+.stat-sub{font-size:0.72rem;color:var(--text-muted);margin-top:0.3rem;}
+
+/* ─── SECTION ────────────────────────────────────────────────────────────── */
+.section-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:1rem;flex-wrap:wrap;gap:0.5rem;}
+.section-header h2{font-family:'Fraunces',serif;font-size:1.1rem;color:var(--navy);font-weight:700;}
+.filter-row{display:flex;gap:0.4rem;flex-wrap:wrap;}
+.filter-btn{background:var(--white);border:1.5px solid rgba(13,31,60,0.1);border-radius:10px;padding:0.4rem 0.9rem;font-size:0.8rem;font-weight:500;color:var(--text-muted);cursor:pointer;font-family:'DM Sans',sans-serif;transition:all 0.15s;}
+.filter-btn.active{background:var(--navy);color:#fff;border-color:var(--navy);}
+
+/* ─── DESKTOP TABLE ──────────────────────────────────────────────────────── */
+.table-wrap{background:var(--white);border-radius:16px;border:1px solid rgba(13,31,60,0.07);overflow:hidden;box-shadow:0 2px 8px rgba(13,31,60,0.04);margin-bottom:1.5rem;overflow-x:auto;}
+table{width:100%;border-collapse:collapse;min-width:580px;}
+thead{background:var(--cream);}
+th{padding:0.85rem 1rem;font-size:0.7rem;font-weight:700;color:var(--text-muted);text-transform:uppercase;letter-spacing:0.06em;text-align:left;border-bottom:1px solid rgba(13,31,60,0.08);white-space:nowrap;}
+td{padding:0.85rem 1rem;font-size:0.85rem;color:var(--text);border-bottom:1px solid rgba(13,31,60,0.05);}
+tr:last-child td{border-bottom:none;}
+tr:hover td{background:rgba(248,244,238,0.6);}
+
+/* ─── BADGES ─────────────────────────────────────────────────────────────── */
+.badge{display:inline-flex;align-items:center;padding:0.22rem 0.65rem;border-radius:100px;font-size:0.72rem;font-weight:700;}
+.badge-pending{background:var(--amber-light);color:var(--amber);}
+.badge-approved{background:var(--green-light);color:var(--green);}
+.badge-rejected{background:var(--red-light);color:var(--red);}
+.badge-new{background:rgba(201,151,58,0.12);color:var(--gold);}
+.badge-matched{background:var(--green-light);color:var(--green);}
+
+/* ─── ACTION BUTTONS ─────────────────────────────────────────────────────── */
+.action-btn{padding:0.32rem 0.75rem;border-radius:8px;font-size:0.76rem;font-weight:700;cursor:pointer;border:none;font-family:'DM Sans',sans-serif;transition:all 0.15s;white-space:nowrap;}
+.btn-approve{background:var(--green-light);color:var(--green);}
+.btn-approve:hover{background:var(--green);color:#fff;}
+.btn-reject{background:var(--red-light);color:var(--red);}
+.btn-reject:hover{background:var(--red);color:#fff;}
+.btn-match{background:rgba(201,151,58,0.12);color:var(--gold);}
+.btn-match:hover{background:var(--gold);color:var(--navy);}
+.btn-view{background:var(--cream-dark);color:var(--navy);}
+.btn-view:hover{background:var(--navy);color:#fff;}
+
+/* ─── MOBILE CARD LIST ───────────────────────────────────────────────────── */
+.card-list{display:none;flex-direction:column;gap:0.8rem;margin-bottom:1.5rem;}
+
+/* Lead Card */
+.m-card{background:var(--white);border-radius:20px;overflow:hidden;box-shadow:0 2px 16px rgba(13,31,60,0.08);border:1px solid rgba(13,31,60,0.06);transition:transform 0.1s;}
+.m-card:active{transform:scale(0.98);}
+.m-card-header{padding:1rem 1.2rem 0.8rem;display:flex;align-items:flex-start;justify-content:space-between;gap:0.5rem;}
+.m-card-title{font-family:'Fraunces',serif;font-size:1rem;font-weight:700;color:var(--navy);line-height:1.2;}
+.m-card-sub{font-size:0.76rem;color:var(--text-muted);margin-top:0.2rem;}
+.m-card-body{display:grid;grid-template-columns:1fr 1fr;gap:1px;background:rgba(13,31,60,0.06);}
+.m-card-field{background:var(--cream);padding:0.7rem 1rem;}
+.m-card-field-label{font-size:0.62rem;color:var(--text-muted);text-transform:uppercase;letter-spacing:0.07em;font-weight:700;margin-bottom:0.2rem;}
+.m-card-field-value{font-size:0.88rem;color:var(--navy);font-weight:600;line-height:1.3;}
+.m-card-field-value a{color:var(--gold);text-decoration:none;}
+.m-card-footer{padding:0.9rem 1rem;display:flex;gap:0.5rem;border-top:1px solid rgba(13,31,60,0.06);}
+.m-card-footer .action-btn{flex:1;text-align:center;padding:0.75rem 0.5rem;font-size:0.85rem;border-radius:12px;}
+
+/* urgent/matched border */
+.m-card.urgent{border-left:4px solid var(--red);}
+.m-card.matched{border-left:4px solid var(--green);}
+.m-card.pending-agent{border-left:4px solid var(--amber);}
+
+.urgent-tag{background:var(--red-light);color:var(--red);font-size:0.68rem;font-weight:700;padding:0.18rem 0.55rem;border-radius:100px;display:inline-block;}
+
+/* ─── MOBILE BOTTOM NAV ──────────────────────────────────────────────────── */
+.m-bottom-nav{display:none;position:fixed;bottom:0;left:0;right:0;background:var(--navy);border-top:1px solid rgba(201,151,58,0.15);z-index:50;padding:0.25rem 0.25rem env(safe-area-inset-bottom);}
+.m-nav-items{display:flex;justify-content:space-around;}
+.m-nav-btn{flex:1;display:flex;flex-direction:column;align-items:center;gap:0.1rem;padding:0.5rem 0.1rem;background:none;border:none;cursor:pointer;color:rgba(255,255,255,0.3);font-family:'DM Sans',sans-serif;font-size:0.58rem;font-weight:600;letter-spacing:0.02em;transition:all 0.15s;position:relative;border-radius:12px;min-height:52px;justify-content:center;}
+.m-nav-btn.active{color:var(--gold);background:rgba(201,151,58,0.1);}
+.m-nav-icon{font-size:1.3rem;line-height:1;}
+.m-nav-badge{position:absolute;top:6px;right:12px;background:var(--red);color:#fff;font-size:0.55rem;font-weight:700;min-width:14px;height:14px;border-radius:100px;display:flex;align-items:center;justify-content:center;padding:0 2px;}
+
+/* ─── TAB CONTENT ────────────────────────────────────────────────────────── */
+.tab-content{display:none;}
+.tab-content.active{display:block;}
+
+/* ─── MODAL — slides up from bottom ─────────────────────────────────────── */
+.modal-overlay{position:fixed;inset:0;background:rgba(13,31,60,0.7);display:none;align-items:flex-end;justify-content:center;z-index:200;backdrop-filter:blur(6px);}
+.modal-overlay.open{display:flex;}
+.modal{background:var(--white);border-radius:24px 24px 0 0;width:100%;max-width:600px;max-height:92vh;overflow-y:auto;animation:slideUp 0.3s cubic-bezier(0.32,0.72,0,1) both;padding:0 1.5rem 2rem;}
+@keyframes slideUp{from{transform:translateY(100%)}to{transform:translateY(0)}}
+.modal-handle{width:36px;height:4px;background:rgba(13,31,60,0.12);border-radius:100px;margin:1rem auto 1.5rem;}
+.modal h3{font-family:'Fraunces',serif;font-size:1.2rem;color:var(--navy);margin-bottom:1.2rem;font-weight:700;}
+.modal-row{display:flex;justify-content:space-between;align-items:flex-start;padding:0.65rem 0;border-bottom:1px solid var(--cream-dark);font-size:0.87rem;gap:1rem;}
+.modal-row:last-of-type{border-bottom:none;}
+.modal-row span:first-child{color:var(--text-muted);font-weight:500;flex-shrink:0;}
+.modal-row span:last-child{color:var(--navy);font-weight:600;text-align:right;}
+.modal-actions{display:flex;gap:0.6rem;margin-top:1.2rem;}
+.modal-actions button{flex:1;padding:0.9rem;border-radius:14px;border:none;font-size:0.9rem;font-weight:700;cursor:pointer;font-family:'DM Sans',sans-serif;}
+.modal-close{background:var(--cream-dark);color:var(--text);}
+.modal-approve{background:var(--green);color:#fff;}
+.modal-reject{background:var(--red);color:#fff;}
+
+/* ─── MATCH MODAL ────────────────────────────────────────────────────────── */
+.match-info{background:var(--cream);border-radius:14px;padding:1rem 1.1rem;margin-bottom:1rem;font-size:0.88rem;line-height:1.6;}
+.match-agent-list{display:flex;flex-direction:column;gap:0.6rem;margin:0.8rem 0;max-height:260px;overflow-y:auto;}
+.match-agent-item{display:flex;align-items:center;justify-content:space-between;background:var(--cream);border:2px solid transparent;border-radius:14px;padding:0.9rem 1rem;cursor:pointer;transition:all 0.15s;}
+.match-agent-item:hover,.match-agent-item.selected{border-color:var(--gold);background:rgba(201,151,58,0.06);}
+.match-agent-name{font-weight:700;font-size:0.9rem;color:var(--navy);}
+.match-agent-meta{font-size:0.75rem;color:var(--text-muted);margin-top:0.15rem;}
+.match-confirm{width:100%;background:var(--gold);color:var(--navy);border:none;padding:1rem;border-radius:14px;font-size:1rem;font-weight:700;cursor:pointer;font-family:'DM Sans',sans-serif;margin-top:0.8rem;}
+
+/* ─── PASSWORD SECTION ───────────────────────────────────────────────────── */
+.pwd-section{margin-top:1rem;padding-top:1rem;border-top:1px solid var(--cream-dark);}
+.pwd-section-label{font-size:0.7rem;font-weight:700;color:var(--navy);text-transform:uppercase;letter-spacing:0.07em;margin-bottom:0.8rem;}
+.pwd-current{display:flex;align-items:center;justify-content:space-between;background:var(--cream);border-radius:10px;padding:0.7rem 1rem;margin-bottom:0.7rem;}
+.pwd-current span:first-child{font-size:0.82rem;color:var(--text-muted);}
+.pwd-value{font-family:monospace;background:var(--navy);color:var(--gold);padding:0.25rem 0.7rem;border-radius:6px;font-size:0.85rem;letter-spacing:0.05em;}
+.pwd-input-row{display:flex;gap:0.5rem;margin-bottom:0.6rem;}
+.pwd-input-row input{flex:1;background:var(--cream);border:1.5px solid rgba(13,31,60,0.12);border-radius:10px;padding:0.75rem 0.9rem;font-size:0.9rem;font-family:'DM Sans',sans-serif;outline:none;}
+.pwd-input-row input:focus{border-color:var(--gold);}
+.pwd-gen-btn{background:var(--cream-dark);color:var(--navy);border:none;padding:0.75rem 0.9rem;border-radius:10px;font-size:0.8rem;font-weight:700;cursor:pointer;font-family:'DM Sans',sans-serif;white-space:nowrap;}
+.pwd-save-btn{width:100%;background:var(--green);color:#fff;border:none;padding:0.85rem;border-radius:12px;font-size:0.9rem;font-weight:700;cursor:pointer;font-family:'DM Sans',sans-serif;}
+
+/* ─── CHECKBOX PILLS ─────────────────────────────────────────────────────── */
+.check-section{margin-top:1rem;padding-top:1rem;border-top:1px solid var(--cream-dark);}
+.check-section-label{font-size:0.7rem;font-weight:700;color:var(--navy);text-transform:uppercase;letter-spacing:0.07em;margin-bottom:0.7rem;}
+.check-grid{display:flex;flex-wrap:wrap;gap:0.35rem;max-height:180px;overflow-y:auto;padding:0.6rem;background:var(--cream);border-radius:12px;margin-bottom:0.7rem;}
+.check-pill{display:inline-flex;align-items:center;gap:0.3rem;background:var(--white);border:1.5px solid rgba(13,31,60,0.1);border-radius:8px;padding:0.3rem 0.55rem;cursor:pointer;font-size:0.78rem;font-weight:500;color:var(--text-muted);transition:all 0.15s;}
+.check-pill:has(input:checked){background:rgba(201,151,58,0.1);border-color:var(--gold);color:var(--navy);font-weight:700;}
+.check-pill input{width:12px;height:12px;accent-color:var(--gold);cursor:pointer;}
+.check-save-btn{width:100%;background:var(--navy);color:var(--gold);border:none;padding:0.8rem;border-radius:12px;font-size:0.88rem;font-weight:700;cursor:pointer;font-family:'DM Sans',sans-serif;}
+
+/* ─── RESPONSIVE ─────────────────────────────────────────────────────────── */
+@media(max-width:900px){
+  /* Hide desktop */
+  .sidebar{display:none;}
+  .topbar{display:none;}
+  /* Show mobile */
+  .main{margin-left:0;padding-bottom:72px;}
+  .m-topbar{display:flex;}
+  .table-wrap{display:none;}
+  .card-list{display:flex;}
+  .m-bottom-nav{display:block;}
+  /* Content */
+  .content{padding:0.9rem;}
+  /* Stats */
+  .stats-row{grid-template-columns:1fr 1fr;gap:0.6rem;margin-bottom:1rem;}
+  .stat-card{padding:0.9rem 0.8rem;}
+  .stat-num{font-size:1.5rem;}
+  .stat-label{font-size:0.65rem;}
+  .stat-sub{display:none;}
+  /* Section */
+  .section-header{flex-direction:column;align-items:flex-start;gap:0.5rem;}
+  .filter-row{width:100%;overflow-x:auto;flex-wrap:nowrap;-webkit-overflow-scrolling:touch;padding-bottom:0.2rem;}
+  .filter-btn{white-space:nowrap;flex-shrink:0;padding:0.45rem 1rem;font-size:0.82rem;}
+}
+@media(max-width:430px){
+  .stats-row{gap:0.5rem;}
+  .stat-card{padding:0.8rem 0.7rem;}
+  .stat-num{font-size:1.35rem;}
+  .content{padding:0.75rem;}
+  .m-card-footer .action-btn{font-size:0.82rem;padding:0.7rem 0.3rem;}
+}
+
+@keyframes fadeUp{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:translateY(0)}}
+</style>
+</head>
+<body>
+
+<!-- ─── LOGIN ──────────────────────────────────────────────────────────────── -->
+<div class="login-screen" id="loginScreen">
+  <div class="login-card">
+    <svg width="48" height="58" viewBox="204 42 272 402" style="margin:0 auto 1rem;display:block;"><defs><linearGradient id="lg" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#243f6e"/><stop offset="100%" stop-color="#0a1828"/></linearGradient><linearGradient id="gg" x1="0" y1="0" x2="1" y2="1"><stop offset="0%" stop-color="#f5d285"/><stop offset="50%" stop-color="#c9973a"/><stop offset="100%" stop-color="#e8b96a"/></linearGradient></defs><path d="M340 42 L476 90 L476 276 Q476 378 340 442 Q204 378 204 276 L204 90 Z" fill="url(#gg)"/><path d="M340 58 L462 102 L462 274 Q462 364 340 422 Q218 364 218 274 L218 102 Z" fill="url(#lg)"/><g transform="translate(340,240)"><rect x="-26" y="-54" width="52" height="90" rx="10" fill="white"/><rect x="-19" y="-46" width="38" height="68" rx="6" fill="#0d1f3c"/><rect x="-7" y="-42" width="14" height="5" rx="2.5" fill="#060f1a"/><rect x="-10" y="28" width="20" height="3.5" rx="1.75" fill="rgba(201,151,58,0.9)"/></g><path d="M316,244 L328,258 L364,216" fill="none" stroke="url(#gg)" stroke-width="11" stroke-linecap="round" stroke-linejoin="round"/></svg>
+    <h2>Admin Dashboard</h2>
+    <p>OneCallShield — Internal Access Only</p>
+    <input type="password" id="loginPass" placeholder="Enter admin password" onkeydown="if(event.key==='Enter')doLogin()">
+    <button class="login-btn" onclick="doLogin()">Sign In →</button>
+  </div>
+</div>
+
+<!-- ─── APP ────────────────────────────────────────────────────────────────── -->
+<div class="app" id="appWrap" style="display:none;">
+
+  <!-- Mobile Top Bar -->
+  <div class="m-topbar">
+    <div class="m-topbar-logo">
+      <svg width="20" height="24" viewBox="204 42 272 402"><defs><linearGradient id="mlg" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#243f6e"/><stop offset="100%" stop-color="#0a1828"/></linearGradient><linearGradient id="mgg" x1="0" y1="0" x2="1" y2="1"><stop offset="0%" stop-color="#f5d285"/><stop offset="50%" stop-color="#c9973a"/><stop offset="100%" stop-color="#e8b96a"/></linearGradient></defs><path d="M340 42 L476 90 L476 276 Q476 378 340 442 Q204 378 204 276 L204 90 Z" fill="url(#mgg)"/><path d="M340 58 L462 102 L462 274 Q462 364 340 422 Q218 364 218 274 L218 102 Z" fill="url(#mlg)"/></svg>
+      OneCall<span>Shield</span>
+    </div>
+    <div style="display:flex;align-items:center;gap:0.5rem;">
+      <span id="mAlert" class="m-alert"></span>
+      <span class="admin-chip">🛡️</span>
+    </div>
+  </div>
+
+  <!-- Desktop Sidebar -->
+  <div class="sidebar">
+    <a href="/" class="sidebar-logo">
+      <svg width="20" height="26" viewBox="204 42 272 402"><defs><linearGradient id="slg" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#243f6e"/><stop offset="100%" stop-color="#0a1828"/></linearGradient><linearGradient id="sgg" x1="0" y1="0" x2="1" y2="1"><stop offset="0%" stop-color="#f5d285"/><stop offset="50%" stop-color="#c9973a"/><stop offset="100%" stop-color="#e8b96a"/></linearGradient></defs><path d="M340 42 L476 90 L476 276 Q476 378 340 442 Q204 378 204 276 L204 90 Z" fill="url(#sgg)"/><path d="M340 58 L462 102 L462 274 Q462 364 340 422 Q218 364 218 274 L218 102 Z" fill="url(#slg)"/></svg>
+      OneCall<span>Shield</span>
+    </a>
+    <nav class="sidebar-nav">
+      <div class="nav-item active" onclick="showTab('overview')"><span class="nav-icon">📊</span> Overview</div>
+      <div class="nav-item" onclick="showTab('leads')"><span class="nav-icon">🎯</span> Leads <span id="newLeadsBadge" class="nav-badge" style="background:rgba(201,151,58,0.2);color:var(--gold);"></span></div>
+      <div class="nav-item" onclick="showTab('agents')"><span class="nav-icon">👥</span> Agents <span id="pendingBadge" class="nav-badge" style="background:rgba(192,57,43,0.15);color:var(--red);"></span></div>
+      <div class="nav-item" onclick="showTab('matched')"><span class="nav-icon">✅</span> Matched</div>
+      <div class="nav-item" onclick="showTab('revenue')"><span class="nav-icon">💰</span> Revenue</div>
+      <div class="nav-item" onclick="showTab('settings')"><span class="nav-icon">⚙️</span> Settings</div>
+    </nav>
+    <div class="sidebar-footer">OneCallShield Admin v3.0</div>
+  </div>
+
+  <!-- Main Content -->
+  <div class="main">
+    <div class="topbar">
+      <div class="topbar-title" id="tabTitle">Overview</div>
+      <div style="display:flex;align-items:center;gap:0.8rem;">
+        <span id="unmatchedPill" style="display:none;background:var(--red-light);color:var(--red);font-size:0.72rem;font-weight:700;padding:0.25rem 0.7rem;border-radius:100px;cursor:pointer;" onclick="showTab('leads')"></span>
+        <span class="admin-chip">🛡️ Admin</span>
+      </div>
+    </div>
+
+    <div class="content">
+
+      <!-- OVERVIEW TAB -->
+      <div class="tab-content active" id="tab-overview">
+
+        <!-- Mobile Action Banner -->
+        <div id="mActionBanner" style="display:none;background:linear-gradient(135deg,var(--navy),var(--navy-mid));border-radius:18px;padding:1.2rem 1.3rem;margin-bottom:1rem;border:1px solid rgba(201,151,58,0.2);">
+          <div style="display:flex;align-items:center;justify-content:space-between;gap:0.8rem;flex-wrap:wrap;">
+            <div>
+              <div style="font-family:'Fraunces',serif;color:var(--gold);font-size:0.95rem;font-weight:700;" id="bannerTitle">All caught up ✅</div>
+              <div style="color:rgba(255,255,255,0.5);font-size:0.78rem;margin-top:0.15rem;" id="bannerSub">No action needed right now</div>
+            </div>
+            <button id="bannerBtn" style="background:var(--gold);color:var(--navy);border:none;padding:0.6rem 1.1rem;border-radius:10px;font-size:0.85rem;font-weight:700;cursor:pointer;font-family:'DM Sans',sans-serif;white-space:nowrap;">View →</button>
+          </div>
+        </div>
+
+        <div class="stats-row">
+          <div class="stat-card"><div class="stat-label">Total Leads</div><div class="stat-num" id="statTotalLeads">0</div><div class="stat-sub">All time</div></div>
+          <div class="stat-card"><div class="stat-label">Unmatched</div><div class="stat-num red" id="statUnmatched">0</div><div class="stat-sub">Need assignment</div></div>
+          <div class="stat-card"><div class="stat-label">Agents</div><div class="stat-num green" id="statActiveAgents">0</div><div class="stat-sub">Approved</div></div>
+          <div class="stat-card"><div class="stat-label">Pending</div><div class="stat-num gold" id="statPending">0</div><div class="stat-sub">Review needed</div></div>
+        </div>
+
+        <div class="section-header"><h2>Recent Leads</h2><button class="filter-btn" onclick="showTab('leads')">View All →</button></div>
+        <div class="table-wrap"><table><thead><tr><th>Name</th><th>Insurance</th><th>ZIP</th><th>Age</th><th>Submitted</th><th>Status</th><th>Action</th></tr></thead><tbody id="recentLeadsTable"></tbody></table></div>
+        <div class="card-list" id="recentLeadsCards"></div>
+
+        <div class="section-header"><h2>Pending Applications</h2><button class="filter-btn" onclick="showTab('agents')">View All →</button></div>
+        <div class="table-wrap"><table><thead><tr><th>Name</th><th>Agency</th><th>Types</th><th>Plan</th><th>Action</th></tr></thead><tbody id="pendingAgentsTable"></tbody></table></div>
+        <div class="card-list" id="pendingAgentsCards"></div>
+      </div>
+
+      <!-- LEADS TAB -->
+      <div class="tab-content" id="tab-leads">
+        <div class="section-header">
+          <h2>Consumer Leads</h2>
+          <div class="filter-row">
+            <button class="filter-btn active" onclick="filterLeads('all',this)">All</button>
+            <button class="filter-btn" onclick="filterLeads('unmatched',this)">Unmatched</button>
+            <button class="filter-btn" onclick="filterLeads('matched',this)">Matched</button>
+          </div>
+        </div>
+        <div class="table-wrap"><table><thead><tr><th>Name</th><th>Phone</th><th>Insurance</th><th>Age</th><th>ZIP</th><th>Contact Time</th><th>Submitted</th><th>Status</th><th>Action</th></tr></thead><tbody id="allLeadsTable"></tbody></table></div>
+        <div class="card-list" id="allLeadsCards"></div>
+      </div>
+
+      <!-- AGENTS TAB -->
+      <div class="tab-content" id="tab-agents">
+        <div class="section-header">
+          <h2>Agent Network</h2>
+          <div class="filter-row">
+            <button class="filter-btn active" onclick="filterAgents('all',this)">All</button>
+            <button class="filter-btn" onclick="filterAgents('pending',this)">Pending</button>
+            <button class="filter-btn" onclick="filterAgents('approved',this)">Approved</button>
+            <button class="filter-btn" onclick="filterAgents('rejected',this)">Rejected</button>
+          </div>
+        </div>
+        <div class="table-wrap"><table><thead><tr><th>Name</th><th>Agency</th><th>Types</th><th>States</th><th>Plan</th><th>Applied</th><th>Status</th><th>Actions</th></tr></thead><tbody id="allAgentsTable"></tbody></table></div>
+        <div class="card-list" id="allAgentsCards"></div>
+      </div>
+
+      <!-- MATCHED TAB -->
+      <div class="tab-content" id="tab-matched">
+        <div class="section-header"><h2>Matched Leads</h2></div>
+        <div class="table-wrap"><table><thead><tr><th>Consumer</th><th>Insurance</th><th>Agent</th><th>Matched</th><th>Value</th></tr></thead><tbody id="matchedTable"></tbody></table></div>
+        <div class="card-list" id="matchedCards"></div>
+      </div>
+
+      <!-- REVENUE TAB -->
+      <div class="tab-content" id="tab-revenue">
+        <div class="stats-row">
+          <div class="stat-card"><div class="stat-label">Total Revenue</div><div class="stat-num gold" id="statRevenue">$0</div><div class="stat-sub">All time</div></div>
+          <div class="stat-card"><div class="stat-label">Leads Matched</div><div class="stat-num green" id="statMatchedCount">0</div><div class="stat-sub">Billable</div></div>
+          <div class="stat-card"><div class="stat-label">Avg Value</div><div class="stat-num" id="statAvgValue">$0</div><div class="stat-sub">Per lead</div></div>
+          <div class="stat-card"><div class="stat-label">This Month</div><div class="stat-num gold" id="statMonthRevenue">$0</div><div class="stat-sub">MTD</div></div>
+        </div>
+        <div class="section-header"><h2>Revenue by Lead</h2></div>
+        <div class="table-wrap"><table><thead><tr><th>Consumer</th><th>Insurance</th><th>Agent</th><th>Date</th><th>Amount</th></tr></thead><tbody id="revenueTable"></tbody></table></div>
+        <div class="card-list" id="revenueCards"></div>
+      </div>
+
+      <!-- ── SETTINGS TAB ─────────────────────────────────────────────────── -->
+      <div class="tab-content" id="tab-settings">
+        <div class="section-header"><h2>⚙️ Admin Settings</h2></div>
+
+        <!-- Admin Password -->
+        <div style="background:var(--white);border-radius:16px;padding:1.5rem;margin-bottom:1.2rem;border:1px solid var(--border);">
+          <h3 style="font-family:'Fraunces',serif;color:var(--navy);font-size:1.1rem;margin:0 0 0.3rem;">🔑 Admin Password</h3>
+          <p style="color:var(--text-muted);font-size:0.85rem;margin:0 0 1rem;">Change your admin dashboard login password.</p>
+          <div style="background:var(--cream);border-radius:10px;padding:1rem;margin-bottom:1rem;">
+            <div style="font-size:0.75rem;color:var(--text-muted);text-transform:uppercase;letter-spacing:0.05em;font-weight:700;margin-bottom:0.3rem;">Current Password</div>
+            <div style="font-family:monospace;font-size:1.1rem;color:var(--navy);font-weight:700;" id="currentPassDisplay">OCS2026admin</div>
+          </div>
+          <div style="display:flex;flex-direction:column;gap:0.6rem;">
+            <input type="password" id="newAdminPass" placeholder="New password" style="background:var(--cream);border:1px solid var(--border);border-radius:8px;padding:0.75rem 1rem;font-size:0.95rem;color:var(--navy);outline:none;width:100%;box-sizing:border-box;">
+            <input type="password" id="confirmAdminPass" placeholder="Confirm new password" style="background:var(--cream);border:1px solid var(--border);border-radius:8px;padding:0.75rem 1rem;font-size:0.95rem;color:var(--navy);outline:none;width:100%;box-sizing:border-box;">
+            <button onclick="changeAdminPassword()" style="background:var(--gold);color:var(--navy);border:none;padding:0.85rem;border-radius:8px;font-size:0.95rem;font-weight:700;cursor:pointer;">Update Password</button>
+          </div>
+          <p id="passMsg" style="font-size:0.82rem;margin:0.5rem 0 0;display:none;"></p>
+        </div>
+
+        <!-- Lead Prices -->
+        <div style="background:var(--white);border-radius:16px;padding:1.5rem;margin-bottom:1.2rem;border:1px solid var(--border);">
+          <h3 style="font-family:'Fraunces',serif;color:var(--navy);font-size:1.1rem;margin:0 0 0.3rem;">💰 Lead Prices</h3>
+          <p style="color:var(--text-muted);font-size:0.85rem;margin:0 0 1rem;">Current prices charged to agents per lead type.</p>
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:0.6rem;">
+            ${Object.entries(LEAD_PRICES).map(([type, price]) => `
+            <div style="background:var(--cream);border-radius:8px;padding:0.75rem 1rem;display:flex;justify-content:space-between;align-items:center;">
+              <span style="font-size:0.88rem;color:var(--navy);font-weight:600;">${type}</span>
+              <span style="color:var(--gold);font-weight:700;font-size:1rem;">$${price}</span>
+            </div>`).join('')}
+          </div>
+        </div>
+
+        <!-- Platform Info -->
+        <div style="background:var(--white);border-radius:16px;padding:1.5rem;margin-bottom:1.2rem;border:1px solid var(--border);">
+          <h3 style="font-family:'Fraunces',serif;color:var(--navy);font-size:1.1rem;margin:0 0 1rem;">🛡️ Platform Info</h3>
+          <table width="100%" style="border-collapse:collapse;">
+            <tr><td style="padding:8px 0;border-bottom:1px solid var(--border);color:var(--text-muted);font-size:0.85rem;width:45%;">Platform</td><td style="padding:8px 0;border-bottom:1px solid var(--border);font-weight:600;font-size:0.9rem;">OneCallShield.com</td></tr>
+            <tr><td style="padding:8px 0;border-bottom:1px solid var(--border);color:var(--text-muted);font-size:0.85rem;">Admin Email</td><td style="padding:8px 0;border-bottom:1px solid var(--border);font-weight:600;font-size:0.9rem;">chris@onecallshield.com</td></tr>
+            <tr><td style="padding:8px 0;border-bottom:1px solid var(--border);color:var(--text-muted);font-size:0.85rem;">Support Email</td><td style="padding:8px 0;border-bottom:1px solid var(--border);font-weight:600;font-size:0.9rem;">info@onecallshield.com</td></tr>
+            <tr><td style="padding:8px 0;border-bottom:1px solid var(--border);color:var(--text-muted);font-size:0.85rem;">Hosting</td><td style="padding:8px 0;border-bottom:1px solid var(--border);font-weight:600;font-size:0.9rem;">Cloudflare Pages (Free)</td></tr>
+            <tr><td style="padding:8px 0;color:var(--text-muted);font-size:0.85rem;">Version</td><td style="padding:8px 0;font-weight:600;font-size:0.9rem;">1.0.0 — April 2026</td></tr>
+          </table>
+        </div>
+
+        <!-- Danger Zone -->
+        <div style="background:var(--white);border-radius:16px;padding:1.5rem;border:1px solid rgba(192,57,43,0.2);">
+          <h3 style="font-family:'Fraunces',serif;color:var(--red);font-size:1.1rem;margin:0 0 0.3rem;">⚠️ Danger Zone</h3>
+          <p style="color:var(--text-muted);font-size:0.85rem;margin:0 0 1rem;">These actions cannot be undone.</p>
+          <button onclick="if(confirm('Clear ALL leads from local storage? This cannot be undone.')){{localStorage.removeItem('ocs_leads');localStorage.removeItem('ocs_matched');renderAll();alert('Leads cleared.');}}" style="background:rgba(192,57,43,0.1);color:var(--red);border:1px solid rgba(192,57,43,0.3);padding:0.75rem 1.2rem;border-radius:8px;font-size:0.88rem;font-weight:600;cursor:pointer;margin-right:0.5rem;">Clear Local Leads</button>
+          <button onclick="if(confirm('Sign out of admin?')){{localStorage.removeItem('ocs_admin_auth');location.reload();}}" style="background:rgba(192,57,43,0.1);color:var(--red);border:1px solid rgba(192,57,43,0.3);padding:0.75rem 1.2rem;border-radius:8px;font-size:0.88rem;font-weight:600;cursor:pointer;">Sign Out</button>
+        </div>
+      </div>
+
+    </div><!-- /content -->
+  </div><!-- /main -->
+
+  <!-- Mobile Bottom Nav -->
+  <div class="m-bottom-nav">
+    <div class="m-nav-items">
+      <button class="m-nav-btn active" id="mnb-overview" onclick="showTab('overview')"><span class="m-nav-icon">📊</span>Overview</button>
+      <button class="m-nav-btn" id="mnb-leads" onclick="showTab('leads')"><span class="m-nav-icon">🎯</span>Leads<span class="m-nav-badge" id="mLeadsBadge" style="display:none;"></span></button>
+      <button class="m-nav-btn" id="mnb-agents" onclick="showTab('agents')"><span class="m-nav-icon">👥</span>Agents<span class="m-nav-badge" id="mAgentsBadge" style="display:none;"></span></button>
+      <button class="m-nav-btn" id="mnb-matched" onclick="showTab('matched')"><span class="m-nav-icon">✅</span>Matched</button>
+      <button class="m-nav-btn" id="mnb-revenue" onclick="showTab('revenue')"><span class="m-nav-icon">💰</span>Revenue</button>
+      <button class="m-nav-btn" id="mnb-settings" onclick="showTab('settings')"><span class="m-nav-icon">⚙️</span>Settings</button>
+    </div>
+  </div>
+
+</div><!-- /app -->
+
+<!-- LEAD DETAIL MODAL -->
+<div class="modal-overlay" id="leadDetailModal">
+  <div class="modal" style="max-width:640px;">
+    <div class="modal-handle"></div>
+    <div id="leadDetailContent"></div>
+  </div>
+</div>
+
+<!-- AGENT DASHBOARD MODAL -->
+<div class="modal-overlay" id="agentDashboardModal">
+  <div class="modal" style="max-width:700px;">
+    <div class="modal-handle"></div>
+    <div id="agentDashboardContent"></div>
+  </div>
+</div>
+
+<!-- AGENT MODAL -->
+<div class="modal-overlay" id="agentModal">
+  <div class="modal">
+    <div class="modal-handle"></div>
+    <h3>Agent Details</h3>
+    <div id="agentModalContent"></div>
+    <div class="modal-actions">
+      <button class="modal-close" onclick="closeModal('agentModal')">Close</button>
+      <button class="modal-reject" id="modalRejectBtn">Reject</button>
+      <button class="modal-approve" id="modalApproveBtn">✅ Approve</button>
+    </div>
+  </div>
+</div>
+
+<!-- MATCH MODAL -->
+<div class="modal-overlay" id="matchModal">
+  <div class="modal">
+    <div class="modal-handle"></div>
+    <h3>🎯 Match Lead to Agent</h3>
+    <div class="match-info" id="matchLeadInfo"></div>
+    <p style="font-size:0.82rem;color:var(--text-muted);margin-bottom:0.5rem;font-weight:600;">Select an agent:</p>
+    <div class="match-agent-list" id="matchAgentList"></div>
+    <button class="match-confirm" onclick="confirmMatch()">✅ Send Lead to Agent</button>
+    <button onclick="closeModal('matchModal')" style="width:100%;background:none;border:none;padding:0.7rem;color:var(--text-muted);cursor:pointer;font-size:0.85rem;margin-top:0.3rem;font-family:'DM Sans',sans-serif;">Cancel</button>
+  </div>
+</div>
+
+<script>
+const LEAD_PRICES={'Auto Insurance':25,'Homeowners Insurance':35,'Renters Insurance':20,'Life Insurance':50,'Health Insurance':45,'Medicare':50,'Other':30};
+let currentAgentId=null,currentLeadId=null,selectedMatchAgent=null;
+
+// ─── DATA ─────────────────────────────────────────────────────────────────────
+const getLeads=()=>JSON.parse(localStorage.getItem('ocs_leads')||'[]');
+const getAgents=()=>JSON.parse(localStorage.getItem('ocs_agents')||'[]');
+const getMatched=()=>JSON.parse(localStorage.getItem('ocs_matched')||'[]');
+const getApps=()=>JSON.parse(localStorage.getItem('ocs_applications')||'[]');
+const saveLeads=d=>localStorage.setItem('ocs_leads',JSON.stringify(d));
+const saveAgents=d=>localStorage.setItem('ocs_agents',JSON.stringify(d));
+const saveMatched=d=>localStorage.setItem('ocs_matched',JSON.stringify(d));
+
+// Sync leads from Cloudflare KV into localStorage on admin load
+async function syncLeadsFromKV() {
+  try {
+    const res = await fetch('https://onecallshield-emails.chris-santoro55.workers.dev', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ type: 'list_leads' })
+    });
+    const data = await res.json();
+    if (!data.success || !data.leads.length) return;
+
+    const localLeads = getLeads();
+    const localIds = new Set(localLeads.map(l => l.id));
+    let added = 0;
+
+    for (const kvLead of data.leads) {
+      if (!localIds.has(kvLead.id)) {
+        localLeads.push(kvLead);
+        added++;
+      } else {
+        const idx = localLeads.findIndex(l => l.id === kvLead.id);
+        if (idx > -1) localLeads[idx] = { ...localLeads[idx], ...kvLead };
+      }
+    }
+
+    saveLeads(localLeads);
+    if (added > 0) { console.log(`✅ Synced ${added} new leads from KV`); renderAll(); }
+  } catch(err) {
+    console.error('KV sync error:', err);
+  }
+}
+
+// Sync agent applications from KV
+async function syncApplicationsFromKV() {
+  try {
+    const res = await fetch('https://onecallshield-emails.chris-santoro55.workers.dev', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ type: 'list_applications' })
+    });
+    const data = await res.json();
+    if (!data.success || !data.applications.length) return;
+
+    const localApps = JSON.parse(localStorage.getItem('ocs_applications') || '[]');
+    const localIds = new Set(localApps.map(a => a.id));
+    let added = 0;
+
+    for (const kvApp of data.applications) {
+      if (!localIds.has(kvApp.id)) {
+        localApps.push(kvApp);
+        added++;
+      }
+    }
+
+    if (added > 0) {
+      localStorage.setItem('ocs_applications', JSON.stringify(localApps));
+      console.log(`✅ Synced ${added} new applications from KV`);
+      renderAll();
+    }
+  } catch(err) {
+    console.error('App sync error:', err);
+  }
+}
+const allAgents=()=>[...getAgents(),...getApps().map(a=>({...a,status:a.status||'pending'}))];
+const getAgentById=id=>allAgents().find(a=>a.id===id);
+
+function timeAgo(iso){
+  const diff=Date.now()-new Date(iso).getTime();
+  const m=Math.floor(diff/60000),h=Math.floor(m/60),d=Math.floor(h/24);
+  if(d>0)return d+'d ago';if(h>0)return h+'h ago';if(m>0)return m+'m ago';return 'Just now';
+}
+function statusBadge(s){
+  const cls={pending:'badge-pending',approved:'badge-approved',rejected:'badge-rejected',unmatched:'badge-new',matched:'badge-matched'};
+  const lbl={pending:'⏳ Pending',approved:'✅ Approved',rejected:'❌ Rejected',unmatched:'🆕 Unmatched',matched:'✅ Matched'};
+  return `<span class="badge ${cls[s]||''}">${lbl[s]||s}</span>`;
+}
+
+// ─── LOGIN ────────────────────────────────────────────────────────────────────
+function doLogin(){
+  const savedPass = localStorage.getItem('ocs_admin_password') || 'OCS2026admin';
+  if(document.getElementById('loginPass').value === savedPass){
+    document.getElementById('loginScreen').style.display='none';
+    document.getElementById('appWrap').style.display='flex';
+    document.getElementById('appWrap').style.flexDirection='column';
+    // Show current password in settings
+    const display = document.getElementById('currentPassDisplay');
+    if(display) display.textContent = savedPass;
+    renderAll();
+  } else { alert('Incorrect password. Please try again.'); }
+}
+
+// ─── TABS ─────────────────────────────────────────────────────────────────────
+function showTab(name){
+  document.querySelectorAll('.tab-content').forEach(t=>t.classList.remove('active'));
+  document.querySelectorAll('.nav-item,.m-nav-btn').forEach(b=>b.classList.remove('active'));
+  document.getElementById('tab-'+name).classList.add('active');
+  const titles={overview:'Overview',leads:'Consumer Leads',agents:'Agent Network',matched:'Matched Leads',revenue:'Revenue'};
+  const el=document.getElementById('tabTitle');
+  if(el)el.textContent=titles[name]||name;
+  const navIdx=['overview','leads','agents','matched','revenue'].indexOf(name);
+  document.querySelectorAll('.nav-item')[navIdx]?.classList.add('active');
+  document.getElementById('mnb-'+name)?.classList.add('active');
+  window.scrollTo(0,0);
+  renderAll();
+}
+
+// ─── RENDER ALL ───────────────────────────────────────────────────────────────
+function renderAll(){
+  const leads=getLeads(),agents=allAgents(),matched=getMatched();
+  const pending=agents.filter(a=>a.status==='pending');
+  const approved=agents.filter(a=>a.status==='approved');
+  const unmatched=leads.filter(l=>l.status==='unmatched');
+
+  // Stats
+  document.getElementById('statTotalLeads').textContent=leads.length;
+  document.getElementById('statUnmatched').textContent=unmatched.length;
+  document.getElementById('statActiveAgents').textContent=approved.length;
+  document.getElementById('statPending').textContent=pending.length;
+
+  // Desktop badges
+  document.getElementById('pendingBadge').textContent=pending.length||'';
+  document.getElementById('newLeadsBadge').textContent=unmatched.length||'';
+
+  // Desktop unmatched pill
+  const up=document.getElementById('unmatchedPill');
+  if(unmatched.length){up.textContent=unmatched.length+' unmatched';up.style.display='inline';}
+  else up.style.display='none';
+
+  // Mobile bottom nav badges
+  const mlb=document.getElementById('mLeadsBadge');
+  mlb.textContent=unmatched.length||'';mlb.style.display=unmatched.length?'flex':'none';
+  const mab=document.getElementById('mAgentsBadge');
+  mab.textContent=pending.length||'';mab.style.display=pending.length?'flex':'none';
+
+  // Mobile top alert pill
+  const ma=document.getElementById('mAlert');
+  if(unmatched.length){ma.textContent=unmatched.length+' new lead'+(unmatched.length>1?'s':'');ma.style.display='inline';ma.onclick=()=>showTab('leads');}
+  else if(pending.length){ma.textContent=pending.length+' pending';ma.style.display='inline';ma.onclick=()=>showTab('agents');}
+  else ma.style.display='none';
+
+  // Mobile action banner (overview only)
+  const banner=document.getElementById('mActionBanner');
+  if(banner&&window.innerWidth<=900){
+    banner.style.display='block';
+    const bt=document.getElementById('bannerTitle');
+    const bs=document.getElementById('bannerSub');
+    const bb=document.getElementById('bannerBtn');
+    if(unmatched.length){
+      bt.textContent='⚡ '+unmatched.length+' lead'+(unmatched.length>1?'s':'')+' need assignment';
+      bs.textContent='Tap to match them to agents now';
+      bb.textContent='Match Now →';bb.onclick=()=>showTab('leads');
+    } else if(pending.length){
+      bt.textContent='👥 '+pending.length+' agent application'+(pending.length>1?'s':'')+' waiting';
+      bs.textContent='Review and approve to grow your network';
+      bb.textContent='Review →';bb.onclick=()=>showTab('agents');
+    } else {
+      bt.textContent='All caught up ✅';
+      bs.textContent='No action needed right now';
+      bb.textContent='View Leads';bb.onclick=()=>showTab('leads');
+    }
+  } else if(banner) banner.style.display='none';
+
+  // Revenue
+  const totalRev=matched.reduce((s,m)=>s+(LEAD_PRICES[m.insuranceType]||30),0);
+  document.getElementById('statRevenue').textContent='$'+totalRev.toLocaleString();
+  document.getElementById('statMatchedCount').textContent=matched.length;
+  document.getElementById('statAvgValue').textContent=matched.length?'$'+(totalRev/matched.length).toFixed(0):'$0';
+  document.getElementById('statMonthRevenue').textContent='$'+totalRev.toLocaleString();
+
+  // Render tables & cards
+  const recentLeads=[...leads].reverse().slice(0,5);
+  renderLeadsTable('recentLeadsTable',recentLeads,true);
+  renderLeadsCards('recentLeadsCards',recentLeads);
+  renderAgentsTable('pendingAgentsTable',pending.slice(0,5),true);
+  renderAgentsCards('pendingAgentsCards',pending.slice(0,5));
+  renderLeadsTable('allLeadsTable',[...leads].reverse(),false);
+  renderLeadsCards('allLeadsCards',[...leads].reverse());
+  renderAgentsTable('allAgentsTable',agents,false);
+  renderAgentsCards('allAgentsCards',agents);
+  renderMatched(matched,agents);
+  renderRevenue(matched,agents);
+}
+
+// ─── LEADS TABLE ─────────────────────────────────────────────────────────────
+function renderLeadsTable(tbId,leads,compact){
+  const tb=document.getElementById(tbId);
+  if(!leads.length){tb.innerHTML=`<tr><td colspan="9" style="text-align:center;color:var(--text-muted);padding:2rem;">No leads yet</td></tr>`;return;}
+  tb.innerHTML=leads.map(l=>`<tr style="cursor:pointer;" onclick="openLeadDetail('${l.id}')" title="Click to view lead details">
+    <td><strong>${l.firstName} ${l.lastName}</strong><br><span style="font-size:0.74rem;color:var(--text-muted);">${l.phone}</span></td>
+    <td>${l.insuranceType}</td>
+    ${compact?'':'<td>'+(l.age||'—')+'</td>'}
+    <td>${l.zip}</td>
+    ${compact?'':'<td style="font-size:0.8rem;">'+(l.contactTime||'Anytime')+'</td>'}
+    <td style="font-size:0.8rem;">${timeAgo(l.submittedAt)}</td>
+    <td>${statusBadge(l.status)}</td>
+    <td onclick="event.stopPropagation()">
+      ${l.status==='unmatched'
+        ?`<button class="action-btn btn-match" onclick="openMatchModal('${l.id}')">🎯 Match</button>`
+        :`<span style="color:var(--green);font-size:0.78rem;font-weight:700;">✓ Matched</span>`}
+    </td>
+  </tr>`).join('');
+}
+
+// ─── LEADS CARDS (mobile) ─────────────────────────────────────────────────────
+function renderLeadsCards(containerId,leads){
+  const c=document.getElementById(containerId);
+  if(!leads.length){c.innerHTML='<p style="text-align:center;color:var(--text-muted);padding:2rem 0;">No leads yet</p>';return;}
+  c.innerHTML=leads.map(l=>{
+    const diff=Date.now()-new Date(l.submittedAt).getTime();
+    const hrs=Math.floor(diff/3600000);
+    const isUrgent=l.status==='unmatched'&&hrs>2;
+    const ageCls=hrs<6?'color:var(--green)':hrs<24?'color:var(--amber)':'color:var(--red)';
+    const ageText=timeAgo(l.submittedAt);
+    return `<div class="m-card ${l.status==='unmatched'&&isUrgent?'urgent':l.status==='matched'?'matched':''}" onclick="openLeadDetail('${l.id}')" style="cursor:pointer;">
+      <div class="m-card-header">
+        <div>
+          <div class="m-card-title">${l.firstName} ${l.lastName}</div>
+          <div class="m-card-sub">${l.insuranceType} · ZIP ${l.zip}</div>
+          ${isUrgent?'<span class="urgent-tag">⚡ Needs Assignment</span>':''}
+        </div>
+        ${statusBadge(l.status)}
+      </div>
+      <div class="m-card-body">
+        <div class="m-card-field">
+          <div class="m-card-field-label">📞 Phone</div>
+          <div class="m-card-field-value"><a href="tel:${l.phone}">${l.phone}</a></div>
+        </div>
+        <div class="m-card-field">
+          <div class="m-card-field-label">🕐 Age</div>
+          <div class="m-card-field-value" style="${ageCls}">${ageText}</div>
+        </div>
+        <div class="m-card-field">
+          <div class="m-card-field-label">👤 Consumer Age</div>
+          <div class="m-card-field-value">${l.age||'—'}</div>
+        </div>
+        <div class="m-card-field">
+          <div class="m-card-field-label">⏰ Call Time</div>
+          <div class="m-card-field-value" style="font-size:0.82rem;">${(l.contactTime||'Anytime').split(' ')[0]}</div>
+        </div>
+      </div>
+      <div class="m-card-footer">
+        ${l.status==='unmatched'
+          ?`<button class="action-btn btn-match" onclick="openMatchModal('${l.id}')">🎯 Match to Agent</button>`
+          :`<div style="background:var(--green-light);color:var(--green);border-radius:12px;padding:0.75rem;font-size:0.85rem;font-weight:700;text-align:center;flex:1;">✅ Already Matched</div>`}
+      </div>
+    </div>`;
+  }).join('');
+}
+
+// ─── AGENTS TABLE ─────────────────────────────────────────────────────────────
+function renderAgentsTable(tbId,agents,compact){
+  const tb=document.getElementById(tbId);
+  if(!agents.length){tb.innerHTML=`<tr><td colspan="8" style="text-align:center;color:var(--text-muted);padding:2rem;">No agents found</td></tr>`;return;}
+  tb.innerHTML=agents.map(a=>`<tr style="cursor:pointer;" onclick="openAgentDashboard('${a.id}')" title="Click to view agent dashboard">
+    <td><strong>${a.firstName} ${a.lastName}</strong><br><span style="font-size:0.75rem;color:var(--text-muted);">${a.email}</span></td>
+    <td>${a.agency||'—'}</td>
+    <td style="font-size:0.8rem;">${(a.insuranceTypes||[]).slice(0,2).join(', ')}${(a.insuranceTypes||[]).length>2?'…':''}</td>
+    ${compact?'':`<td style="font-size:0.78rem;">${(a.states||[]).slice(0,4).join(', ')}${(a.states||[]).length>4?'…':''}</td>`}
+    <td>${a.plan==='monthly'?'Monthly':'Per Lead'}</td>
+    ${compact?'':'<td>'+timeAgo(a.submittedAt)+'</td>'}
+    <td>${statusBadge(a.status)}</td>
+    <td onclick="event.stopPropagation()">
+      <button class="action-btn btn-view" onclick="openAgentModal('${a.id}')">⚙️ Manage</button>
+      ${a.status==='pending'?`<button class="action-btn btn-approve" onclick="approveAgent('${a.id}')">✓</button><button class="action-btn btn-reject" onclick="rejectAgent('${a.id}')">✗</button>`:''}
+    </td>
+  </tr>`).join('');
+}
+
+// ─── AGENTS CARDS (mobile) ────────────────────────────────────────────────────
+function renderAgentsCards(containerId,agents){
+  const c=document.getElementById(containerId);
+  if(!agents.length){c.innerHTML='<p style="text-align:center;color:var(--text-muted);padding:2rem 0;">No agents found</p>';return;}
+  c.innerHTML=agents.map(a=>`
+    <div class="m-card ${a.status==='pending'?'pending-agent':''}" onclick="openAgentDashboard('${a.id}')" style="cursor:pointer;">
+      <div class="m-card-header">
+        <div>
+          <div class="m-card-title">${a.firstName} ${a.lastName}</div>
+          <div class="m-card-sub">${a.agency||'Independent'} · ${timeAgo(a.submittedAt)}</div>
+          ${a.portalPassword
+            ?'<span style="font-size:0.7rem;color:var(--green);font-weight:700;">🔑 Portal Active</span>'
+            :'<span style="font-size:0.7rem;color:var(--amber);font-weight:700;">⚠️ No Portal Password</span>'}
+        </div>
+        ${statusBadge(a.status)}
+      </div>
+      <div class="m-card-body">
+        <div class="m-card-field">
+          <div class="m-card-field-label">📞 Phone</div>
+          <div class="m-card-field-value"><a href="tel:${a.phone||''}">${a.phone||'—'}</a></div>
+        </div>
+        <div class="m-card-field">
+          <div class="m-card-field-label">📋 Plan</div>
+          <div class="m-card-field-value">${a.plan==='monthly'?'Monthly':'Per Lead'}</div>
+        </div>
+        <div class="m-card-field">
+          <div class="m-card-field-label">🛡️ Insurance Types</div>
+          <div class="m-card-field-value" style="font-size:0.78rem;">${(a.insuranceTypes||[]).join(', ')||'—'}</div>
+        </div>
+        <div class="m-card-field">
+          <div class="m-card-field-label">📍 States</div>
+          <div class="m-card-field-value" style="font-size:0.78rem;">${(a.states||[]).slice(0,6).join(', ')||'—'}${(a.states||[]).length>6?'…':''}</div>
+        </div>
+      </div>
+      <div class="m-card-footer" onclick="event.stopPropagation()">
+        <button class="action-btn btn-view" onclick="openAgentModal('${a.id}')">⚙️ Manage</button>
+        ${a.status==='pending'
+          ?`<button class="action-btn btn-approve" onclick="approveAgent('${a.id}')">✅ Approve</button>
+            <button class="action-btn btn-reject" onclick="rejectAgent('${a.id}')">❌ Reject</button>`:''}
+      </div>
+    </div>`).join('');
+}
+
+// ─── MATCHED & REVENUE ────────────────────────────────────────────────────────
+function renderMatched(matched,agents){
+  const tb=document.getElementById('matchedTable'),c=document.getElementById('matchedCards');
+  if(!matched.length){
+    tb.innerHTML='<tr><td colspan="5" style="text-align:center;color:var(--text-muted);padding:2rem;">No matched leads yet</td></tr>';
+    c.innerHTML='<p style="text-align:center;color:var(--text-muted);padding:2rem 0;">No matched leads yet</p>';return;
+  }
+  const rev=matched.slice().reverse();
+  tb.innerHTML=rev.map(m=>{const ag=agents.find(a=>a.id===m.agentId);return`<tr><td><strong>${m.consumerName}</strong></td><td>${m.insuranceType}</td><td>${ag?ag.firstName+' '+ag.lastName:'—'}</td><td>${timeAgo(m.matchedAt)}</td><td style="color:var(--green);font-weight:700;">$${LEAD_PRICES[m.insuranceType]||30}</td></tr>`;}).join('');
+  c.innerHTML=rev.map(m=>{const ag=agents.find(a=>a.id===m.agentId);return`<div class="m-card matched"><div class="m-card-header"><div><div class="m-card-title">${m.consumerName}</div><div class="m-card-sub">${m.insuranceType} · ${timeAgo(m.matchedAt)}</div></div><span style="font-family:'Fraunces',serif;color:var(--green);font-size:1.3rem;font-weight:700;">$${LEAD_PRICES[m.insuranceType]||30}</span></div><div class="m-card-body"><div class="m-card-field"><div class="m-card-field-label">Agent</div><div class="m-card-field-value">${ag?ag.firstName+' '+ag.lastName:'—'}</div></div><div class="m-card-field"><div class="m-card-field-label">Matched</div><div class="m-card-field-value">${timeAgo(m.matchedAt)}</div></div></div></div>`;}).join('');
+}
+
+function renderRevenue(matched,agents){
+  const tb=document.getElementById('revenueTable'),c=document.getElementById('revenueCards');
+  if(!matched.length){
+    tb.innerHTML='<tr><td colspan="5" style="text-align:center;color:var(--text-muted);padding:2rem;">No revenue yet</td></tr>';
+    c.innerHTML='<p style="text-align:center;color:var(--text-muted);padding:2rem 0;">No revenue yet</p>';return;
+  }
+  const rev=matched.slice().reverse();
+  tb.innerHTML=rev.map(m=>{const ag=agents.find(a=>a.id===m.agentId);return`<tr><td>${m.consumerName}</td><td>${m.insuranceType}</td><td>${ag?ag.firstName+' '+ag.lastName:'—'}</td><td>${new Date(m.matchedAt).toLocaleDateString()}</td><td style="color:var(--green);font-weight:700;">$${LEAD_PRICES[m.insuranceType]||30}</td></tr>`;}).join('');
+  c.innerHTML=rev.map(m=>{const ag=agents.find(a=>a.id===m.agentId);return`<div class="m-card"><div class="m-card-header"><div><div class="m-card-title">${m.consumerName}</div><div class="m-card-sub">${m.insuranceType} · ${new Date(m.matchedAt).toLocaleDateString()}</div></div><span style="font-family:'Fraunces',serif;color:var(--green);font-size:1.3rem;font-weight:700;">$${LEAD_PRICES[m.insuranceType]||30}</span></div><div class="m-card-body"><div class="m-card-field"><div class="m-card-field-label">Agent</div><div class="m-card-field-value">${ag?ag.firstName+' '+ag.lastName:'—'}</div></div></div></div>`;}).join('');
+}
+
+// ─── AGENT ACTIONS ────────────────────────────────────────────────────────────
+function updateAgentStatus(id,status){
+  let agents=getAgents(),idx=agents.findIndex(a=>a.id===id);
+  if(idx>-1){agents[idx].status=status;saveAgents(agents);return;}
+  let apps=getApps(),appIdx=apps.findIndex(a=>a.id===id);
+  if(appIdx>-1){apps[appIdx].status=status;localStorage.setItem('ocs_applications',JSON.stringify(apps));}
+}
+function approveAgent(id){updateAgentStatus(id,'approved');closeModal('agentModal');renderAll();}
+function rejectAgent(id){updateAgentStatus(id,'rejected');closeModal('agentModal');renderAll();}
+
+function openAgentModal(id){
+  currentAgentId=id;
+  const a=getAgentById(id);if(!a)return;
+  const allStates=['AL','AK','AZ','AR','CA','CO','CT','DE','FL','GA','HI','ID','IL','IN','IA','KS','KY','LA','ME','MD','MA','MI','MN','MS','MO','MT','NE','NV','NH','NJ','NM','NY','NC','ND','OH','OK','OR','PA','RI','SC','SD','TN','TX','UT','VT','VA','WA','WV','WI','WY'];
+  const allTypes=['Auto Insurance','Homeowners Insurance','Renters Insurance','Life Insurance','Health Insurance','Medicare','Other'];
+  const agentStates=a.states||[],agentTypes=a.insuranceTypes||[];
+  const stateBoxes=allStates.map(s=>`<label class="check-pill"><input type="checkbox" value="${s}" ${agentStates.includes(s)?'checked':''}> ${s}</label>`).join('');
+  const typeBoxes=allTypes.map(t=>`<label class="check-pill"><input type="checkbox" value="${t}" ${agentTypes.includes(t)?'checked':''}> ${t}</label>`).join('');
+
+  document.getElementById('agentModalContent').innerHTML=`
+    <div class="modal-row"><span>Name</span><span>${a.firstName} ${a.lastName}</span></div>
+    <div class="modal-row"><span>Agency</span><span>${a.agency||'—'}</span></div>
+    <div class="modal-row"><span>Email</span><span style="font-size:0.82rem;">${a.email}</span></div>
+    <div class="modal-row"><span>Phone</span><span><a href="tel:${a.phone||''}" style="color:var(--gold);text-decoration:none;">${a.phone||'—'}</a></span></div>
+    <div class="modal-row"><span>Experience</span><span>${a.years||'—'} years</span></div>
+    <div class="modal-row"><span>Plan</span><span>${a.plan==='monthly'?'Monthly':'Per Lead'}</span></div>
+    <div class="modal-row"><span>Status</span><span>${statusBadge(a.status)}</span></div>
+    ${a.bio?`<div class="modal-row"><span>Bio</span><span style="font-size:0.82rem;">${a.bio}</span></div>`:''}
+
+    <!-- Portal Password -->
+    <div class="pwd-section">
+      <div class="pwd-section-label">🔑 Portal Password</div>
+      ${a.portalPassword?`<div class="pwd-current"><span>Current:</span><span class="pwd-value">${a.portalPassword}</span></div>`:'<p style="font-size:0.83rem;color:var(--text-muted);margin-bottom:0.7rem;">No password set yet — set one to give this agent portal access.</p>'}
+      <div class="pwd-input-row">
+        <input type="text" id="agentPasswordInput" placeholder="Set portal password..." value="${a.portalPassword||''}">
+        <button class="pwd-gen-btn" onclick="generatePassword('${id}')">Auto Generate</button>
+      </div>
+      <button class="pwd-save-btn" onclick="saveAgentPassword('${id}')">💾 Save & Email to Agent</button>
+    </div>
+
+    <!-- Insurance Types -->
+    <div class="check-section">
+      <div class="check-section-label">Licensed Insurance Types</div>
+      <div class="check-grid" id="typeCheckboxes">${typeBoxes}</div>
+      <button class="check-save-btn" onclick="saveAgentTypes('${id}')">💾 Save Insurance Types</button>
+    </div>
+
+    <!-- States -->
+    <div class="check-section">
+      <div class="check-section-label">Licensed States</div>
+      <div class="check-grid" id="stateCheckboxes">${stateBoxes}</div>
+      <button class="check-save-btn" style="margin-top:0.6rem;" onclick="saveAgentStates('${id}')">💾 Save States</button>
+    </div>
+  `;
+  document.getElementById('modalApproveBtn').onclick=()=>approveAgent(id);
+  document.getElementById('modalRejectBtn').onclick=()=>rejectAgent(id);
+  document.getElementById('agentModal').classList.add('open');
+}
+
+function generatePassword(id){
+  const chars='ABCDEFGHJKMNPQRSTUVWXYZabcdefghjkmnpqrstuvwxyz23456789';
+  let pwd='';for(let i=0;i<10;i++)pwd+=chars[Math.floor(Math.random()*chars.length)];
+  document.getElementById('agentPasswordInput').value=pwd;
+}
+
+function saveAgentPassword(id){
+  const pwd=document.getElementById('agentPasswordInput').value.trim();
+  if(!pwd){alert('Please enter or generate a password first.');return;}
+  ['ocs_agents','ocs_applications'].forEach(key=>{
+    const arr=JSON.parse(localStorage.getItem(key)||'[]');
+    const idx=arr.findIndex(a=>a.id===id);
+    if(idx>-1){arr[idx].portalPassword=pwd;arr[idx].status='approved';localStorage.setItem(key,JSON.stringify(arr));}
+  });
+  const agent=getAgentById(id);
+  if(agent&&agent.email){
+    const agentWithPwd = {...agent, portalPassword: pwd, status: 'approved'};
+
+    // Save agent to KV for cross-device portal login
+    fetch('https://onecallshield-emails.chris-santoro55.workers.dev', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ type: 'save_agent', agent: agentWithPwd })
+    })
+    .then(r=>r.json())
+    .then(d=>{
+      if(d.success) console.log('✅ Agent saved to KV:', d.key);
+      else console.error('❌ KV save failed:', d.error);
+    })
+    .catch(err=>console.error('KV agent save error:',err));
+
+    // Send portal access email
+    fetch('https://onecallshield-emails.chris-santoro55.workers.dev', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        type: 'portal_access',
+        agentFirstName: agent.firstName,
+        agentLastName: agent.lastName,
+        agentEmail: agent.email,
+        portalEmail: agent.email,
+        portalPassword: pwd
+      })
+    }).catch(err=>console.error('Portal email error:',err));
+  }
+  alert('✅ Password saved and sent to '+agent.email+'!\n\nPassword: '+pwd);
+  closeModal('agentModal');renderAll();
+}
+
+function saveAgentTypes(id){
+  const checked=[...document.querySelectorAll('#typeCheckboxes input:checked')].map(i=>i.value);
+  if(!checked.length){alert('Select at least one type.');return;}
+  ['ocs_agents','ocs_applications'].forEach(key=>{
+    const arr=JSON.parse(localStorage.getItem(key)||'[]');
+    const idx=arr.findIndex(a=>a.id===id);
+    if(idx>-1){arr[idx].insuranceTypes=checked;localStorage.setItem(key,JSON.stringify(arr));}
+  });
+  alert('✅ Insurance types updated!');openAgentModal(id);
+}
+
+function saveAgentStates(id){
+  const checked=[...document.querySelectorAll('#stateCheckboxes input:checked')].map(i=>i.value);
+  if(!checked.length){alert('Select at least one state.');return;}
+  ['ocs_agents','ocs_applications'].forEach(key=>{
+    const arr=JSON.parse(localStorage.getItem(key)||'[]');
+    const idx=arr.findIndex(a=>a.id===id);
+    if(idx>-1){arr[idx].states=checked;localStorage.setItem(key,JSON.stringify(arr));}
+  });
+  alert('✅ States updated!');closeModal('agentModal');renderAll();
+}
+
+// ─── LEAD DETAIL MODAL ───────────────────────────────────────────────────────
+function openLeadDetail(leadId){
+  const lead=getLeads().find(l=>l.id===leadId);
+  if(!lead)return;
+  const agent=lead.matchedAgentId?getAgentById(lead.matchedAgentId):null;
+  const diff=Date.now()-new Date(lead.submittedAt).getTime();
+  const hrs=Math.floor(diff/3600000);
+  const ageCls=hrs<6?'var(--green)':hrs<24?'var(--amber)':'var(--red)';
+  const notes=lead.agentNotes||[];
+
+  document.getElementById('leadDetailContent').innerHTML=`
+    <!-- Header -->
+    <div style="display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:1.5rem;gap:1rem;">
+      <div>
+        <h3 style="font-family:'Fraunces',serif;font-size:1.3rem;color:var(--navy);font-weight:700;margin-bottom:0.3rem;">${lead.firstName} ${lead.lastName}</h3>
+        <div style="display:flex;align-items:center;gap:0.6rem;flex-wrap:wrap;">
+          ${statusBadge(lead.status)}
+          <span style="font-size:0.8rem;color:${ageCls};font-weight:600;">${timeAgo(lead.submittedAt)}</span>
+          <span style="font-size:0.8rem;color:var(--text-muted);">${lead.id}</span>
+        </div>
+      </div>
+      <button onclick="closeModal('leadDetailModal')" style="background:var(--cream-dark);border:none;width:32px;height:32px;border-radius:50%;cursor:pointer;font-size:1rem;display:flex;align-items:center;justify-content:center;flex-shrink:0;">✕</button>
+    </div>
+
+    <!-- Info Grid -->
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:0.8rem;margin-bottom:1.5rem;">
+      <div style="background:var(--cream);border-radius:12px;padding:1rem;">
+        <div style="font-size:0.68rem;color:var(--text-muted);text-transform:uppercase;letter-spacing:0.07em;font-weight:700;margin-bottom:0.3rem;">📞 Phone</div>
+        <div style="font-size:1rem;color:var(--gold);font-weight:700;"><a href="tel:${lead.phone}" style="color:var(--gold);text-decoration:none;">${lead.phone}</a></div>
+        <div style="font-size:0.72rem;margin-top:4px;">${lead.phoneVerified === false ? '<span style="color:#f87171;">⚠️ Unverified</span>' : '<span style="color:var(--green);">✅ Verified</span>'}</div>
+      </div>
+      <div style="background:var(--cream);border-radius:12px;padding:1rem;">
+        <div style="font-size:0.68rem;color:var(--text-muted);text-transform:uppercase;letter-spacing:0.07em;font-weight:700;margin-bottom:0.3rem;">📧 Email</div>
+        <div style="font-size:0.88rem;color:var(--navy);font-weight:600;">${lead.email||'—'}</div>
+      </div>
+      <div style="background:var(--cream);border-radius:12px;padding:1rem;">
+        <div style="font-size:0.68rem;color:var(--text-muted);text-transform:uppercase;letter-spacing:0.07em;font-weight:700;margin-bottom:0.3rem;">🛡️ Insurance Type</div>
+        <div style="font-size:0.95rem;color:var(--navy);font-weight:700;">${lead.insuranceType}</div>
+      </div>
+      <div style="background:var(--cream);border-radius:12px;padding:1rem;">
+        <div style="font-size:0.68rem;color:var(--text-muted);text-transform:uppercase;letter-spacing:0.07em;font-weight:700;margin-bottom:0.3rem;">👤 Age</div>
+        <div style="font-size:0.95rem;color:var(--navy);font-weight:700;">${lead.age||'—'}</div>
+      </div>
+      <div style="background:var(--cream);border-radius:12px;padding:1rem;">
+        <div style="font-size:0.68rem;color:var(--text-muted);text-transform:uppercase;letter-spacing:0.07em;font-weight:700;margin-bottom:0.3rem;">📍 ZIP Code</div>
+        <div style="font-size:0.95rem;color:var(--navy);font-weight:700;">${lead.zip}</div>
+      </div>
+      <div style="background:var(--cream);border-radius:12px;padding:1rem;">
+        <div style="font-size:0.68rem;color:var(--text-muted);text-transform:uppercase;letter-spacing:0.07em;font-weight:700;margin-bottom:0.3rem;">⏰ Contact Time</div>
+        <div style="font-size:0.88rem;color:var(--navy);font-weight:600;">${lead.contactTime||'Anytime'}</div>
+      </div>
+      ${lead.lifeType?`
+      <div style="background:var(--cream);border-radius:12px;padding:1rem;">
+        <div style="font-size:0.68rem;color:var(--text-muted);text-transform:uppercase;letter-spacing:0.07em;font-weight:700;margin-bottom:0.3rem;">❤️ Life Type</div>
+        <div style="font-size:0.88rem;color:var(--navy);font-weight:600;">${lead.lifeType}</div>
+      </div>
+      <div style="background:var(--cream);border-radius:12px;padding:1rem;">
+        <div style="font-size:0.68rem;color:var(--text-muted);text-transform:uppercase;letter-spacing:0.07em;font-weight:700;margin-bottom:0.3rem;">💰 Face Amount</div>
+        <div style="font-size:0.88rem;color:var(--navy);font-weight:600;">${lead.faceAmount||'—'}</div>
+      </div>`:''}
+      <div style="background:var(--cream);border-radius:12px;padding:1rem;">
+        <div style="font-size:0.68rem;color:var(--text-muted);text-transform:uppercase;letter-spacing:0.07em;font-weight:700;margin-bottom:0.3rem;">✅ TCPA Consent</div>
+        <div style="font-size:0.82rem;color:var(--green);font-weight:600;">Consented ${new Date(lead.submittedAt).toLocaleString()}</div>
+      </div>
+      <div style="background:var(--cream);border-radius:12px;padding:1rem;">
+        <div style="font-size:0.68rem;color:var(--text-muted);text-transform:uppercase;letter-spacing:0.07em;font-weight:700;margin-bottom:0.3rem;">💵 Lead Value</div>
+        <div style="font-size:1rem;color:var(--green);font-weight:700;">$${LEAD_PRICES[lead.insuranceType]||30}</div>
+      </div>
+    </div>
+
+    <!-- Matched Agent -->
+    <div style="background:${agent?'var(--green-light)':'rgba(201,151,58,0.08)'};border:1px solid ${agent?'rgba(45,122,79,0.3)':'rgba(201,151,58,0.25)'};border-radius:12px;padding:1rem 1.2rem;margin-bottom:1.5rem;display:flex;align-items:center;justify-content:space-between;gap:1rem;flex-wrap:wrap;">
+      <div>
+        <div style="font-size:0.72rem;color:${agent?'var(--green)':'var(--gold)'};font-weight:700;text-transform:uppercase;letter-spacing:0.06em;margin-bottom:0.3rem;">${agent?'✅ Matched Agent':'⚡ Not Yet Matched'}</div>
+        <div style="font-size:0.95rem;color:var(--navy);font-weight:700;">${agent?agent.firstName+' '+agent.lastName+' — '+agent.agency:'Waiting for assignment'}</div>
+        ${agent?`<div style="font-size:0.82rem;color:var(--text-muted);">Matched ${timeAgo(lead.matchedAt)}</div>`:''}
+      </div>
+      ${!agent?`<button class="action-btn btn-match" onclick="closeModal('leadDetailModal');openMatchModal('${lead.id}')">🎯 Match Now</button>`:''}
+    </div>
+
+    <!-- Agent Status & Notes -->
+    ${agent?`
+    <div style="margin-bottom:1.5rem;">
+      <div style="font-size:0.78rem;font-weight:700;color:var(--navy);text-transform:uppercase;letter-spacing:0.06em;margin-bottom:0.8rem;">📋 Agent Activity</div>
+      <div style="background:var(--cream);border-radius:10px;padding:0.8rem 1rem;margin-bottom:0.8rem;display:flex;align-items:center;justify-content:space-between;">
+        <span style="font-size:0.88rem;color:var(--text-muted);">Lead Status (set by agent):</span>
+        <span style="font-size:0.88rem;font-weight:700;color:var(--navy);">${lead.agentStatus?lead.agentStatus.charAt(0).toUpperCase()+lead.agentStatus.slice(1):'Not yet updated'}</span>
+      </div>
+      ${lead.callbackDate?`<div style="background:#fef3c7;border:1px solid #fcd34d;border-radius:10px;padding:0.8rem 1rem;margin-bottom:0.8rem;font-size:0.88rem;color:#92400e;font-weight:600;">⏰ Callback scheduled: ${new Date(lead.callbackDate).toLocaleString()}</div>`:''}
+      ${lead.agentRating?`<div style="background:var(--cream);border-radius:10px;padding:0.8rem 1rem;margin-bottom:0.8rem;display:flex;align-items:center;justify-content:space-between;"><span style="font-size:0.88rem;color:var(--text-muted);">Lead Quality Rating:</span><span style="color:#f59e0b;font-size:1.1rem;">${'★'.repeat(lead.agentRating)}${'☆'.repeat(5-lead.agentRating)}</span></div>`:''}
+    </div>
+    `:''}
+
+    <!-- Call Notes -->
+    <div style="margin-bottom:1.5rem;">
+      <div style="font-size:0.78rem;font-weight:700;color:var(--navy);text-transform:uppercase;letter-spacing:0.06em;margin-bottom:0.8rem;">📝 Call Notes (${notes.length})</div>
+      ${notes.length?notes.slice().reverse().map(n=>`
+        <div style="background:var(--cream);border-radius:10px;padding:0.8rem 1rem;border-left:3px solid var(--gold);margin-bottom:0.5rem;">
+          <div style="font-size:0.88rem;color:var(--text);line-height:1.5;">${n.text}</div>
+          <div style="font-size:0.73rem;color:var(--text-muted);margin-top:0.3rem;">${n.date}</div>
+        </div>`).join('')
+      :'<p style="font-size:0.85rem;color:var(--text-muted);font-style:italic;">No call notes added by agent yet.</p>'}
+    </div>
+
+    <!-- Actions -->
+    <div style="display:flex;gap:0.6rem;flex-wrap:wrap;">
+      ${lead.status==='unmatched'?`<button class="action-btn btn-match" style="padding:0.8rem 1.2rem;border-radius:10px;font-size:0.9rem;" onclick="closeModal('leadDetailModal');openMatchModal('${lead.id}')">🎯 Match to Agent</button>`:''}
+      <button onclick="closeModal('leadDetailModal')" style="flex:1;padding:0.8rem;border-radius:10px;border:none;background:var(--cream-dark);color:var(--text);font-size:0.9rem;font-weight:600;cursor:pointer;font-family:'DM Sans',sans-serif;">Close</button>
+    </div>
+  `;
+  document.getElementById('leadDetailModal').classList.add('open');
+}
+
+// ─── AGENT DASHBOARD MODAL ────────────────────────────────────────────────────
+function openAgentDashboard(agentId){
+  const agent=getAgentById(agentId);
+  if(!agent)return;
+  const allLeads=getLeads();
+  const agentLeads=allLeads.filter(l=>l.matchedAgentId===agentId);
+  const totalLeads=agentLeads.length;
+  const newLeads=agentLeads.filter(l=>!l.agentStatus||l.agentStatus==='new').length;
+  const contacted=agentLeads.filter(l=>l.agentStatus&&l.agentStatus!=='new'&&l.agentStatus!=='lost').length;
+  const closed=agentLeads.filter(l=>l.agentStatus==='closed').length;
+  const lost=agentLeads.filter(l=>l.agentStatus==='lost').length;
+  const followup=agentLeads.filter(l=>l.agentStatus==='followup').length;
+  const closeRate=totalLeads>0?Math.round((closed/totalLeads)*100):0;
+  const totalRevenue=agentLeads.filter(l=>l.status==='matched').length*(LEAD_PRICES['Auto Insurance']||30);
+  const avgRating=agentLeads.filter(l=>l.agentRating).length?
+    (agentLeads.filter(l=>l.agentRating).reduce((s,l)=>s+(l.agentRating||0),0)/agentLeads.filter(l=>l.agentRating).length).toFixed(1):null;
+
+  document.getElementById('agentDashboardContent').innerHTML=`
+    <!-- Header -->
+    <div style="display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:1.5rem;gap:1rem;">
+      <div>
+        <h3 style="font-family:'Fraunces',serif;font-size:1.3rem;color:var(--navy);font-weight:700;margin-bottom:0.3rem;">${agent.firstName} ${agent.lastName}</h3>
+        <div style="display:flex;align-items:center;gap:0.6rem;flex-wrap:wrap;">
+          ${statusBadge(agent.status)}
+          <span style="font-size:0.8rem;color:var(--text-muted);">${agent.agency||'Independent'}</span>
+          ${agent.portalPassword?'<span style="font-size:0.75rem;color:var(--green);font-weight:700;">🔑 Portal Active</span>':'<span style="font-size:0.75rem;color:var(--amber);font-weight:700;">⚠️ No Portal Access</span>'}
+        </div>
+      </div>
+      <div style="display:flex;gap:0.5rem;">
+        <button class="action-btn btn-view" onclick="closeModal('agentDashboardModal');openAgentModal('${agentId}')">⚙️ Manage</button>
+        <button onclick="closeModal('agentDashboardModal')" style="background:var(--cream-dark);border:none;width:32px;height:32px;border-radius:50%;cursor:pointer;font-size:1rem;display:flex;align-items:center;justify-content:center;">✕</button>
+      </div>
+    </div>
+
+    <!-- Stats Row -->
+    <div style="display:grid;grid-template-columns:repeat(5,1fr);gap:0.7rem;margin-bottom:1.5rem;">
+      <div style="background:var(--cream);border-radius:12px;padding:0.9rem;text-align:center;">
+        <div style="font-family:'Fraunces',serif;font-size:1.6rem;font-weight:700;color:var(--navy);">${totalLeads}</div>
+        <div style="font-size:0.65rem;color:var(--text-muted);text-transform:uppercase;letter-spacing:0.06em;margin-top:0.2rem;">Total Leads</div>
+      </div>
+      <div style="background:rgba(201,151,58,0.08);border-radius:12px;padding:0.9rem;text-align:center;">
+        <div style="font-family:'Fraunces',serif;font-size:1.6rem;font-weight:700;color:var(--gold);">${newLeads}</div>
+        <div style="font-size:0.65rem;color:var(--text-muted);text-transform:uppercase;letter-spacing:0.06em;margin-top:0.2rem;">New</div>
+      </div>
+      <div style="background:var(--green-light);border-radius:12px;padding:0.9rem;text-align:center;">
+        <div style="font-family:'Fraunces',serif;font-size:1.6rem;font-weight:700;color:var(--green);">${closed}</div>
+        <div style="font-size:0.65rem;color:var(--text-muted);text-transform:uppercase;letter-spacing:0.06em;margin-top:0.2rem;">Closed 🏆</div>
+      </div>
+      <div style="background:var(--green-light);border-radius:12px;padding:0.9rem;text-align:center;">
+        <div style="font-family:'Fraunces',serif;font-size:1.6rem;font-weight:700;color:var(--green);">${closeRate}%</div>
+        <div style="font-size:0.65rem;color:var(--text-muted);text-transform:uppercase;letter-spacing:0.06em;margin-top:0.2rem;">Close Rate</div>
+      </div>
+      <div style="background:rgba(201,151,58,0.08);border-radius:12px;padding:0.9rem;text-align:center;">
+        <div style="font-family:'Fraunces',serif;font-size:1.6rem;font-weight:700;color:var(--gold);">${avgRating?'★'+avgRating:'—'}</div>
+        <div style="font-size:0.65rem;color:var(--text-muted);text-transform:uppercase;letter-spacing:0.06em;margin-top:0.2rem;">Avg Rating</div>
+      </div>
+    </div>
+
+    <!-- Status Breakdown -->
+    <div style="background:var(--cream);border-radius:12px;padding:1rem 1.2rem;margin-bottom:1.5rem;">
+      <div style="font-size:0.72rem;font-weight:700;color:var(--navy);text-transform:uppercase;letter-spacing:0.06em;margin-bottom:0.8rem;">📊 Lead Status Breakdown</div>
+      ${[['new','🆕 New',newLeads,'var(--gold)'],['contacted','📞 Contacted',contacted,'var(--green)'],['followup','🔄 Follow Up',followup,'#d97706'],['closed','✅ Closed',closed,'var(--green)'],['lost','❌ Lost',lost,'var(--red)']].map(([s,label,count,color])=>`
+        <div style="display:flex;align-items:center;gap:1rem;padding:0.5rem 0;border-bottom:1px solid rgba(13,31,60,0.06);">
+          <span style="font-size:0.85rem;color:var(--text-muted);width:110px;">${label}</span>
+          <div style="flex:1;background:rgba(13,31,60,0.06);border-radius:100px;height:7px;overflow:hidden;">
+            <div style="width:${totalLeads>0?Math.round((count/totalLeads)*100):0}%;background:${color};height:100%;border-radius:100px;transition:width 0.5s;"></div>
+          </div>
+          <span style="font-family:'Fraunces',serif;font-size:1rem;font-weight:700;color:var(--navy);width:24px;text-align:right;">${count}</span>
+        </div>`).join('')}
+    </div>
+
+    <!-- Agent Info -->
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:0.7rem;margin-bottom:1.5rem;">
+      <div style="background:var(--cream);border-radius:12px;padding:0.9rem;">
+        <div style="font-size:0.68rem;color:var(--text-muted);text-transform:uppercase;letter-spacing:0.07em;font-weight:700;margin-bottom:0.3rem;">📞 Phone</div>
+        <div style="font-size:0.9rem;color:var(--navy);font-weight:600;"><a href="tel:${agent.phone||''}" style="color:var(--gold);text-decoration:none;">${agent.phone||'—'}</a></div>
+      </div>
+      <div style="background:var(--cream);border-radius:12px;padding:0.9rem;">
+        <div style="font-size:0.68rem;color:var(--text-muted);text-transform:uppercase;letter-spacing:0.07em;font-weight:700;margin-bottom:0.3rem;">📧 Email</div>
+        <div style="font-size:0.82rem;color:var(--navy);font-weight:600;">${agent.email}</div>
+      </div>
+      <div style="background:var(--cream);border-radius:12px;padding:0.9rem;">
+        <div style="font-size:0.68rem;color:var(--text-muted);text-transform:uppercase;letter-spacing:0.07em;font-weight:700;margin-bottom:0.3rem;">📋 Plan</div>
+        <div style="font-size:0.9rem;color:var(--navy);font-weight:600;">${agent.plan==='monthly'?'Monthly Subscription':'Pay Per Lead'}</div>
+      </div>
+      <div style="background:var(--cream);border-radius:12px;padding:0.9rem;">
+        <div style="font-size:0.68rem;color:var(--text-muted);text-transform:uppercase;letter-spacing:0.07em;font-weight:700;margin-bottom:0.3rem;">🕐 Member Since</div>
+        <div style="font-size:0.9rem;color:var(--navy);font-weight:600;">${timeAgo(agent.submittedAt)}</div>
+      </div>
+      <div style="background:var(--cream);border-radius:12px;padding:0.9rem;">
+        <div style="font-size:0.68rem;color:var(--text-muted);text-transform:uppercase;letter-spacing:0.07em;font-weight:700;margin-bottom:0.3rem;">🛡️ Insurance Types</div>
+        <div style="font-size:0.82rem;color:var(--navy);font-weight:600;line-height:1.4;">${(agent.insuranceTypes||[]).join(', ')||'—'}</div>
+      </div>
+      <div style="background:var(--cream);border-radius:12px;padding:0.9rem;">
+        <div style="font-size:0.68rem;color:var(--text-muted);text-transform:uppercase;letter-spacing:0.07em;font-weight:700;margin-bottom:0.3rem;">📍 Licensed States</div>
+        <div style="font-size:0.82rem;color:var(--navy);font-weight:600;line-height:1.4;">${(agent.states||[]).slice(0,8).join(', ')+(agent.states||[]).length>8?'…':''||'—'}</div>
+      </div>
+    </div>
+
+    <!-- Their Leads -->
+    ${totalLeads>0?`
+    <div>
+      <div style="font-size:0.78rem;font-weight:700;color:var(--navy);text-transform:uppercase;letter-spacing:0.06em;margin-bottom:0.8rem;">🎯 Their Leads</div>
+      <div style="border:1px solid rgba(13,31,60,0.08);border-radius:12px;overflow:hidden;">
+        ${agentLeads.slice().reverse().map(l=>`
+          <div style="display:flex;align-items:center;padding:0.8rem 1rem;border-bottom:1px solid rgba(13,31,60,0.05);gap:0.8rem;cursor:pointer;" onclick="closeModal('agentDashboardModal');openLeadDetail('${l.id}')">
+            <div style="flex:1;">
+              <div style="font-size:0.88rem;font-weight:700;color:var(--navy);">${l.firstName} ${l.lastName}</div>
+              <div style="font-size:0.78rem;color:var(--text-muted);">${l.insuranceType} · ${timeAgo(l.matchedAt||l.submittedAt)}</div>
+            </div>
+            <div style="font-size:0.75rem;font-weight:600;color:${l.agentStatus==='closed'?'var(--green)':l.agentStatus==='lost'?'var(--red)':'var(--gold)'};">${l.agentStatus?l.agentStatus.charAt(0).toUpperCase()+l.agentStatus.slice(1):'New'}</div>
+            ${l.agentRating?`<div style="color:#f59e0b;font-size:0.85rem;">${'★'.repeat(l.agentRating)}</div>`:''}
+            <div style="font-size:0.72rem;color:var(--green);font-weight:700;">$${LEAD_PRICES[l.insuranceType]||30}</div>
+          </div>`).join('')}
+      </div>
+    </div>`:'<p style="font-size:0.88rem;color:var(--text-muted);text-align:center;padding:1rem;">No leads assigned to this agent yet.</p>'}
+  `;
+  document.getElementById('agentDashboardModal').classList.add('open');
+}
+
+// ─── MATCH LEAD ───────────────────────────────────────────────────────────────
+function openMatchModal(leadId){
+  currentLeadId=leadId;selectedMatchAgent=null;
+  const leads=getLeads(),lead=leads.find(l=>l.id===leadId);if(!lead)return;
+  document.getElementById('matchLeadInfo').innerHTML=`
+    <strong>${lead.firstName} ${lead.lastName}</strong> · ${lead.insuranceType}<br>
+    <span style="color:var(--text-muted);font-size:0.85rem;">ZIP ${lead.zip} · Age ${lead.age||'N/A'} · ${lead.contactTime||'Anytime'}</span>
+    ${lead.phone?`<br><a href="tel:${lead.phone}" style="color:var(--gold);font-weight:700;">${lead.phone}</a>`:''}
+  `;
+  const approved=allAgents().filter(a=>a.status==='approved');
+  const compatible=approved.filter(a=>(a.insuranceTypes||[]).some(t=>t===lead.insuranceType||lead.insuranceType.includes(t.split(' ')[0])));
+  const list=compatible.length?compatible:approved;
+  document.getElementById('matchAgentList').innerHTML=!list.length
+    ?'<p style="color:var(--text-muted);font-size:0.85rem;padding:1rem 0;">No approved agents yet. Approve agents first.</p>'
+    :list.map(a=>`<div class="match-agent-item" id="mai-${a.id}" onclick="selectAgent('${a.id}')">
+        <div>
+          <div class="match-agent-name">${a.firstName} ${a.lastName}</div>
+          <div class="match-agent-meta">${a.agency||'—'} · ${(a.insuranceTypes||[]).slice(0,2).join(', ')}</div>
+        </div>
+        <span style="font-size:0.78rem;color:var(--text-muted);">${(a.states||[]).slice(0,3).join(', ')}</span>
+      </div>`).join('');
+  document.getElementById('matchModal').classList.add('open');
+}
+
+function selectAgent(agentId){
+  selectedMatchAgent=agentId;
+  document.querySelectorAll('.match-agent-item').forEach(el=>el.classList.remove('selected'));
+  document.getElementById('mai-'+agentId)?.classList.add('selected');
+}
+
+function confirmMatch(){
+  if(!selectedMatchAgent){alert('Please select an agent.');return;}
+  const leads=getLeads(),leadIdx=leads.findIndex(l=>l.id===currentLeadId);if(leadIdx===-1)return;
+  leads[leadIdx].status='matched';leads[leadIdx].matchedAgentId=selectedMatchAgent;leads[leadIdx].matchedAt=new Date().toISOString();
+  saveLeads(leads);
+  const lead=leads[leadIdx],agent=getAgentById(selectedMatchAgent);
+  const matched=getMatched();
+  matched.push({id:'M-'+Date.now(),leadId:currentLeadId,agentId:selectedMatchAgent,consumerName:lead.firstName+' '+lead.lastName,insuranceType:lead.insuranceType,matchedAt:new Date().toISOString(),value:LEAD_PRICES[lead.insuranceType]||30});
+  saveMatched(matched);
+
+  // Email agent via Netlify function → Resend
+  if(agent&&agent.email){
+    fetch('https://onecallshield-emails.chris-santoro55.workers.dev', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        type: 'agent_lead',
+        agentName: agent.firstName+' '+agent.lastName,
+        agentFirstName: agent.firstName,
+        agentEmail: agent.email,
+        consumerFirstName: lead.firstName,
+        consumerLastName: lead.lastName,
+        consumerPhone: lead.phone,
+        consumerEmail: lead.email||'N/A',
+        consumerAge: lead.age||'N/A',
+        consumerZip: lead.zip,
+        insuranceType: lead.insuranceType,
+        contactTime: lead.contactTime||'Anytime',
+        lifeType: lead.lifeType||null,
+        faceAmount: lead.faceAmount||null,
+        healthStatus: lead.healthStatus||null,
+        leadId: lead.id
+      })
+    }).then(r=>r.json())
+      .then(d=>console.log('✅ Agent notified:',agent.email,d))
+      .catch(err=>console.error('❌ Agent email error:',err));
+  }
+
+  // Email consumer their match notification → Resend
+  if(lead.email){
+    fetch('https://onecallshield-emails.chris-santoro55.workers.dev', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        type: 'consumer_matched',
+        consumerEmail: lead.email,
+        consumerFirstName: lead.firstName,
+        agentFirstName: agent.firstName,
+        agentLastName: agent.lastName,
+        agentPhone: agent.phone||'N/A',
+        agentEmail: agent.email,
+        agentLicense: agent.licenseNumber||'',
+        agentAgency: agent.agency||'',
+        agentTypes: agent.insuranceTypes||[],
+        contactTime: lead.contactTime||'Anytime',
+        insuranceType: lead.insuranceType,
+        leadId: lead.id
+      })
+    }).then(r=>r.json())
+      .then(d=>console.log('✅ Consumer match notification sent:',lead.email,d))
+      .catch(err=>console.error('❌ Consumer match email error:',err));
+  }
+
+  // Update lead status in KV so status page reflects matched state on any device
+  fetch('https://onecallshield-emails.chris-santoro55.workers.dev', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({
+      type: 'update_lead',
+      leadId: lead.id,
+      updates: {
+        status: 'matched',
+        matchedAt: new Date().toISOString(),
+        matchedAgentId: selectedMatchAgent,
+        agentFirstName: agent.firstName,
+        agentLastName: agent.lastName,
+        agentAgency: agent.agency||'',
+        agentLicense: agent.licenseNumber||'',
+        agentTypes: agent.insuranceTypes||[]
+      }
+    })
+  }).catch(err=>console.error('KV update error:',err));
+
+  // Admin confirmation
+  // Formspree removed — using Cloudflare Worker for all notifications
+
+  closeModal('matchModal');
+  alert('✅ Lead matched! '+(agent?agent.firstName+' '+agent.lastName+' notified at '+agent.email:''));
+  renderAll();
+}
+
+// ─── FILTERS ──────────────────────────────────────────────────────────────────
+function filterLeads(filter,btn){
+  document.querySelectorAll('#tab-leads .filter-btn').forEach(b=>b.classList.remove('active'));
+  btn.classList.add('active');
+  const leads=filter==='all'?[...getLeads()].reverse():getLeads().filter(l=>l.status===filter).reverse();
+  renderLeadsTable('allLeadsTable',leads,false);
+  renderLeadsCards('allLeadsCards',leads);
+}
+function filterAgents(filter,btn){
+  document.querySelectorAll('#tab-agents .filter-btn').forEach(b=>b.classList.remove('active'));
+  btn.classList.add('active');
+  const agents=filter==='all'?allAgents():allAgents().filter(a=>a.status===filter);
+  renderAgentsTable('allAgentsTable',agents,false);
+  renderAgentsCards('allAgentsCards',agents);
+}
+
+// ─── MODAL HELPERS ────────────────────────────────────────────────────────────
+function closeModal(id){document.getElementById(id).classList.remove('open');}
+document.querySelectorAll('.modal-overlay').forEach(o=>{o.addEventListener('click',e=>{if(e.target===o)o.classList.remove('open');});});
+
+// ─── INIT ─────────────────────────────────────────────────────────────────────
+renderAll();
+syncLeadsFromKV();
+syncApplicationsFromKV();
+setInterval(syncLeadsFromKV, 30000);
+setInterval(syncApplicationsFromKV, 30000);
+
+// ─── ADMIN PASSWORD CHANGE ────────────────────────────────────────────────────
+function changeAdminPassword() {
+  const newPass = document.getElementById('newAdminPass').value.trim();
+  const confirmPass = document.getElementById('confirmAdminPass').value.trim();
+  const msg = document.getElementById('passMsg');
+
+  if (!newPass || newPass.length < 6) {
+    msg.style.display = 'block';
+    msg.style.color = 'var(--red)';
+    msg.textContent = '⚠️ Password must be at least 6 characters.';
+    return;
+  }
+  if (newPass !== confirmPass) {
+    msg.style.display = 'block';
+    msg.style.color = 'var(--red)';
+    msg.textContent = '⚠️ Passwords do not match.';
+    return;
+  }
+
+  // Save new password to localStorage
+  localStorage.setItem('ocs_admin_password', newPass);
+  document.getElementById('currentPassDisplay').textContent = newPass;
+  document.getElementById('newAdminPass').value = '';
+  document.getElementById('confirmAdminPass').value = '';
+  msg.style.display = 'block';
+  msg.style.color = 'var(--green)';
+  msg.textContent = '✅ Password updated successfully!';
+  setTimeout(() => { msg.style.display = 'none'; }, 3000);
+}
+</script>
+</body>
+</html>
