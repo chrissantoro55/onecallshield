@@ -1,0 +1,985 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Agent Portal — OneCallShield</title>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,600;0,9..144,700&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+<script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-database-compat.js"></script>
+<style>
+:root{--navy:#0d1f3c;--navy-mid:#1a3460;--gold:#c9973a;--gold-light:#e8b96a;--cream:#f8f4ee;--cream-dark:#ede7dc;--white:#fff;--text:#1a1a2e;--text-muted:#5a6480;--green:#2d7a4f;--green-light:#e8f5ee;--red:#c0392b;--red-light:#fdf0ef;--border:rgba(13,31,60,0.08);}
+*{margin:0;padding:0;box-sizing:border-box;}
+body{font-family:'DM Sans',sans-serif;background:var(--cream);color:var(--text);}
+.login-screen{position:fixed;inset:0;background:var(--navy);display:flex;align-items:center;justify-content:center;z-index:1000;padding:20px;}
+.login-card{background:rgba(255,255,255,0.05);border:1px solid rgba(201,151,58,0.25);border-radius:20px;padding:2.5rem;width:100%;max-width:380px;text-align:center;box-sizing:border-box;}
+.login-card h2{font-family:'Fraunces',serif;color:#fff;font-size:1.6rem;margin-bottom:0.3rem;}
+.login-card p.sub{color:rgba(255,255,255,0.5);font-size:0.88rem;margin-bottom:2rem;}
+.login-card input{background:rgba(255,255,255,0.07);border:1px solid rgba(255,255,255,0.15);border-radius:8px;padding:0.85rem 1rem;color:#fff;font-size:0.95rem;font-family:'DM Sans',sans-serif;outline:none;width:100%;margin-bottom:0.8rem;transition:border-color 0.2s;box-sizing:border-box;}
+.login-card input:focus{border-color:var(--gold);}
+.login-btn{width:100%;background:var(--gold);color:var(--navy);border:none;padding:0.95rem;border-radius:8px;font-size:1rem;font-weight:700;font-family:'DM Sans',sans-serif;cursor:pointer;}
+.login-btn:hover{background:var(--gold-light);}
+.login-error{color:#f87171;font-size:0.83rem;margin-top:0.5rem;display:none;}
+.main{display:none;min-height:100vh;}
+nav{background:var(--navy);padding:0 5%;height:68px;display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid rgba(201,151,58,0.2);position:sticky;top:0;z-index:50;}
+.nav-logo{font-family:'Fraunces',serif;font-size:1.2rem;font-weight:700;color:#fff;display:flex;align-items:center;gap:0.5rem;}
+.nav-logo span{color:var(--gold);}
+.agent-chip{background:rgba(201,151,58,0.15);color:var(--gold);font-size:0.8rem;font-weight:500;padding:0.3rem 0.8rem;border-radius:100px;}
+.logout-btn{color:rgba(255,255,255,0.4);font-size:0.82rem;cursor:pointer;background:none;border:none;font-family:'DM Sans',sans-serif;}
+.content{max-width:1100px;margin:0 auto;padding:2rem 5%;}
+.welcome-banner{background:linear-gradient(135deg,var(--navy),var(--navy-mid));border-radius:16px;padding:2rem;margin-bottom:2rem;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:1rem;border:1px solid rgba(201,151,58,0.2);}
+.welcome-text h2{font-family:'Fraunces',serif;color:#fff;font-size:1.5rem;margin-bottom:0.3rem;}
+.welcome-text p{color:rgba(255,255,255,0.55);font-size:0.9rem;}
+.welcome-stats{display:flex;gap:1.5rem;flex-wrap:wrap;}
+.welcome-stat{text-align:center;}
+.welcome-stat-num{font-family:'Fraunces',serif;font-size:1.8rem;font-weight:700;color:var(--gold);display:block;line-height:1;}
+.welcome-stat-num.green{color:#6dcf9b;}
+.welcome-stat-label{font-size:0.72rem;color:rgba(255,255,255,0.4);text-transform:uppercase;letter-spacing:0.06em;margin-top:0.2rem;}
+.callbacks-alert{background:#fff;border-radius:12px;border-left:4px solid var(--gold);padding:1rem 1.5rem;margin-bottom:1.5rem;display:none;}
+.callbacks-alert h4{font-family:'Fraunces',serif;color:var(--navy);font-size:1rem;margin-bottom:0.5rem;}
+.callback-item{display:flex;align-items:center;justify-content:space-between;padding:0.4rem 0;border-bottom:1px solid var(--cream-dark);font-size:0.88rem;cursor:pointer;}
+.callback-item:last-child{border-bottom:none;}
+.tabs{display:flex;gap:0.5rem;margin-bottom:1.5rem;background:var(--cream-dark);border-radius:10px;padding:0.3rem;flex-wrap:wrap;}
+.tab-btn{flex:1;padding:0.6rem;border-radius:7px;border:none;font-family:'DM Sans',sans-serif;font-size:0.85rem;font-weight:500;cursor:pointer;background:transparent;color:var(--text-muted);transition:all 0.2s;white-space:nowrap;}
+.tab-btn.active{background:var(--navy);color:#fff;}
+.tab-panel{display:none;}
+.tab-panel.active{display:block;}
+.section-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:1.2rem;}
+.section-header h2{font-family:'Fraunces',serif;font-size:1.2rem;color:var(--navy);font-weight:600;}
+.table-wrap{background:var(--white);border-radius:16px;border:1px solid var(--border);overflow:hidden;margin-bottom:2rem;overflow-x:auto;}
+table{width:100%;border-collapse:collapse;min-width:700px;}
+thead{background:var(--cream);}
+th{padding:0.9rem 1rem;font-size:0.72rem;font-weight:700;color:var(--text-muted);text-transform:uppercase;letter-spacing:0.06em;text-align:left;border-bottom:1px solid var(--border);}
+td{padding:0.9rem 1rem;font-size:0.87rem;color:var(--text);border-bottom:1px solid rgba(13,31,60,0.04);}
+tr:last-child td{border-bottom:none;}
+tr.lead-row{cursor:pointer;}
+tr.lead-row:hover td{background:rgba(201,151,58,0.04);}
+.badge{display:inline-flex;align-items:center;padding:0.22rem 0.65rem;border-radius:100px;font-size:0.73rem;font-weight:600;}
+.badge-new{background:rgba(201,151,58,0.12);color:var(--gold);}
+.badge-contacted{background:var(--green-light);color:var(--green);}
+.badge-followup{background:#fef3c7;color:#d97706;}
+.badge-closed{background:rgba(13,31,60,0.08);color:var(--navy);}
+.badge-lost{background:var(--red-light);color:var(--red);}
+.age-fresh{color:var(--green);font-weight:600;font-size:0.78rem;}
+.age-warm{color:#d97706;font-weight:600;font-size:0.78rem;}
+.age-old{color:var(--red);font-weight:600;font-size:0.78rem;}
+.copy-btn{background:none;border:1px solid rgba(13,31,60,0.15);border-radius:4px;padding:0.15rem 0.4rem;font-size:0.7rem;cursor:pointer;color:var(--text-muted);margin-left:0.3rem;font-family:'DM Sans',sans-serif;}
+.profile-card{background:var(--white);border-radius:16px;padding:2rem;border:1px solid var(--border);margin-bottom:1.5rem;}
+.profile-card h2{font-family:'Fraunces',serif;font-size:1.2rem;color:var(--navy);font-weight:600;margin-bottom:1.2rem;}
+.profile-row{display:flex;justify-content:space-between;padding:0.7rem 0;border-bottom:1px solid var(--cream-dark);font-size:0.9rem;}
+.profile-row:last-child{border-bottom:none;}
+.profile-row span:first-child{color:var(--text-muted);}
+.profile-row span:last-child{color:var(--navy);font-weight:500;}
+.stats-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:1rem;margin-bottom:1.5rem;}
+.stat-card{background:var(--white);border-radius:14px;padding:1.2rem;border:1px solid var(--border);text-align:center;}
+.stat-card-num{font-family:'Fraunces',serif;font-size:1.8rem;font-weight:700;color:var(--navy);display:block;}
+.stat-card-num.gold{color:var(--gold);}
+.stat-card-num.green{color:var(--green);}
+.stat-card-label{font-size:0.75rem;color:var(--text-muted);text-transform:uppercase;letter-spacing:0.05em;margin-top:0.3rem;}
+.edit-section{background:var(--white);border-radius:16px;padding:1.8rem;border:1px solid var(--border);margin-bottom:1.5rem;}
+.edit-section h3{font-family:'Fraunces',serif;font-size:1.05rem;color:var(--navy);font-weight:600;margin-bottom:0.5rem;}
+.edit-section p{font-size:0.85rem;color:var(--text-muted);margin-bottom:1rem;}
+.checkbox-grid{display:flex;flex-wrap:wrap;gap:0.4rem;margin-bottom:1rem;}
+.check-pill{display:inline-flex;align-items:center;gap:0.35rem;background:var(--cream);border:1.5px solid rgba(13,31,60,0.1);border-radius:8px;padding:0.4rem 0.7rem;cursor:pointer;font-size:0.82rem;color:var(--text-muted);transition:all 0.15s;}
+.check-pill input{width:13px;height:13px;accent-color:var(--gold);cursor:pointer;}
+.save-btn{width:100%;background:var(--gold);color:var(--navy);border:none;padding:0.85rem;border-radius:10px;font-size:0.95rem;font-weight:700;cursor:pointer;font-family:'DM Sans',sans-serif;}
+.modal-overlay{position:fixed;inset:0;background:rgba(13,31,60,0.65);display:none;align-items:flex-start;justify-content:center;z-index:200;overflow-y:auto;padding:2rem 1rem;backdrop-filter:blur(4px);}
+.modal-overlay.open{display:flex;}
+.lead-modal{background:var(--white);border-radius:20px;width:100%;max-width:660px;overflow:hidden;}
+.modal-header{background:linear-gradient(135deg,var(--navy),var(--navy-mid));padding:1.5rem 2rem;display:flex;align-items:center;justify-content:space-between;}
+.modal-header h3{font-family:'Fraunces',serif;color:#fff;font-size:1.1rem;font-weight:600;flex:1;margin-right:1rem;}
+.modal-close{background:rgba(255,255,255,0.1);border:none;color:#fff;width:32px;height:32px;border-radius:50%;cursor:pointer;font-size:1rem;display:flex;align-items:center;justify-content:center;flex-shrink:0;}
+.modal-body{padding:1.5rem 2rem;max-height:75vh;overflow-y:auto;}
+.info-grid{display:grid;grid-template-columns:1fr 1fr;gap:0.8rem;margin-bottom:1.2rem;}
+.info-item{background:var(--cream);border-radius:10px;padding:0.9rem 1rem;}
+.info-label{font-size:0.7rem;color:var(--text-muted);text-transform:uppercase;letter-spacing:0.06em;margin-bottom:0.25rem;}
+.info-value{font-size:0.92rem;color:var(--navy);font-weight:600;}
+.info-value a{color:var(--gold);text-decoration:none;}
+.info-value.gold{color:var(--gold);}
+.call-btn{display:block;width:100%;background:var(--green);color:#fff;border:none;padding:1rem;border-radius:10px;font-size:1rem;font-weight:700;cursor:pointer;font-family:'DM Sans',sans-serif;margin-bottom:1.2rem;text-align:center;text-decoration:none;letter-spacing:0.02em;}
+.script-box{background:rgba(13,31,60,0.03);border:1px solid rgba(13,31,60,0.1);border-radius:10px;padding:1rem 1.2rem;margin-bottom:1.2rem;}
+.script-box h5{font-family:'Fraunces',serif;color:var(--navy);font-size:0.9rem;font-weight:600;margin-bottom:0.5rem;}
+.script-box p{font-size:0.85rem;color:var(--text-muted);line-height:1.6;margin-bottom:0.5rem;}
+.script-box ul{padding-left:1.2rem;}
+.script-box ul li{font-size:0.83rem;color:var(--text-muted);line-height:1.7;}
+.status-row{display:flex;align-items:center;gap:0.8rem;margin-bottom:1rem;padding:0.9rem 1rem;background:var(--cream);border-radius:10px;}
+.status-row label{font-size:0.8rem;color:var(--text-muted);font-weight:500;white-space:nowrap;}
+.status-row select{flex:1;background:#fff;border:1.5px solid rgba(13,31,60,0.12);border-radius:8px;padding:0.55rem 0.8rem;font-size:0.9rem;font-family:'DM Sans',sans-serif;color:var(--navy);outline:none;}
+.callback-row{display:flex;align-items:center;gap:0.8rem;margin-bottom:1.2rem;padding:0.9rem 1rem;background:#fef3c7;border-radius:10px;border:1px solid #fcd34d;}
+.callback-row label{font-size:0.8rem;color:#92400e;font-weight:500;white-space:nowrap;}
+.callback-row input{flex:1;background:#fff;border:1.5px solid #fcd34d;border-radius:8px;padding:0.55rem 0.8rem;font-size:0.9rem;font-family:'DM Sans',sans-serif;color:var(--navy);outline:none;}
+.rating-row{display:flex;align-items:center;gap:0.8rem;margin-bottom:1.2rem;padding:0.9rem 1rem;background:var(--cream);border-radius:10px;}
+.rating-row label{font-size:0.8rem;color:var(--text-muted);font-weight:500;}
+.stars{display:flex;gap:0.3rem;}
+.star-btn{background:none;border:none;font-size:1.4rem;cursor:pointer;color:#d1d5db;transition:color 0.15s;line-height:1;}
+.star-btn.active{color:#f59e0b;}
+.notes-wrap{margin-bottom:1.2rem;}
+.notes-wrap h4{font-family:'Fraunces',serif;font-size:1rem;color:var(--navy);font-weight:600;margin-bottom:0.8rem;}
+.notes-list{display:flex;flex-direction:column;gap:0.5rem;max-height:160px;overflow-y:auto;margin-bottom:0.8rem;}
+.note-item{background:var(--cream);border-radius:8px;padding:0.75rem 1rem;border-left:3px solid var(--gold);}
+.note-text{font-size:0.88rem;color:var(--text);line-height:1.5;}
+.note-meta{font-size:0.73rem;color:var(--text-muted);margin-top:0.25rem;}
+.note-input-row{display:flex;gap:0.6rem;}
+.note-input-row textarea{flex:1;background:var(--cream);border:1.5px solid rgba(13,31,60,0.12);border-radius:8px;padding:0.75rem;font-size:0.88rem;font-family:'DM Sans',sans-serif;color:var(--text);outline:none;resize:none;height:70px;}
+.note-input-row textarea:focus{border-color:var(--gold);}
+.add-note-btn{background:var(--navy);color:var(--gold);border:none;padding:0 1rem;border-radius:8px;font-size:0.85rem;font-weight:600;cursor:pointer;font-family:'DM Sans',sans-serif;white-space:nowrap;}
+.modal-footer{padding:1rem 2rem 1.5rem;display:flex;gap:0.8rem;}
+.modal-footer button{flex:1;padding:0.85rem;border-radius:10px;border:none;font-size:0.9rem;font-weight:600;cursor:pointer;font-family:'DM Sans',sans-serif;}
+.btn-save{background:var(--gold);color:var(--navy);}
+.btn-cancel{background:var(--cream-dark);color:var(--text);}
+.new-lead-alert{background:linear-gradient(135deg,var(--navy),var(--navy-mid));border-radius:16px;padding:1.2rem 1.5rem;margin-bottom:1.5rem;display:none;border:1px solid rgba(201,151,58,0.3);}
+.confetti-container{position:fixed;inset:0;pointer-events:none;z-index:9999;overflow:hidden;}
+.confetti-piece{position:absolute;width:10px;height:10px;top:-10px;animation:confettiFall linear forwards;}
+@keyframes confettiFall{to{transform:translateY(110vh) rotate(720deg);opacity:0;}}
+@media(max-width:768px){
+  .welcome-banner{flex-direction:column;}
+  .stats-grid{grid-template-columns:1fr 1fr;}
+  .info-grid{grid-template-columns:1fr;}
+  .tabs{gap:0.3rem;}
+  .tab-btn{font-size:0.78rem;padding:0.5rem 0.3rem;}
+  .content{padding:1.5rem 4%;}
+}
+</style>
+</head>
+<body>
+
+<!-- LOGIN -->
+<div class="login-screen" id="loginScreen">
+  <div class="login-card">
+    <svg width="50" height="62" viewBox="204 42 272 402" style="margin:0 auto 1rem;display:block;"><defs><linearGradient id="lg" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#243f6e"/><stop offset="100%" stop-color="#0a1828"/></linearGradient><linearGradient id="gg" x1="0" y1="0" x2="1" y2="1"><stop offset="0%" stop-color="#f5d285"/><stop offset="50%" stop-color="#c9973a"/><stop offset="100%" stop-color="#e8b96a"/></linearGradient></defs><path d="M340 42 L476 90 L476 276 Q476 378 340 442 Q204 378 204 276 L204 90 Z" fill="url(#gg)"/><path d="M340 58 L462 102 L462 274 Q462 364 340 422 Q218 364 218 274 L218 102 Z" fill="url(#lg)"/><path d="M316,244 L328,258 L364,216" fill="none" stroke="url(#gg)" stroke-width="11" stroke-linecap="round" stroke-linejoin="round"/></svg>
+    <h2>Agent Portal</h2>
+    <p class="sub">Sign in to access your leads</p>
+    <input type="email" id="portalEmail" placeholder="Your email address" onkeydown="if(event.key==='Enter')doPortalLogin()">
+    <input type="password" id="portalPass" placeholder="Your portal password" onkeydown="if(event.key==='Enter')doPortalLogin()">
+    <button class="login-btn" id="loginBtn" onclick="doPortalLogin()">Sign In →</button>
+    <p class="login-error" id="loginError">Invalid email or password. Please try again.</p>
+    <p style="color:rgba(255,255,255,0.25);font-size:0.78rem;margin-top:1rem;">Need help? Contact <a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="a8c1c6cec7e8c7c6cdcbc9c4c4dbc0c1cdc4cc86cbc7c5">[email&#160;protected]</a></p>
+  </div>
+</div>
+
+<!-- MAIN PORTAL -->
+<div class="main" id="mainPortal">
+  <nav>
+    <div class="nav-logo">
+      <svg width="22" height="26" viewBox="204 42 272 402"><defs><linearGradient id="nlg" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#243f6e"/><stop offset="100%" stop-color="#0a1828"/></linearGradient><linearGradient id="ngg" x1="0" y1="0" x2="1" y2="1"><stop offset="0%" stop-color="#f5d285"/><stop offset="50%" stop-color="#c9973a"/><stop offset="100%" stop-color="#e8b96a"/></linearGradient></defs><path d="M340 42 L476 90 L476 276 Q476 378 340 442 Q204 378 204 276 L204 90 Z" fill="url(#ngg)"/><path d="M340 58 L462 102 L462 274 Q462 364 340 422 Q218 364 218 274 L218 102 Z" fill="url(#nlg)"/></svg>
+      OneCall<span>Shield</span>
+    </div>
+    <div style="display:flex;align-items:center;gap:0.8rem;">
+      <span class="agent-chip" id="agentChip">Agent</span>
+      <button class="logout-btn" onclick="doLogout()">Sign Out</button>
+    </div>
+  </nav>
+
+  <div class="content">
+    <!-- Welcome Banner -->
+    <div class="welcome-banner">
+      <div class="welcome-text">
+        <h2>Welcome back, <span id="agentFirstName">Agent</span>! 👋</h2>
+        <p>Here's your lead dashboard. Contact new leads within the first hour for best results.</p>
+      </div>
+      <div class="welcome-stats">
+        <div class="welcome-stat"><span class="welcome-stat-num gold" id="statTotal">0</span><div class="welcome-stat-label">Total Leads</div></div>
+        <div class="welcome-stat"><span class="welcome-stat-num gold" id="statNew">0</span><div class="welcome-stat-label">New</div></div>
+        <div class="welcome-stat"><span class="welcome-stat-num" style="color:#6dcf9b;" id="statContacted">0</span><div class="welcome-stat-label">Contacted</div></div>
+        <div class="welcome-stat"><span class="welcome-stat-num" style="color:#6dcf9b;" id="statClosed">0</span><div class="welcome-stat-label">Closed 🏆</div></div>
+      </div>
+    </div>
+
+    <!-- New Lead Alert -->
+    <div class="new-lead-alert" id="newLeadAlert" style="display:none;">
+      <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:0.8rem;">
+        <div>
+          <div style="font-family:'Fraunces',serif;color:var(--gold);font-size:0.95rem;font-weight:700;" id="newLeadAlertTitle">🎯 New lead!</div>
+          <div style="color:rgba(255,255,255,0.5);font-size:0.78rem;margin-top:0.15rem;" id="newLeadAlertSub">Contact them now for best results!</div>
+        </div>
+        <button onclick="document.getElementById('newLeadAlert').style.display='none'" style="background:rgba(255,255,255,0.1);color:#fff;border:none;padding:0.5rem 1rem;border-radius:8px;font-size:0.82rem;cursor:pointer;font-family:'DM Sans',sans-serif;">Dismiss</button>
+      </div>
+    </div>
+
+    <!-- Callbacks Alert -->
+    <div class="callbacks-alert" id="callbacksAlert">
+      <h4>⏰ Callbacks Due Today</h4>
+      <div id="callbacksList"></div>
+    </div>
+
+    <!-- Tabs -->
+    <div class="tabs">
+      <button class="tab-btn active" onclick="switchTab('leads',this)">🎯 My Leads</button>
+      <button class="tab-btn" onclick="switchTab('stats',this)">📊 Performance</button>
+      <button class="tab-btn" onclick="switchTab('profile',this)">👤 Profile</button>
+      <button class="tab-btn" onclick="switchTab('licenses',this)">🪪 Licenses</button>
+      <button class="tab-btn" onclick="switchTab('settings',this)">⚙️ Settings</button>
+    </div>
+
+    <!-- LEADS TAB -->
+    <div class="tab-panel active" id="portal-leads">
+      <div class="section-header">
+        <h2>Your Leads</h2>
+        <span style="font-size:0.82rem;color:var(--text-muted);">Click a lead to call and update status</span>
+      </div>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>Consumer</th><th>Email</th><th>Insurance</th><th>Status</th><th>Age</th><th>Callback</th><th>Rating</th><th>Notes</th></tr></thead>
+          <tbody id="leadsTable"></tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- STATS TAB -->
+    <div class="tab-panel" id="portal-stats">
+      <div class="stats-grid">
+        <div class="stat-card"><span class="stat-card-num" id="s_total">0</span><div class="stat-card-label">Total Leads</div></div>
+        <div class="stat-card"><span class="stat-card-num gold" id="s_contacted">0</span><div class="stat-card-label">Contacted</div></div>
+        <div class="stat-card"><span class="stat-card-num green" id="s_closed">0</span><div class="stat-card-label">Policies Sold 🏆</div></div>
+        <div class="stat-card"><span class="stat-card-num gold" id="s_rate">0%</span><div class="stat-card-label">Close Rate</div></div>
+      </div>
+      <div style="background:var(--white);border-radius:16px;padding:1.5rem;border:1px solid var(--border);">
+        <h3 style="font-family:'Fraunces',serif;font-size:1rem;color:var(--navy);margin-bottom:1rem;">Lead Status Breakdown</h3>
+        <div id="statsBreakdown"></div>
+      </div>
+    </div>
+
+    <!-- PROFILE TAB -->
+    <div class="tab-panel" id="portal-profile">
+      <div class="profile-card">
+        <h2>Your Profile</h2>
+
+        <!-- Avatar / Photo -->
+        <div style="text-align:center;margin-bottom:1.5rem;padding-bottom:1.5rem;border-bottom:1px solid var(--cream-dark);">
+          <div style="position:relative;width:90px;margin:0 auto 12px;">
+            <div id="initialsAvatar" style="width:90px;height:90px;border-radius:50%;background:var(--navy);border:3px solid var(--gold);display:flex;align-items:center;justify-content:center;font-family:'Fraunces',serif;font-size:2rem;color:var(--gold);font-weight:700;overflow:hidden;">
+              <img id="profilePhotoImg" src="" alt="" style="width:100%;height:100%;object-fit:cover;display:none;border-radius:50%;">
+              <span id="profileInitials">?</span>
+            </div>
+          </div>
+          <p style="font-size:0.8rem;color:var(--text-muted);margin:0 0 1rem;">This photo and bio appear when consumers are matched with you</p>
+
+          <!-- Photo URL input -->
+          <div style="margin-bottom:0.8rem;">
+            <label style="font-size:0.78rem;font-weight:700;color:var(--navy);text-transform:uppercase;letter-spacing:0.05em;display:block;margin-bottom:0.4rem;">Profile Photo URL</label>
+            <div style="display:flex;gap:0.5rem;">
+              <input type="url" id="photoUrlInput" placeholder="Paste a link to your professional headshot..." style="flex:1;background:var(--cream);border:1.5px solid rgba(13,31,60,0.12);border-radius:8px;padding:0.65rem 0.8rem;font-size:0.88rem;font-family:'DM Sans',sans-serif;outline:none;">
+              <button onclick="savePhotoUrl()" style="background:var(--gold);color:var(--navy);border:none;padding:0.65rem 1.2rem;border-radius:8px;font-weight:700;cursor:pointer;font-family:'DM Sans',sans-serif;white-space:nowrap;font-size:0.85rem;">Save</button>
+            </div>
+            <p style="font-size:0.75rem;color:var(--text-muted);margin:0.3rem 0 0;">Use a LinkedIn photo URL or upload to Google Drive and paste the link.</p>
+          </div>
+
+          <!-- Bio input -->
+          <div style="margin-bottom:0.8rem;">
+            <label style="font-size:0.78rem;font-weight:700;color:var(--navy);text-transform:uppercase;letter-spacing:0.05em;display:block;margin-bottom:0.4rem;">Your Personal Introduction</label>
+            <textarea id="bioInput" placeholder="e.g. Hi, I'm John — I've helped families in New York find the right insurance for over 10 years. I specialize in life and health insurance and I'm here to make this process simple." style="width:100%;background:var(--cream);border:1.5px solid rgba(13,31,60,0.12);border-radius:8px;padding:0.75rem;font-size:0.88rem;font-family:'DM Sans',sans-serif;outline:none;resize:none;height:90px;box-sizing:border-box;"></textarea>
+            <button onclick="saveBio()" style="background:var(--navy);color:var(--gold);border:none;padding:0.6rem 1.2rem;border-radius:8px;font-weight:700;cursor:pointer;font-family:'DM Sans',sans-serif;font-size:0.85rem;margin-top:0.4rem;">Save Introduction</button>
+            <p id="bioSaved" style="color:var(--green);font-size:0.82rem;margin:0.3rem 0 0;display:none;">✅ Saved! Consumers will see this when matched with you.</p>
+          </div>
+
+          <!-- Specialty -->
+          <div>
+            <label style="font-size:0.78rem;font-weight:700;color:var(--navy);text-transform:uppercase;letter-spacing:0.05em;display:block;margin-bottom:0.4rem;">Your Specialty Line</label>
+            <div style="display:flex;gap:0.5rem;">
+              <input type="text" id="specialtyInput" placeholder="e.g. Specializing in Medicare & Senior Health Insurance" style="flex:1;background:var(--cream);border:1.5px solid rgba(13,31,60,0.12);border-radius:8px;padding:0.65rem 0.8rem;font-size:0.88rem;font-family:'DM Sans',sans-serif;outline:none;">
+              <button onclick="saveSpecialty()" style="background:var(--gold);color:var(--navy);border:none;padding:0.65rem 1.2rem;border-radius:8px;font-weight:700;cursor:pointer;font-family:'DM Sans',sans-serif;white-space:nowrap;font-size:0.85rem;">Save</button>
+            </div>
+            <p style="font-size:0.75rem;color:var(--text-muted);margin:0.3rem 0 0;">One line shown to consumers in your introduction email.</p>
+          </div>
+        </div>
+
+        <div class="profile-row"><span>Full Name</span><span id="pName">—</span></div>
+        <div class="profile-row"><span>Agency</span><span id="pAgency">—</span></div>
+        <div class="profile-row"><span>Email</span><span id="pEmail">—</span></div>
+        <div class="profile-row"><span>Phone</span><span id="pPhone">—</span></div>
+        <div class="profile-row"><span>Plan</span><span id="pPlan">—</span></div>
+        <div class="profile-row"><span>Insurance Types</span><span id="pTypes" style="font-size:0.82rem;">—</span></div>
+        <div class="profile-row"><span>Licensed States</span><span id="pStates" style="font-size:0.82rem;">—</span></div>
+      </div>
+    </div>
+
+    <!-- LICENSES TAB -->
+    <div class="tab-panel" id="portal-licenses">
+      <div class="edit-section">
+        <h3>🪪 License Number</h3>
+        <p>Your license number is shown to consumers when you are matched with them.</p>
+        <div style="display:flex;gap:0.6rem;">
+          <input type="text" id="licenseInput" placeholder="e.g. FL-1234567" style="flex:1;background:var(--cream);border:1.5px solid rgba(13,31,60,0.12);border-radius:8px;padding:0.75rem;font-size:0.95rem;font-family:'DM Sans',sans-serif;outline:none;">
+          <button onclick="saveLicense()" style="background:var(--gold);color:var(--navy);border:none;padding:0.75rem 1.5rem;border-radius:8px;font-weight:700;cursor:pointer;font-family:'DM Sans',sans-serif;">Save</button>
+        </div>
+        <p id="licenseSaved" style="color:var(--green);font-size:0.85rem;margin-top:0.5rem;display:none;">✅ License number saved!</p>
+      </div>
+
+      <div class="edit-section">
+        <h3>🛡️ Insurance Types</h3>
+        <p>Select all insurance types you are licensed to sell.</p>
+        <div class="checkbox-grid" id="typeGrid"></div>
+        <button class="save-btn" onclick="saveMyTypes()">💾 Save Insurance Types</button>
+      </div>
+
+      <div class="edit-section">
+        <h3>📍 Licensed States</h3>
+        <p>Select all states where you hold an active insurance license.</p>
+        <div class="checkbox-grid" id="stateGrid"></div>
+        <button class="save-btn" onclick="saveMyStates()" style="margin-top:0.6rem;">💾 Save Licensed States</button>
+      </div>
+    </div>
+
+    <!-- SETTINGS TAB -->
+    <div class="tab-panel" id="portal-settings">
+
+      <!-- Update Email -->
+      <div class="edit-section">
+        <h3>📧 Update Email Address</h3>
+        <p style="font-size:0.85rem;color:var(--text-muted);margin-bottom:0.8rem;">This is the email you use to log in and receive lead notifications.</p>
+        <div style="display:flex;flex-direction:column;gap:0.6rem;">
+          <input type="email" id="newEmailInput" placeholder="Enter new email address" style="background:var(--cream);border:1.5px solid rgba(13,31,60,0.12);border-radius:8px;padding:0.75rem;font-size:0.95rem;font-family:'DM Sans',sans-serif;outline:none;">
+          <input type="email" id="confirmEmailInput" placeholder="Confirm new email address" style="background:var(--cream);border:1.5px solid rgba(13,31,60,0.12);border-radius:8px;padding:0.75rem;font-size:0.95rem;font-family:'DM Sans',sans-serif;outline:none;">
+          <button class="save-btn" onclick="updateEmail()">💾 Update Email</button>
+        </div>
+        <p id="emailUpdateMsg" style="font-size:0.85rem;margin-top:0.5rem;display:none;"></p>
+      </div>
+
+      <!-- Update Phone -->
+      <div class="edit-section">
+        <h3>📞 Update Phone Number</h3>
+        <p style="font-size:0.85rem;color:var(--text-muted);margin-bottom:0.8rem;">Your phone number is shared with consumers when they are matched with you.</p>
+        <div style="display:flex;gap:0.6rem;">
+          <input type="tel" id="newPhoneInput" placeholder="e.g. (845) 555-0100" style="flex:1;background:var(--cream);border:1.5px solid rgba(13,31,60,0.12);border-radius:8px;padding:0.75rem;font-size:0.95rem;font-family:'DM Sans',sans-serif;outline:none;">
+          <button onclick="updatePhone()" style="background:var(--gold);color:var(--navy);border:none;padding:0.75rem 1.5rem;border-radius:8px;font-weight:700;cursor:pointer;font-family:'DM Sans',sans-serif;white-space:nowrap;">Save</button>
+        </div>
+        <p id="phoneUpdateMsg" style="color:var(--green);font-size:0.85rem;margin-top:0.5rem;display:none;">✅ Phone number updated!</p>
+      </div>
+
+      <!-- Update Password -->
+      <div class="edit-section">
+        <h3>🔒 Change Password</h3>
+        <p style="font-size:0.85rem;color:var(--text-muted);margin-bottom:0.8rem;">Choose a strong password at least 8 characters long.</p>
+        <div style="display:flex;flex-direction:column;gap:0.6rem;">
+          <input type="password" id="currentPassInput" placeholder="Current password" style="background:var(--cream);border:1.5px solid rgba(13,31,60,0.12);border-radius:8px;padding:0.75rem;font-size:0.95rem;font-family:'DM Sans',sans-serif;outline:none;">
+          <input type="password" id="newPassInput" placeholder="New password (min 8 characters)" style="background:var(--cream);border:1.5px solid rgba(13,31,60,0.12);border-radius:8px;padding:0.75rem;font-size:0.95rem;font-family:'DM Sans',sans-serif;outline:none;">
+          <input type="password" id="confirmPassInput" placeholder="Confirm new password" style="background:var(--cream);border:1.5px solid rgba(13,31,60,0.12);border-radius:8px;padding:0.75rem;font-size:0.95rem;font-family:'DM Sans',sans-serif;outline:none;">
+          <button class="save-btn" onclick="updatePassword()">🔒 Change Password</button>
+        </div>
+        <p id="passUpdateMsg" style="font-size:0.85rem;margin-top:0.5rem;display:none;"></p>
+      </div>
+
+      <!-- Update Agency Name -->
+      <div class="edit-section">
+        <h3>🏢 Update Agency Name</h3>
+        <p style="font-size:0.85rem;color:var(--text-muted);margin-bottom:0.8rem;">Your agency name appears on consumer match emails.</p>
+        <div style="display:flex;gap:0.6rem;">
+          <input type="text" id="newAgencyInput" placeholder="Enter agency name" style="flex:1;background:var(--cream);border:1.5px solid rgba(13,31,60,0.12);border-radius:8px;padding:0.75rem;font-size:0.95rem;font-family:'DM Sans',sans-serif;outline:none;">
+          <button onclick="updateAgency()" style="background:var(--gold);color:var(--navy);border:none;padding:0.75rem 1.5rem;border-radius:8px;font-weight:700;cursor:pointer;font-family:'DM Sans',sans-serif;white-space:nowrap;">Save</button>
+        </div>
+        <p id="agencyUpdateMsg" style="color:var(--green);font-size:0.85rem;margin-top:0.5rem;display:none;">✅ Agency name updated!</p>
+      </div>
+
+      <!-- Sign Out -->
+      <div class="edit-section">
+        <h3>🚪 Sign Out</h3>
+        <p style="font-size:0.85rem;color:var(--text-muted);margin-bottom:0.8rem;">Sign out of your agent portal on this device.</p>
+        <button onclick="if(confirm('Sign out of your agent portal?')){sessionStorage.removeItem('ocs_portal_session');location.reload();}" style="background:var(--navy);color:#fff;border:none;padding:0.75rem 1.5rem;border-radius:8px;font-weight:700;cursor:pointer;font-family:'DM Sans',sans-serif;">Sign Out →</button>
+      </div>
+
+    </div>
+
+  </div>
+</div>
+
+<!-- LEAD MODAL -->
+<div class="modal-overlay" id="leadModal">
+  <div class="lead-modal">
+    <div class="modal-header">
+      <h3 id="modalTitle">Lead Details</h3>
+      <button class="modal-close" onclick="closeModal()">✕</button>
+    </div>
+    <div class="modal-body">
+      <a id="callBtn" href="#" class="call-btn">📞 Call Consumer Now</a>
+      <div class="info-grid" id="infoGrid"></div>
+      <div class="script-box" id="scriptBox"></div>
+      <div class="status-row">
+        <label>Status:</label>
+        <select id="statusSelect" onchange="checkConfetti()">
+          <option value="new">🆕 New</option>
+          <option value="contacted">📞 Contacted</option>
+          <option value="followup">🔄 Follow Up</option>
+          <option value="closed">✅ Closed — Policy Sold!</option>
+          <option value="lost">❌ Lost</option>
+        </select>
+      </div>
+      <div class="callback-row">
+        <label>⏰ Schedule Callback:</label>
+        <input type="datetime-local" id="callbackInput">
+      </div>
+      <div class="rating-row">
+        <label>Lead Quality:</label>
+        <div class="stars" id="starRating">
+          <button class="star-btn" onclick="setRating(1)">★</button>
+          <button class="star-btn" onclick="setRating(2)">★</button>
+          <button class="star-btn" onclick="setRating(3)">★</button>
+          <button class="star-btn" onclick="setRating(4)">★</button>
+          <button class="star-btn" onclick="setRating(5)">★</button>
+        </div>
+        <span id="ratingLabel" style="font-size:0.82rem;color:var(--text-muted);margin-left:0.5rem;"></span>
+      </div>
+      <div class="notes-wrap">
+        <h4>📝 Call Notes</h4>
+        <div class="notes-list" id="notesList"></div>
+        <div class="note-input-row">
+          <textarea id="noteInput" placeholder="Add a note..."></textarea>
+          <button class="add-note-btn" onclick="addNote()">+ Add</button>
+        </div>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn-cancel" onclick="closeModal()">Cancel</button>
+      <button class="btn-save" onclick="saveLeadChanges()">💾 Save Changes</button>
+    </div>
+  </div>
+</div>
+
+<div class="confetti-container" id="confettiContainer"></div>
+
+<script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script>
+// ════════════════════════════════════════════════════════════════
+// FIREBASE
+// ════════════════════════════════════════════════════════════════
+firebase.initializeApp({
+  apiKey: "AIzaSyBoEo4t1s-yPmVYo2fCRzZWnD_ApS2mUMo",
+  authDomain: "onecallshield.firebaseapp.com",
+  databaseURL: "https://onecallshield-default-rtdb.firebaseio.com",
+  projectId: "onecallshield",
+  storageBucket: "onecallshield.firebasestorage.app",
+  messagingSenderId: "1020973095687",
+  appId: "1:1020973095687:web:713cf8942241b59e3ac3a2"
+});
+const db = firebase.database();
+
+// ════════════════════════════════════════════════════════════════
+// CONSTANTS
+// ════════════════════════════════════════════════════════════════
+const ALL_STATES=['AL','AK','AZ','AR','CA','CO','CT','DE','FL','GA','HI','ID','IL','IN','IA','KS','KY','LA','ME','MD','MA','MI','MN','MS','MO','MT','NE','NV','NH','NJ','NM','NY','NC','ND','OH','OK','OR','PA','RI','SC','SD','TN','TX','UT','VT','VA','WA','WV','WI','WY'];
+const ALL_TYPES=['Auto Insurance','Homeowners Insurance','Renters Insurance','Life Insurance','Health Insurance','Medicare','Other'];
+const RATING_LABELS={1:'Poor',2:'Fair',3:'Good',4:'Very Good',5:'Excellent'};
+const SCRIPTS={
+  'Auto Insurance':{opener:"Hi [Name], this is [Your Name] calling about your auto insurance quote. I can usually find people a better rate in just a few minutes. Is now a good time?",questions:['What vehicle(s) are you looking to insure?','Any recent accidents or violations in the last 3 years?','Are you currently insured?','Are you looking for liability only or full coverage?']},
+  'Homeowners Insurance':{opener:"Hi [Name], this is [Your Name] calling about your homeowners insurance request. I specialize in getting homeowners the best coverage at the best price. Is now a good time?",questions:['When did you purchase your home?','Do you have a mortgage lender requiring coverage?','Have you had any claims in the last 5 years?','Are you bundling with auto insurance?']},
+  'Renters Insurance':{opener:"Hi [Name], I'm calling about your renters insurance inquiry. Great news — renters insurance is very affordable and I can usually get people covered same day. Is this a good time?",questions:['How much personal property would you estimate you own?','Do you need liability coverage?','Does your landlord require a specific coverage amount?','Are you interested in bundling with auto?']},
+  'Life Insurance':{opener:"Hi [Name], this is [Your Name] — I specialize in life insurance and I'm reaching out about your inquiry. Do you have a few minutes?",questions:['Are you looking for term or whole life?','What coverage amount are you considering?','Is this to protect income, pay off debts, or leave a legacy?','Have you had any major health changes recently?']},
+  'Health Insurance':{opener:"Hi [Name], I'm calling about your health insurance quote. I work with multiple carriers so I can shop the market for you. Is now a good time?",questions:['Is this for just yourself or your family?','Do you have any preferred doctors or medications?','Low monthly premium or low deductible?','Do you currently have any coverage?']},
+  'Medicare':{opener:"Hi [Name], this is [Your Name] — I'm a licensed Medicare specialist. I help people navigate Medicare options at absolutely no cost to them. Do you have a few minutes?",questions:['Are you turning 65 soon or already enrolled?','Medicare Supplement or Medicare Advantage?','Any preferred doctors or specialists?','Do you take any regular medications?']},
+  'Other':{opener:"Hi [Name], this is [Your Name] calling about your insurance inquiry. I want to make sure I understand exactly what you need. Is now a good time?",questions:['What type of coverage are you looking for?','Have you had this type of insurance before?','Is there a specific timeline?','What is most important — price, coverage, or a specific carrier?']}
+};
+
+// ════════════════════════════════════════════════════════════════
+// STATE
+// ════════════════════════════════════════════════════════════════
+let currentAgent = null;
+let currentLeadId = null;
+let myLeads = [];
+let currentRating = 0;
+
+// ════════════════════════════════════════════════════════════════
+// LOGIN — reads from Firebase, works on any device
+// ════════════════════════════════════════════════════════════════
+function doPortalLogin() {
+  const email = document.getElementById('portalEmail').value.trim().toLowerCase();
+  const pass = document.getElementById('portalPass').value.trim();
+  const err = document.getElementById('loginError');
+  const btn = document.getElementById('loginBtn');
+  err.style.display = 'none';
+  if(!email || !pass) { err.textContent = 'Please enter your email and password.'; err.style.display = 'block'; return; }
+
+  btn.textContent = 'Signing in...';
+  btn.disabled = true;
+
+  db.ref('agents').once('value').then(snap => {
+    const data = snap.val();
+    btn.textContent = 'Sign In →';
+    btn.disabled = false;
+
+    if(!data) { err.textContent = 'Invalid email or password.'; err.style.display = 'block'; return; }
+
+    const agent = Object.values(data).find(a =>
+      a.email && a.email.toLowerCase() === email &&
+      a.portalPassword === pass &&
+      a.status === 'approved'
+    );
+
+    if(agent) {
+      // Store session for 7 days
+      sessionStorage.setItem('ocs_portal_session', JSON.stringify({
+        agent,
+        expires: Date.now() + (7 * 24 * 60 * 60 * 1000)
+      }));
+      startPortal(agent);
+    } else {
+      err.textContent = 'Invalid email or password. Please try again.';
+      err.style.display = 'block';
+    }
+  }).catch(e => {
+    btn.textContent = 'Sign In →';
+    btn.disabled = false;
+    err.textContent = 'Connection error. Please try again.';
+    err.style.display = 'block';
+  });
+}
+
+function startPortal(agent) {
+  currentAgent = agent;
+  document.getElementById('loginScreen').style.display = 'none';
+  document.getElementById('mainPortal').style.display = 'block';
+  loadPortal();
+}
+
+// Auto-login if valid session exists — runs after page fully loads
+window.addEventListener('load', function checkPortalSession() {
+  try {
+    const raw = sessionStorage.getItem('ocs_portal_session');
+    if(!raw) return;
+    const session = JSON.parse(raw);
+    if(session.agent && session.expires > Date.now()) {
+      startPortal(session.agent);
+    } else {
+      sessionStorage.removeItem('ocs_portal_session');
+    }
+  } catch(e) {
+    sessionStorage.removeItem('ocs_portal_session');
+  }
+});
+
+// ════════════════════════════════════════════════════════════════
+// LOAD PORTAL
+// ════════════════════════════════════════════════════════════════
+function loadPortal() {
+  const a = currentAgent;
+  document.getElementById('agentFirstName').textContent = a.firstName;
+  document.getElementById('agentChip').textContent = a.firstName + ' ' + a.lastName;
+  document.getElementById('pName').textContent = a.firstName + ' ' + a.lastName;
+  document.getElementById('pAgency').textContent = a.agency || '—';
+  document.getElementById('pEmail').textContent = a.email;
+  document.getElementById('pPhone').textContent = a.phone || '—';
+  document.getElementById('pPlan').textContent = a.plan === 'monthly' ? 'Monthly Subscription' : 'Pay Per Lead';
+  document.getElementById('pTypes').textContent = (a.insuranceTypes||[]).join(', ') || '—';
+  document.getElementById('pStates').textContent = (a.states||[]).join(', ') || '—';
+
+  // Initials avatar
+  const initials = ((a.firstName||'?')[0] + (a.lastName||'?')[0]).toUpperCase();
+  // Photo or initials
+  const photoImg = document.getElementById('profilePhotoImg');
+  const initialsSpan = document.getElementById('profileInitials');
+  if(a.photoUrl) {
+    photoImg.src = a.photoUrl;
+    photoImg.style.display = 'block';
+    initialsSpan.style.display = 'none';
+  } else {
+    initialsSpan.textContent = initials;
+    photoImg.style.display = 'none';
+    initialsSpan.style.display = 'flex';
+  }
+
+  // Bio, specialty, photo inputs
+  if(a.bio) document.getElementById('bioInput').value = a.bio;
+  if(a.specialty) document.getElementById('specialtyInput').value = a.specialty;
+  if(a.photoUrl) document.getElementById('photoUrlInput').value = a.photoUrl;
+
+  // License number
+  if(a.licenseNumber) document.getElementById('licenseInput').value = a.licenseNumber;
+  // Pre-populate settings fields
+  if(a.phone) document.getElementById('newPhoneInput').value = a.phone;
+  if(a.agency) document.getElementById('newAgencyInput').value = a.agency;
+
+  // Checkboxes
+  document.getElementById('typeGrid').innerHTML = ALL_TYPES.map(t =>
+    `<label class="check-pill"><input type="checkbox" value="${t}" ${(a.insuranceTypes||[]).includes(t)?'checked':''}> ${t}</label>`
+  ).join('');
+  document.getElementById('stateGrid').innerHTML = ALL_STATES.map(s =>
+    `<label class="check-pill"><input type="checkbox" value="${s}" ${(a.states||[]).includes(s)?'checked':''}> ${s}</label>`
+  ).join('');
+
+  // Load leads from Firebase — real-time
+  loadMyLeads();
+}
+
+// ════════════════════════════════════════════════════════════════
+// LOAD LEADS — reads from Firebase, works on any device
+// ════════════════════════════════════════════════════════════════
+function loadMyLeads() {
+  // Listen for real-time updates
+  db.ref('leads').on('value', snap => {
+    const data = snap.val();
+    if(!data) { myLeads = []; }
+    else {
+      const all = Object.values(data);
+      myLeads = all.filter(l =>
+        l.agentEmail === currentAgent.email ||
+        l.matchedAgentId === currentAgent.id ||
+        (l.agentFirstName === currentAgent.firstName && l.agentLastName === currentAgent.lastName && l.status === 'matched')
+      ).sort((a,b) => new Date(b.matchedAt||b.submittedAt) - new Date(a.matchedAt||a.submittedAt));
+    }
+    updateStats();
+    renderTable();
+    checkCallbacks();
+    checkNewLeads();
+  });
+}
+
+// ════════════════════════════════════════════════════════════════
+// STATS
+// ════════════════════════════════════════════════════════════════
+function updateStats() {
+  const total = myLeads.length;
+  const newLeadsCount = myLeads.filter(l => !l.agentStatus || l.agentStatus === 'new').length;
+  const contacted = myLeads.filter(l => l.agentStatus && l.agentStatus !== 'new' && l.agentStatus !== 'lost').length;
+  const closed = myLeads.filter(l => l.agentStatus === 'closed').length;
+  const rate = total > 0 ? Math.round((closed/total)*100) : 0;
+
+  document.getElementById('statTotal').textContent = total;
+  document.getElementById('statNew').textContent = newLeadsCount;
+  document.getElementById('statContacted').textContent = contacted;
+  document.getElementById('statClosed').textContent = closed;
+  document.getElementById('s_total').textContent = total;
+  document.getElementById('s_contacted').textContent = contacted;
+  document.getElementById('s_closed').textContent = closed;
+  document.getElementById('s_rate').textContent = rate + '%';
+
+  const statuses = ['new','contacted','followup','closed','lost'];
+  const labels = {new:'🆕 New',contacted:'📞 Contacted',followup:'🔄 Follow Up',closed:'✅ Closed',lost:'❌ Lost'};
+  document.getElementById('statsBreakdown').innerHTML = statuses.map(s => {
+    const count = myLeads.filter(l => (l.agentStatus||'new') === s).length;
+    const pct = total > 0 ? Math.round((count/total)*100) : 0;
+    return `<div style="display:flex;align-items:center;gap:1rem;padding:0.6rem 0;border-bottom:1px solid var(--cream-dark);">
+      <span style="width:120px;font-size:0.88rem;color:var(--text-muted);">${labels[s]}</span>
+      <div style="flex:1;background:var(--cream);border-radius:100px;height:8px;overflow:hidden;">
+        <div style="width:${pct}%;background:var(--gold);height:100%;border-radius:100px;transition:width 0.5s;"></div>
+      </div>
+      <span style="font-family:'Fraunces',serif;font-size:1rem;font-weight:700;color:var(--navy);width:40px;text-align:right;">${count}</span>
+    </div>`;
+  }).join('');
+}
+
+function checkNewLeads() {
+  const newLeads = myLeads.filter(l => !l.agentStatus || l.agentStatus === 'new');
+  const alert = document.getElementById('newLeadAlert');
+  if(!newLeads.length) { alert.style.display = 'none'; return; }
+  alert.style.display = 'block';
+  if(newLeads.length === 1) {
+    document.getElementById('newLeadAlertTitle').textContent = '🎯 New lead — ' + newLeads[0].firstName + ' ' + newLeads[0].lastName;
+    document.getElementById('newLeadAlertSub').textContent = newLeads[0].insuranceType + ' · Call now!';
+  } else {
+    document.getElementById('newLeadAlertTitle').textContent = '🎯 ' + newLeads.length + ' new leads waiting!';
+    document.getElementById('newLeadAlertSub').textContent = 'Contact them now — the sooner you call, the higher your close rate.';
+  }
+}
+
+function checkCallbacks() {
+  const now = new Date(), today = now.toDateString();
+  const due = myLeads.filter(l => l.callbackDate && (new Date(l.callbackDate).toDateString()===today || new Date(l.callbackDate)<now));
+  const alert = document.getElementById('callbacksAlert');
+  if(!due.length) { alert.style.display = 'none'; return; }
+  alert.style.display = 'block';
+  document.getElementById('callbacksList').innerHTML = due.map(l =>
+    `<div class="callback-item" onclick="openLeadModal('${l.id}')">
+      <span style="font-weight:600;color:var(--navy);">${l.firstName} ${l.lastName} — ${l.insuranceType}</span>
+      <span style="color:var(--gold);font-weight:600;font-size:0.82rem;">${new Date(l.callbackDate).toLocaleTimeString([],{hour:'2-digit',minute:'2-digit'})}</span>
+    </div>`
+  ).join('');
+}
+
+// ════════════════════════════════════════════════════════════════
+// TABLE
+// ════════════════════════════════════════════════════════════════
+function leadAge(d) {
+  const diff = Date.now() - new Date(d).getTime(), hrs = Math.floor(diff/3600000), days = Math.floor(diff/86400000);
+  if(hrs<1) return {text:'Just now',cls:'age-fresh'};
+  if(hrs<6) return {text:hrs+'h ago',cls:'age-fresh'};
+  if(hrs<24) return {text:hrs+'h ago',cls:'age-warm'};
+  if(days<3) return {text:days+'d ago',cls:'age-warm'};
+  return {text:days+'d ago',cls:'age-old'};
+}
+
+function badge(s) {
+  const cls={new:'badge-new',contacted:'badge-contacted',followup:'badge-followup',closed:'badge-closed',lost:'badge-lost'};
+  const lbl={new:'🆕 New',contacted:'📞 Contacted',followup:'🔄 Follow Up',closed:'✅ Closed',lost:'❌ Lost'};
+  return `<span class="badge ${cls[s]||'badge-new'}">${lbl[s]||'🆕 New'}</span>`;
+}
+
+function renderTable() {
+  const tb = document.getElementById('leadsTable');
+  if(!myLeads.length) { tb.innerHTML = '<tr><td colspan="8" style="text-align:center;color:var(--text-muted);padding:3rem;">No leads assigned yet — check back soon!</td></tr>'; return; }
+  tb.innerHTML = myLeads.map(l => {
+    const age = leadAge(l.matchedAt||l.submittedAt);
+    const stars = '★'.repeat(l.agentRating||0) + '☆'.repeat(5-(l.agentRating||0));
+    const cb = l.callbackDate ? new Date(l.callbackDate).toLocaleDateString() : '—';
+    return `<tr class="lead-row" onclick="openLeadModal('${l.id}')">
+      <td><strong>${l.firstName} ${l.lastName}</strong><br><span style="font-size:0.75rem;color:var(--text-muted);">${l.zip} · Age ${l.age||'?'}</span></td>
+      <td style="font-size:0.82rem;">${l.email||'—'}${l.email?`<button class="copy-btn" onclick="event.stopPropagation();copyText('${l.email}')">Copy</button>`:''}</td>
+      <td>${l.insuranceType}</td>
+      <td>${badge(l.agentStatus||'new')}</td>
+      <td class="${age.cls}">${age.text}</td>
+      <td style="font-size:0.82rem;color:var(--text-muted);">${cb}</td>
+      <td style="color:#f59e0b;font-size:0.85rem;">${stars}</td>
+      <td style="color:var(--text-muted);font-size:0.82rem;">${(l.agentNotes||[]).length?'📝'+(l.agentNotes||[]).length:'—'}</td>
+    </tr>`;
+  }).join('');
+}
+
+function copyText(t) { if(!t)return; navigator.clipboard.writeText(t).then(()=>alert('✅ Copied!')).catch(()=>{}); }
+
+// ════════════════════════════════════════════════════════════════
+// LEAD MODAL
+// ════════════════════════════════════════════════════════════════
+function openLeadModal(id) {
+  currentLeadId = id;
+  currentRating = 0;
+  const l = myLeads.find(x => x.id === id);
+  if(!l) return;
+
+  document.getElementById('modalTitle').textContent = l.firstName + ' ' + l.lastName + ' — ' + l.insuranceType;
+  document.getElementById('callBtn').href = 'tel:' + l.phone;
+  document.getElementById('callBtn').textContent = '📞 Call ' + l.firstName + ' Now — ' + l.phone;
+
+  document.getElementById('infoGrid').innerHTML = `
+    <div class="info-item"><div class="info-label">Full Name</div><div class="info-value">${l.firstName} ${l.lastName}</div></div>
+    <div class="info-item"><div class="info-label">Phone</div><div class="info-value"><a href="tel:${l.phone}">${l.phone}</a></div></div>
+    <div class="info-item"><div class="info-label">Email</div><div class="info-value" style="font-size:0.82rem;">${l.email||'—'}${l.email?`<button class="copy-btn" onclick="copyText('${l.email}')">Copy</button>`:''}</div></div>
+    <div class="info-item"><div class="info-label">Age</div><div class="info-value">${l.age||'—'}</div></div>
+    <div class="info-item"><div class="info-label">ZIP Code</div><div class="info-value">${l.zip}</div></div>
+    <div class="info-item"><div class="info-label">Insurance</div><div class="info-value gold">${l.insuranceType}</div></div>
+    <div class="info-item"><div class="info-label">Best Call Time</div><div class="info-value">${l.contactTime||'Anytime'}</div></div>
+    <div class="info-item"><div class="info-label">TCPA Consent</div><div class="info-value" style="font-size:0.8rem;color:var(--green);">✅ ${new Date(l.submittedAt).toLocaleString()}</div></div>
+    ${l.lifeType?`<div class="info-item"><div class="info-label">Life Type</div><div class="info-value">${l.lifeType}</div></div><div class="info-item"><div class="info-label">Face Amount</div><div class="info-value">${l.faceAmount||'—'}</div></div>`:``}`;
+
+  const script = SCRIPTS[l.insuranceType] || SCRIPTS['Other'];
+  document.getElementById('scriptBox').innerHTML = `
+    <h5>💬 Opening Script</h5>
+    <p style="font-style:italic;">"${script.opener}"</p>
+    <h5 style="margin-top:0.8rem;">🎯 Key Questions</h5>
+    <ul>${script.questions.map(q=>`<li>${q}</li>`).join('')}</ul>`;
+
+  document.getElementById('statusSelect').value = l.agentStatus || 'new';
+  document.getElementById('callbackInput').value = l.callbackDate ? new Date(l.callbackDate).toISOString().slice(0,16) : '';
+  currentRating = l.agentRating || 0;
+  updateStars(currentRating);
+  renderNotes(l.agentNotes||[]);
+  document.getElementById('noteInput').value = '';
+
+  // Show enhanced optional consumer data if it exists
+  if(l.enhanced) {
+    const skip = ['insuranceType','submittedAt'];
+    const eKeys = Object.keys(l.enhanced).filter(k => !skip.includes(k));
+    if(eKeys.length) {
+      const labels = {
+        'ev_year':'Vehicle Year','ev_make':'Vehicle Make','ev_model':'Vehicle Model','ev_mileage':'Approximate Mileage','ev_violations':'Violations Last 3 Years','ev_current_insurer':'Current Insurer','ev_current_rate':'Current Monthly Rate','ev_coverage':'Coverage Level Desired',
+        'eh_year_built':'Year Built','eh_sqft':'Square Footage','eh_value':'Home Value','eh_roof':'Roof Age','eh_construction':'Construction Type','eh_claims':'Claims Last 5 Years','eh_current_insurer':'Current Insurer','eh_current_rate':'Current Annual Premium',
+        'er_property_value':'Value of Belongings','er_unit_type':'Rental Type','er_current_insurer':'Current Renters Insurance','er_special_items':'High Value Items',
+        'el_term_length':'Preferred Term Length','el_tobacco':'Tobacco Use','el_occupation':'Occupation','el_beneficiary':'Primary Beneficiary','el_existing':'Existing Coverage','el_riders':'Riders Interested In',
+        'eh2_household':'Household Size','eh2_income':'Annual Income','eh2_current':'Current Coverage','eh2_deductible':'Preferred Deductible','eh2_doctors':'Preferred Doctors','eh2_medications':'Prescription Medications',
+        'em_current':'Current Medicare Status','em_plan_type':'Plan Type Interest','em_doctors':'Doctors to Keep','em_medications':'Prescription Medications','em_budget':'Monthly Budget','em_concerns':'Biggest Concern',
+        'eo_description':'What They Need','eo_current':'Current Coverage','eo_budget':'Monthly Budget','eo_urgency':'How Soon Needed'
+      };
+      let extraHtml = '<div class="info-item" style="grid-column:1/-1;background:rgba(201,151,58,0.08);border-radius:10px;padding:12px 14px;border:1px solid rgba(201,151,58,0.25);margin-top:4px;">';
+      extraHtml += '<div class="info-label" style="color:var(--gold);font-size:0.75rem;margin-bottom:8px;">⭐ ADDITIONAL INFO FROM CONSUMER</div>';
+      extraHtml += '<div style="display:grid;gap:4px;">';
+      eKeys.forEach(k => {
+        const label = labels[k] || k.replace(/_/g,' ').replace(/^e[a-z0-9]+_/,'');
+        extraHtml += '<div style="font-size:0.85rem;"><span style="color:var(--text-muted);font-weight:600;">'+label+':</span> <span style="color:var(--text);">'+l.enhanced[k]+'</span></div>';
+      });
+      extraHtml += '</div></div>';
+      document.getElementById('infoGrid').innerHTML += extraHtml;
+    }
+  }
+
+  document.getElementById('leadModal').classList.add('open');
+}
+
+function checkConfetti() { if(document.getElementById('statusSelect').value==='closed') launchConfetti(); }
+
+function launchConfetti() {
+  const container = document.getElementById('confettiContainer');
+  const colors = ['#c9973a','#0d1f3c','#2d7a4f','#e8b96a','#fff','#f59e0b'];
+  for(let i=0;i<80;i++) {
+    const p = document.createElement('div');
+    p.className = 'confetti-piece';
+    p.style.cssText = `left:${Math.random()*100}%;background:${colors[Math.floor(Math.random()*colors.length)]};border-radius:${Math.random()>.5?'50%':'2px'};width:${6+Math.random()*8}px;height:${6+Math.random()*8}px;animation-duration:${2+Math.random()*2}s;animation-delay:${Math.random()*.5}s;`;
+    container.appendChild(p);
+    setTimeout(()=>p.remove(),4000);
+  }
+}
+
+function setRating(n) { currentRating = n; updateStars(n); }
+function updateStars(n) {
+  document.querySelectorAll('.star-btn').forEach((btn,i) => btn.classList.toggle('active', i<n));
+  document.getElementById('ratingLabel').textContent = n ? RATING_LABELS[n] : 'Not rated';
+}
+
+function renderNotes(notes) {
+  const nl = document.getElementById('notesList');
+  if(!notes.length) { nl.innerHTML = '<p style="color:var(--text-muted);font-size:0.85rem;text-align:center;padding:0.8rem;">No notes yet</p>'; return; }
+  nl.innerHTML = notes.slice().reverse().map(n => `<div class="note-item"><div class="note-text">${n.text}</div><div class="note-meta">${n.date}</div></div>`).join('');
+}
+
+function addNote() {
+  const text = document.getElementById('noteInput').value.trim();
+  if(!text) return;
+  const lead = myLeads.find(l => l.id === currentLeadId);
+  if(!lead) return;
+  const notes = lead.agentNotes || [];
+  notes.push({text, date: new Date().toLocaleString()});
+  // Save to Firebase
+  db.ref('leads/' + currentLeadId + '/agentNotes').set(notes);
+  renderNotes(notes);
+  document.getElementById('noteInput').value = '';
+}
+
+function saveLeadChanges() {
+  const status = document.getElementById('statusSelect').value;
+  const callbackVal = document.getElementById('callbackInput').value;
+  // Save to Firebase — syncs everywhere
+  db.ref('leads/' + currentLeadId).update({
+    agentStatus: status,
+    callbackDate: callbackVal ? new Date(callbackVal).toISOString() : '',
+    agentRating: currentRating
+  });
+  if(status === 'closed') launchConfetti();
+  closeModal();
+  alert('✅ Lead updated!' + (status==='closed'?' 🎉 Congratulations!':''));
+}
+
+function closeModal() {
+  document.getElementById('leadModal').classList.remove('open');
+  currentLeadId = null;
+}
+document.getElementById('leadModal').addEventListener('click', e => { if(e.target===document.getElementById('leadModal')) closeModal(); });
+
+// ════════════════════════════════════════════════════════════════
+// PROFILE SAVES
+// ════════════════════════════════════════════════════════════════
+function saveMyTypes() {
+  const checked = [...document.querySelectorAll('#typeGrid input:checked')].map(i=>i.value);
+  if(!checked.length) { alert('Select at least one type.'); return; }
+  db.ref('agents/' + currentAgent.id + '/insuranceTypes').set(checked);
+  currentAgent.insuranceTypes = checked;
+  document.getElementById('pTypes').textContent = checked.join(', ');
+  alert('✅ Insurance types saved!');
+}
+
+function saveMyStates() {
+  const checked = [...document.querySelectorAll('#stateGrid input:checked')].map(i=>i.value);
+  if(!checked.length) { alert('Select at least one state.'); return; }
+  db.ref('agents/' + currentAgent.id + '/states').set(checked);
+  currentAgent.states = checked;
+  document.getElementById('pStates').textContent = checked.join(', ');
+  alert('✅ States saved!');
+}
+
+function saveLicense() {
+  const license = document.getElementById('licenseInput').value.trim();
+  if(!license) { alert('Please enter your license number.'); return; }
+  db.ref('agents/' + currentAgent.id + '/licenseNumber').set(license);
+  currentAgent.licenseNumber = license;
+  document.getElementById('licenseSaved').style.display = 'block';
+  setTimeout(() => document.getElementById('licenseSaved').style.display = 'none', 3000);
+}
+
+// ════════════════════════════════════════════════════════════════
+// TABS & LOGOUT
+// ════════════════════════════════════════════════════════════════
+function switchTab(name, btn) {
+  document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+  document.getElementById('portal-'+name).classList.add('active');
+  btn.classList.add('active');
+}
+
+function doLogout() {
+  sessionStorage.removeItem('ocs_portal_session');
+  currentAgent = null;
+  myLeads = [];
+  db.ref('leads').off();
+  document.getElementById('mainPortal').style.display = 'none';
+  document.getElementById('loginScreen').style.display = 'flex';
+  document.getElementById('portalEmail').value = '';
+  document.getElementById('portalPass').value = '';
+}
+
+// ── SETTINGS FUNCTIONS ────────────────────────────────────────────────────────
+function updateEmail() {
+  const newEmail = document.getElementById('newEmailInput').value.trim();
+  const confirmEmail = document.getElementById('confirmEmailInput').value.trim();
+  const msg = document.getElementById('emailUpdateMsg');
+  if(!newEmail || !newEmail.includes('@')) {
+    msg.textContent = 'Please enter a valid email address.';
+    msg.style.color = 'var(--red)'; msg.style.display = 'block'; return;
+  }
+  if(newEmail !== confirmEmail) {
+    msg.textContent = 'Email addresses do not match.';
+    msg.style.color = 'var(--red)'; msg.style.display = 'block'; return;
+  }
+  if(newEmail === currentAgent.email) {
+    msg.textContent = 'This is already your current email.';
+    msg.style.color = 'var(--red)'; msg.style.display = 'block'; return;
+  }
+  db.ref('agents/' + currentAgent.id + '/email').set(newEmail);
+  currentAgent.email = newEmail;
+  document.getElementById('pEmail').textContent = newEmail;
+  document.getElementById('newEmailInput').value = '';
+  document.getElementById('confirmEmailInput').value = '';
+  msg.textContent = '✅ Email updated! Use your new email to log in next time.';
+  msg.style.color = 'var(--green)'; msg.style.display = 'block';
+  setTimeout(function(){ msg.style.display = 'none'; }, 4000);
+}
+
+function updatePhone() {
+  const phone = document.getElementById('newPhoneInput').value.trim();
+  const msg = document.getElementById('phoneUpdateMsg');
+  if(!phone || phone.replace(/[^0-9]/g,'').length < 10) {
+    alert('Please enter a valid 10-digit phone number.'); return;
+  }
+  db.ref('agents/' + currentAgent.id + '/phone').set(phone);
+  currentAgent.phone = phone;
+  document.getElementById('pPhone').textContent = phone;
+  msg.style.display = 'block';
+  setTimeout(function(){ msg.style.display = 'none'; }, 3000);
+}
+
+function updatePassword() {
+  const current = document.getElementById('currentPassInput').value.trim();
+  const newPass = document.getElementById('newPassInput').value.trim();
+  const confirm = document.getElementById('confirmPassInput').value.trim();
+  const msg = document.getElementById('passUpdateMsg');
+  if(!current) {
+    msg.textContent = 'Please enter your current password.';
+    msg.style.color = 'var(--red)'; msg.style.display = 'block'; return;
+  }
+  if(current !== currentAgent.password) {
+    msg.textContent = 'Current password is incorrect.';
+    msg.style.color = 'var(--red)'; msg.style.display = 'block'; return;
+  }
+  if(!newPass || newPass.length < 8) {
+    msg.textContent = 'New password must be at least 8 characters.';
+    msg.style.color = 'var(--red)'; msg.style.display = 'block'; return;
+  }
+  if(newPass !== confirm) {
+    msg.textContent = 'Passwords do not match.';
+    msg.style.color = 'var(--red)'; msg.style.display = 'block'; return;
+  }
+  db.ref('agents/' + currentAgent.id + '/password').set(newPass);
+  currentAgent.password = newPass;
+  document.getElementById('currentPassInput').value = '';
+  document.getElementById('newPassInput').value = '';
+  document.getElementById('confirmPassInput').value = '';
+  msg.textContent = '✅ Password updated successfully!';
+  msg.style.color = 'var(--green)'; msg.style.display = 'block';
+  setTimeout(function(){ msg.style.display = 'none'; }, 4000);
+}
+
+function updateAgency() {
+  const agency = document.getElementById('newAgencyInput').value.trim();
+  const msg = document.getElementById('agencyUpdateMsg');
+  if(!agency) { alert('Please enter your agency name.'); return; }
+  db.ref('agents/' + currentAgent.id + '/agency').set(agency);
+  currentAgent.agency = agency;
+  document.getElementById('pAgency').textContent = agency;
+  msg.style.display = 'block';
+  setTimeout(function(){ msg.style.display = 'none'; }, 3000);
+}
+</script>
+</body>
+</html>
