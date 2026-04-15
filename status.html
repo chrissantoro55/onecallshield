@@ -1,0 +1,339 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<!-- Google tag (gtag.js) -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=AW-18074640566"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+  gtag('config', 'AW-18074640566');
+</script>
+
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Your Request Status — OneCallShield</title>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,600;0,9..144,700&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{--navy:#0d1f3c;--navy-mid:#1a3460;--gold:#c9973a;--gold-light:#e8b96a;--cream:#f8f4ee;--cream-dark:#ede7dc;--white:#fff;--text:#1a1a2e;--text-muted:#5a6480;--green:#2d7a4f;--green-light:#e8f5ee;--red:#c0392b;}
+*{margin:0;padding:0;box-sizing:border-box;}
+body{font-family:'DM Sans',sans-serif;background:var(--cream);color:var(--text);min-height:100vh;}
+
+/* NAV */
+.nav{background:var(--navy);padding:0 5%;height:64px;display:flex;align-items:center;justify-content:space-between;}
+.nav-logo{font-family:'Fraunces',serif;font-size:1.1rem;font-weight:700;color:#fff;text-decoration:none;display:flex;align-items:center;gap:0.5rem;}
+.nav-logo span{color:var(--gold);}
+.nav-back{color:rgba(255,255,255,0.5);font-size:0.85rem;text-decoration:none;transition:color 0.2s;}
+.nav-back:hover{color:#fff;}
+
+/* MAIN */
+.main{max-width:580px;margin:0 auto;padding:40px 20px 80px;}
+
+/* LOADING */
+.loading{text-align:center;padding:80px 20px;}
+.loading-spinner{width:40px;height:40px;border:3px solid var(--cream-dark);border-top-color:var(--gold);border-radius:50%;animation:spin 0.8s linear infinite;margin:0 auto 16px;}
+@keyframes spin{to{transform:rotate(360deg)}}
+
+/* NOT FOUND */
+.not-found{text-align:center;padding:80px 20px;}
+
+/* STATUS CARD */
+.status-card{background:var(--white);border-radius:20px;overflow:hidden;box-shadow:0 4px 24px rgba(13,31,60,0.08);}
+
+/* HEADER */
+.status-header{background:var(--navy);padding:32px 28px;text-align:center;}
+.status-header-icon{width:56px;height:56px;background:var(--gold);border-radius:50%;display:flex;align-items:center;justify-content:center;margin:0 auto 14px;font-size:24px;}
+.status-header-title{font-family:'Fraunces',serif;font-size:1.4rem;font-weight:700;color:#fff;margin-bottom:6px;}
+.status-header-sub{font-size:0.85rem;color:rgba(255,255,255,0.45);}
+
+/* GOLD BAR */
+.gold-bar{height:3px;background:linear-gradient(90deg,#c9973a,#f5d285,#c9973a);}
+
+/* CONSUMER INFO */
+.consumer-info{padding:24px 28px;border-bottom:1px solid var(--cream-dark);}
+.consumer-name{font-family:'Fraunces',serif;font-size:1.2rem;font-weight:700;color:var(--navy);margin-bottom:4px;}
+.consumer-meta{font-size:0.85rem;color:var(--text-muted);}
+.consumer-id{font-size:0.75rem;color:var(--text-muted);font-family:monospace;margin-top:4px;}
+
+/* STATUS STEPS */
+.status-steps{padding:28px;}
+.step{display:flex;gap:16px;margin-bottom:24px;position:relative;}
+.step:last-child{margin-bottom:0;}
+.step:not(:last-child)::after{content:'';position:absolute;left:19px;top:42px;width:2px;height:calc(100% - 18px);background:var(--cream-dark);}
+.step.complete::after{background:var(--green);}
+.step.active::after{background:linear-gradient(180deg,var(--green),var(--cream-dark));}
+
+.step-icon{width:40px;height:40px;border-radius:50%;display:flex;align-items:center;justify-content:center;flex-shrink:0;font-size:1rem;z-index:1;}
+.step.complete .step-icon{background:var(--green);color:#fff;}
+.step.active .step-icon{background:var(--navy);color:var(--gold);border:2px solid var(--gold);animation:pulse 2s infinite;}
+.step.pending .step-icon{background:var(--cream-dark);color:var(--text-muted);}
+@keyframes pulse{0%,100%{box-shadow:0 0 0 0 rgba(201,151,58,0.4);}50%{box-shadow:0 0 0 8px rgba(201,151,58,0);}}
+
+.step-content{flex:1;padding-top:8px;}
+.step-title{font-size:0.95rem;font-weight:700;color:var(--navy);margin-bottom:3px;}
+.step.pending .step-title{color:var(--text-muted);}
+.step-desc{font-size:0.82rem;color:var(--text-muted);line-height:1.5;}
+.step-time{font-size:0.75rem;color:var(--text-muted);margin-top:4px;}
+
+/* MATCHED AGENT CARD */
+.agent-card{margin:0 28px 28px;background:var(--green-light);border:1px solid rgba(45,122,79,0.2);border-radius:14px;padding:20px;}
+.agent-card-label{font-size:0.72rem;font-weight:700;color:var(--green);text-transform:uppercase;letter-spacing:0.08em;margin-bottom:12px;}
+.agent-row{display:flex;align-items:center;gap:14px;}
+.agent-photo{width:56px;height:56px;border-radius:50%;object-fit:cover;border:2px solid rgba(45,122,79,0.3);flex-shrink:0;background:var(--cream-dark);display:flex;align-items:center;justify-content:center;font-size:1.4rem;}
+.agent-photo img{width:100%;height:100%;border-radius:50%;object-fit:cover;}
+.agent-name{font-family:'Fraunces',serif;font-size:1.05rem;font-weight:700;color:var(--navy);margin-bottom:2px;}
+.agent-agency{font-size:0.82rem;color:var(--text-muted);}
+.agent-license{font-size:0.75rem;color:var(--green);font-weight:600;margin-top:3px;}
+.agent-types{font-size:0.78rem;color:var(--text-muted);margin-top:2px;}
+.agent-calltime{margin-top:12px;background:rgba(45,122,79,0.1);border-radius:8px;padding:10px 14px;font-size:0.85rem;color:var(--green);font-weight:600;}
+
+/* GUARANTEE BOX */
+.guarantee{margin:0 28px 28px;background:var(--navy);border-radius:14px;padding:20px;text-align:center;}
+.guarantee-title{font-family:'Fraunces',serif;font-size:1rem;font-weight:700;color:var(--gold);margin-bottom:12px;}
+.guarantee-row{display:flex;justify-content:center;gap:0;margin-bottom:0;}
+.guarantee-item{text-align:center;padding:0 16px;border-right:1px solid rgba(255,255,255,0.08);}
+.guarantee-item:last-child{border-right:none;}
+.guarantee-num{font-family:'Fraunces',serif;font-size:1.6rem;font-weight:700;color:var(--gold);line-height:1;}
+.guarantee-label{font-size:0.65rem;color:rgba(255,255,255,0.35);text-transform:uppercase;letter-spacing:2px;margin-top:3px;}
+
+/* FOOTER */
+.status-footer{padding:20px 28px;border-top:1px solid var(--cream-dark);text-align:center;}
+.status-footer p{font-size:0.82rem;color:var(--text-muted);line-height:1.7;}
+.status-footer a{color:var(--gold);text-decoration:none;font-weight:600;}
+
+/* REFRESH BADGE */
+.refresh-badge{display:inline-flex;align-items:center;gap:0.4rem;background:rgba(13,31,60,0.06);border-radius:100px;padding:0.3rem 0.8rem;font-size:0.75rem;color:var(--text-muted);margin-bottom:20px;cursor:pointer;border:none;font-family:'DM Sans',sans-serif;}
+.refresh-badge:hover{background:rgba(13,31,60,0.1);}
+
+@media(max-width:600px){
+  .main{padding:24px 14px 60px;}
+  .status-header{padding:24px 20px;}
+  .consumer-info{padding:18px 20px;}
+  .status-steps{padding:20px;}
+  .agent-card{margin:0 20px 20px;}
+  .guarantee{margin:0 20px 20px;}
+  .status-footer{padding:16px 20px;}
+  .guarantee-item{padding:0 10px;}
+}
+</style>
+</head>
+<body>
+
+<nav class="nav">
+  <a href="/" class="nav-logo">
+    <svg width="20" height="24" viewBox="204 42 272 402"><defs><linearGradient id="sn" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#243f6e"/><stop offset="100%" stop-color="#0a1828"/></linearGradient><linearGradient id="sg" x1="0" y1="0" x2="1" y2="1"><stop offset="0%" stop-color="#f5d285"/><stop offset="50%" stop-color="#c9973a"/><stop offset="100%" stop-color="#e8b96a"/></linearGradient></defs><path d="M340 42 L476 90 L476 276 Q476 378 340 442 Q204 378 204 276 L204 90 Z" fill="url(#sg)"/><path d="M340 58 L462 102 L462 274 Q462 364 340 422 Q218 364 218 274 L218 102 Z" fill="url(#sn)"/><g transform="translate(340,240)"><rect x="-26" y="-54" width="52" height="90" rx="10" fill="white"/><rect x="-19" y="-46" width="38" height="68" rx="6" fill="#0d1f3c"/><rect x="-7" y="-42" width="14" height="5" rx="2.5" fill="#060f1a"/><rect x="-10" y="28" width="20" height="3.5" rx="1.75" fill="rgba(201,151,58,0.9)"/></g><path d="M316,244 L328,258 L364,216" fill="none" stroke="url(#sg)" stroke-width="11" stroke-linecap="round" stroke-linejoin="round"/></svg>
+    OneCall<span>Shield</span>
+  </a>
+  <a href="/" class="nav-back">← Back to Home</a>
+</nav>
+
+<div class="main">
+  <!-- Loading -->
+  <div class="loading" id="loadingState">
+    <div class="loading-spinner"></div>
+    <p style="color:var(--text-muted);font-size:0.9rem;">Loading your request status...</p>
+  </div>
+
+  <!-- Not Found -->
+  <div class="not-found" id="notFoundState" style="display:none;">
+    <div style="font-size:3rem;margin-bottom:16px;">🔍</div>
+    <h2 style="font-family:'Fraunces',serif;color:var(--navy);margin-bottom:8px;">Request Not Found</h2>
+    <p style="color:var(--text-muted);margin-bottom:24px;">We couldn't find a request with this link. It may have expired or the link may be incorrect.</p>
+    <a href="/" style="display:inline-block;background:var(--navy);color:var(--gold);text-decoration:none;padding:0.8rem 1.6rem;border-radius:10px;font-weight:600;font-size:0.9rem;">Get a New Quote →</a>
+  </div>
+
+  <!-- Status Card -->
+  <div id="statusState" style="display:none;">
+    <div style="text-align:center;margin-bottom:20px;">
+      <button class="refresh-badge" onclick="loadStatus()">🔄 Refresh Status</button>
+    </div>
+
+    <div class="status-card">
+      <div class="status-header">
+        <div class="status-header-icon">🛡️</div>
+        <div class="status-header-title" id="headerTitle">We've Got You Covered</div>
+        <div class="status-header-sub" id="headerSub">Your request is being reviewed</div>
+      </div>
+      <div class="gold-bar"></div>
+
+      <!-- Consumer Info -->
+      <div class="consumer-info">
+        <div class="consumer-name" id="consumerName"></div>
+        <div class="consumer-meta" id="consumerMeta"></div>
+        <div class="consumer-id" id="consumerId"></div>
+      </div>
+
+      <!-- Status Steps -->
+      <div class="status-steps" id="statusSteps"></div>
+
+      <!-- Matched Agent (shown when matched) -->
+      <div class="agent-card" id="agentCard" style="display:none;"></div>
+
+      <!-- Guarantee -->
+      <div class="guarantee">
+        <div class="guarantee-title">The One Call Guarantee™</div>
+        <div class="guarantee-row">
+          <div class="guarantee-item"><div class="guarantee-num">1</div><div class="guarantee-label">Form</div></div>
+          <div class="guarantee-item"><div class="guarantee-num">1</div><div class="guarantee-label">Agent</div></div>
+          <div class="guarantee-item"><div class="guarantee-num">1</div><div class="guarantee-label">Call</div></div>
+          <div class="guarantee-item"><div class="guarantee-num">0</div><div class="guarantee-label">Spam</div></div>
+        </div>
+      </div>
+
+      <!-- Footer -->
+      <div class="status-footer">
+        <p>Questions? Email us at <a href="mailto:chris@onecallshield.com">chris@onecallshield.com</a><br>
+        <span style="font-size:0.75rem;">© 2026 OneCallShield LLC · Your data is protected</span></p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+const STEPS = {
+  unmatched: [
+    { icon: '✓', status: 'complete', title: 'Request Received', desc: 'We\'ve received your insurance request and it\'s in our system.', showTime: true },
+    { icon: '🔍', status: 'active', title: 'Reviewing Your Request', desc: 'Our team is personally reviewing your needs and selecting the best agent for you.' },
+    { icon: '🤝', status: 'pending', title: 'Agent Matched', desc: 'Your agent will be assigned shortly.' },
+    { icon: '📞', status: 'pending', title: 'Your Agent Will Call', desc: 'One call. Real quotes. No pressure.' }
+  ],
+  matched: [
+    { icon: '✓', status: 'complete', title: 'Request Received', desc: 'We received your insurance request.', showTime: true },
+    { icon: '✓', status: 'complete', title: 'Request Reviewed', desc: 'Our team reviewed your needs.' },
+    { icon: '✓', status: 'complete', title: 'Agent Matched', desc: 'We\'ve selected your exclusive agent.', showMatchTime: true },
+    { icon: '📞', status: 'active', title: 'Your Agent Will Call', desc: 'Your agent will reach out at your preferred time. One call. Real quotes. No pressure.' }
+  ]
+};
+
+function getLeadId() {
+  // Check query param first (?id=xxx), then URL path (/status/xxx)
+  const params = new URLSearchParams(window.location.search);
+  if (params.get('id')) return params.get('id');
+  const path = window.location.pathname;
+  const parts = path.split('/');
+  return parts[parts.length - 1] || null;
+}
+
+function getAgents() {
+  return [...JSON.parse(localStorage.getItem('ocs_agents')||'[]'),
+          ...JSON.parse(localStorage.getItem('ocs_applications')||'[]')];
+}
+
+function timeAgo(iso) {
+  if (!iso) return '';
+  const diff = Date.now() - new Date(iso).getTime();
+  const m = Math.floor(diff/60000), h = Math.floor(m/60), d = Math.floor(h/24);
+  if (d > 0) return d + 'd ago';
+  if (h > 0) return h + 'h ago';
+  if (m > 0) return m + 'm ago';
+  return 'Just now';
+}
+
+function loadStatus() {
+  const leadId = getLeadId();
+  if (!leadId) { showNotFound(); return; }
+  loadStatusAsync(leadId);
+}
+
+async function loadStatusAsync(leadId) {
+  let lead = null;
+
+  // Try Firebase first — works on any device, any browser
+  try {
+    const res = await fetch('https://onecallshield-default-rtdb.firebaseio.com/leads/' + leadId + '.json');
+    const data = await res.json();
+    if (data && data.id) lead = data;
+  } catch(err) {
+    console.error('Firebase fetch error:', err);
+  }
+
+  // Fall back to KV worker
+  if (!lead) {
+    try {
+      const res = await fetch('https://onecallshield-emails.chris-santoro55.workers.dev', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ type: 'get_status', leadId })
+      });
+      const data = await res.json();
+      if (data.found) lead = data.lead;
+    } catch(err) {
+      console.error('KV fetch error:', err);
+    }
+  }
+
+  if (!lead) { showNotFound(); return; }
+
+  document.getElementById('loadingState').style.display = 'none';
+  document.getElementById('statusState').style.display = 'block';
+
+  // Consumer info
+  document.getElementById('consumerName').textContent = lead.firstName + ' ' + lead.lastName;
+  document.getElementById('consumerMeta').textContent = lead.insuranceType + ' · ZIP ' + lead.zip;
+  document.getElementById('consumerId').textContent = 'Request ID: ' + lead.id;
+
+  const isMatched = lead.status === 'matched';
+
+  // Header
+  document.getElementById('headerTitle').textContent = isMatched ? 'Your Agent Has Been Matched! 🎉' : 'We\'ve Got You Covered';
+  document.getElementById('headerSub').textContent = isMatched ? 'Your agent will be in touch soon' : 'Your request is being personally reviewed';
+
+  // Steps
+  const steps = isMatched ? STEPS.matched : STEPS.unmatched;
+  document.getElementById('statusSteps').innerHTML = steps.map(s => `
+    <div class="step ${s.status}">
+      <div class="step-icon">${s.status === 'complete' ? '✓' : s.icon}</div>
+      <div class="step-content">
+        <div class="step-title">${s.title}</div>
+        <div class="step-desc">${s.desc}</div>
+        ${s.showTime && lead.submittedAt ? `<div class="step-time">${new Date(lead.submittedAt).toLocaleString()} · ${timeAgo(lead.submittedAt)}</div>` : ''}
+        ${s.showMatchTime && lead.matchedAt ? `<div class="step-time">Matched ${timeAgo(lead.matchedAt)}</div>` : ''}
+      </div>
+    </div>`).join('');
+
+  // Agent card — use KV data if available, fall back to localStorage
+  if (isMatched) {
+    // KV stores agent info directly on the lead
+    const agentFromKV = lead.agentFirstName ? {
+      firstName: lead.agentFirstName,
+      lastName: lead.agentLastName,
+      agency: lead.agentAgency,
+      licenseNumber: lead.agentLicense,
+      insuranceTypes: lead.agentTypes,
+      photoUrl: lead.agentPhotoUrl
+    } : null;
+
+    const agentFromLocal = lead.matchedAgentId ? getAgents().find(a => a.id === lead.matchedAgentId) : null;
+    const agent = agentFromKV || agentFromLocal;
+
+    if (agent) {
+      document.getElementById('agentCard').style.display = 'block';
+      document.getElementById('agentCard').innerHTML = `
+        <div class="agent-card-label">✅ Your Matched Agent</div>
+        <div class="agent-row">
+          <div class="agent-photo">
+            ${agent.photoUrl ? `<img src="${agent.photoUrl}" alt="${agent.firstName}">` : '👤'}
+          </div>
+          <div>
+            <div class="agent-name">${agent.firstName} ${agent.lastName}</div>
+            <div class="agent-agency">${agent.agency || 'Independent Agent'}</div>
+            ${agent.licenseNumber ? `<div class="agent-license">License #${agent.licenseNumber}</div>` : ''}
+            <div class="agent-types">${(agent.insuranceTypes||[]).slice(0,3).join(' · ')}</div>
+          </div>
+        </div>
+        <div class="agent-calltime">📞 Expect your call: ${lead.contactTime || 'Anytime'}</div>`;
+    }
+  }
+}
+
+function showNotFound() {
+  document.getElementById('loadingState').style.display = 'none';
+  document.getElementById('notFoundState').style.display = 'block';
+}
+
+// Auto-refresh every 60 seconds
+loadStatus();
+setInterval(loadStatus, 60000);
+</script>
+</body>
+</html>
