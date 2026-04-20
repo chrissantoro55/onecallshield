@@ -192,6 +192,26 @@ tr.lead-row:hover td{background:rgba(201,151,58,0.04);}
 .pipeline-card-type{font-size:0.73rem;color:var(--gold);font-weight:600;margin-bottom:0.2rem;}
 .pipeline-card-age{font-size:0.7rem;color:var(--text-muted);}
 .pipeline-card-call{display:block;width:100%;background:var(--gold);color:var(--navy);border:none;padding:0.38rem;border-radius:6px;font-size:0.73rem;font-weight:700;cursor:pointer;font-family:'DM Sans',sans-serif;margin-top:0.5rem;text-align:center;text-decoration:none;box-sizing:border-box;}
+/* ── PHASE 1 DASHBOARD ── */
+.insight-line{font-size:0.88rem;color:rgba(255,255,255,0.75);margin-top:0.5rem;padding:8px 12px;background:rgba(255,255,255,0.08);border-radius:8px;border-left:3px solid var(--gold);}
+.revenue-card{background:linear-gradient(135deg,#2d7a4f,#1a5c3a);border-radius:14px;padding:16px 20px;color:#fff;}
+.priority-box{background:linear-gradient(135deg,#0d1f3c,#1a3460);border-radius:14px;padding:16px 20px;display:flex;align-items:center;justify-content:space-between;gap:1rem;flex-wrap:wrap;border:1px solid rgba(201,151,58,0.25);}
+.priority-call-btn{background:var(--gold);color:var(--navy);border:none;padding:0.6rem 1.2rem;border-radius:8px;font-size:0.88rem;font-weight:700;cursor:pointer;font-family:'DM Sans',sans-serif;text-decoration:none;white-space:nowrap;}
+/* ── PHASE 2 SCORE BADGES ── */
+.score-hot{background:#c9973a;color:#0d1f3c;padding:2px 8px;border-radius:100px;font-size:0.72rem;font-weight:700;display:inline-block;}
+.score-warm{background:#1a3460;color:#e8b96a;padding:2px 8px;border-radius:100px;font-size:0.72rem;font-weight:700;display:inline-block;}
+.score-cool{background:#f0f4f8;color:#5a6480;padding:2px 8px;border-radius:100px;font-size:0.72rem;font-weight:700;display:inline-block;}
+/* ── PHASE 3 FILTER ── */
+.filter-pill{padding:6px 14px;border-radius:100px;border:1.5px solid rgba(13,31,60,0.12);background:#fff;font-size:0.78rem;font-weight:600;cursor:pointer;color:var(--text-muted);transition:all 0.2s;}
+.filter-pill.active{background:var(--navy);color:var(--gold);border-color:var(--navy);}
+.results-count{font-size:0.82rem;color:var(--text-muted);margin-bottom:0.6rem;}
+/* ── PHASE 4 PIPELINE TAB ── */
+.pipeline-wrap{display:flex;gap:1rem;overflow-x:auto;padding-bottom:1rem;min-height:400px;}
+.pipeline-col{min-width:220px;flex-shrink:0;background:var(--cream);border-radius:14px;overflow:hidden;}
+.pipeline-col-header{padding:12px 14px;font-weight:700;font-size:0.85rem;display:flex;justify-content:space-between;align-items:center;color:#fff;}
+.pipeline-card{background:#fff;margin:8px;border-radius:10px;padding:12px;cursor:pointer;border-left:4px solid #ccc;box-shadow:0 1px 4px rgba(0,0,0,0.06);transition:transform 0.15s;}
+.pipeline-card:hover{transform:translateY(-2px);}
+.badge-quoted{background:rgba(124,58,237,0.1);color:#7c3aed;}
 </style>
 </head>
 <body>
@@ -206,6 +226,8 @@ tr.lead-row:hover td{background:rgba(201,151,58,0.04);}
     <input type="password" id="portalPass" placeholder="Your portal password" onkeydown="if(event.key==='Enter')doPortalLogin()">
     <button class="login-btn" id="loginBtn" onclick="doPortalLogin()">Sign In →</button>
     <p class="login-error" id="loginError">Invalid email or password. Please try again.</p>
+    <button onclick="document.getElementById('forgotMsg').style.display='block'" style="background:none;border:none;color:rgba(255,255,255,0.35);font-size:0.78rem;cursor:pointer;font-family:'DM Sans',sans-serif;margin-top:0.5rem;text-decoration:underline;">Forgot password?</button>
+    <p id="forgotMsg" style="display:none;background:rgba(255,255,255,0.07);border-radius:8px;padding:0.7rem;color:rgba(255,255,255,0.6);font-size:0.8rem;margin-top:0.6rem;">Contact chris@onecallshield.com to reset your password.</p>
     <p style="color:rgba(255,255,255,0.25);font-size:0.78rem;margin-top:1rem;">Need help? Contact <a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="a8c1c6cec7e8c7c6cdcbc9c4c4dbc0c1cdc4cc86cbc7c5">[email&#160;protected]</a></p>
   </div>
 </div>
@@ -224,17 +246,41 @@ tr.lead-row:hover td{background:rgba(201,151,58,0.04);}
   </nav>
 
   <div class="content">
-    <!-- Welcome Banner -->
+    <!-- INTELLIGENT DASHBOARD -->
     <div class="welcome-banner">
-      <div class="welcome-text">
-        <h2>Welcome back, <span id="agentFirstName">Agent</span>! 👋</h2>
-        <p>Here's your lead dashboard. Contact new leads within the first hour for best results.</p>
+      <div style="width:100%;">
+        <div style="display:flex;align-items:flex-start;justify-content:space-between;flex-wrap:wrap;gap:0.8rem;margin-bottom:0.8rem;">
+          <div>
+            <h2 style="font-family:'Fraunces',serif;color:#fff;font-size:1.5rem;margin-bottom:0.15rem;">Welcome back, <span id="agentFirstName">Agent</span>! 👋</h2>
+            <div id="dashDate" style="color:rgba(255,255,255,0.4);font-size:0.8rem;"></div>
+            <div id="dashInsight" class="insight-line" style="display:none;"></div>
+          </div>
+          <div id="topAgentBadge" style="display:none;background:var(--gold);color:var(--navy);padding:0.4rem 1rem;border-radius:100px;font-size:0.8rem;font-weight:700;">🏆 Top Agent This Month</div>
+        </div>
+        <div class="welcome-stats">
+          <div class="welcome-stat"><span class="welcome-stat-num gold" id="statTotal">0</span><div class="welcome-stat-label">Total Leads</div></div>
+          <div class="welcome-stat"><span class="welcome-stat-num gold" id="statNew">0</span><div class="welcome-stat-label">New</div></div>
+          <div class="welcome-stat"><span class="welcome-stat-num" style="color:#6dcf9b;" id="statContacted">0</span><div class="welcome-stat-label">Contacted</div></div>
+          <div class="welcome-stat"><span class="welcome-stat-num" style="color:#fbbf24;" id="statCallbacksToday">0</span><div class="welcome-stat-label">Callbacks Today</div></div>
+          <div class="welcome-stat"><span class="welcome-stat-num" style="color:#6dcf9b;" id="statClosed">0</span><div class="welcome-stat-label">Closed 🏆</div></div>
+          <div class="welcome-stat"><span class="welcome-stat-num" style="color:#f5d285;" id="statRate">0%</span><div class="welcome-stat-label">Close Rate</div></div>
+        </div>
       </div>
-      <div class="welcome-stats">
-        <div class="welcome-stat"><span class="welcome-stat-num gold" id="statTotal">0</span><div class="welcome-stat-label">Total Leads</div></div>
-        <div class="welcome-stat"><span class="welcome-stat-num gold" id="statNew">0</span><div class="welcome-stat-label">New</div></div>
-        <div class="welcome-stat"><span class="welcome-stat-num" style="color:#6dcf9b;" id="statContacted">0</span><div class="welcome-stat-label">Contacted</div></div>
-        <div class="welcome-stat"><span class="welcome-stat-num" style="color:#6dcf9b;" id="statClosed">0</span><div class="welcome-stat-label">Closed 🏆</div></div>
+    </div>
+    <!-- REVENUE + PRIORITY ROW -->
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:1rem;margin-bottom:1.2rem;">
+      <div class="revenue-card">
+        <div style="font-size:0.72rem;color:rgba(255,255,255,0.5);text-transform:uppercase;letter-spacing:0.06em;margin-bottom:0.3rem;">💰 Revenue This Month</div>
+        <div style="font-family:'Fraunces',serif;font-size:2rem;font-weight:700;color:#fff;" id="statRevenue">$0</div>
+        <div style="font-size:0.72rem;color:rgba(255,255,255,0.4);margin-top:0.2rem;">from closed policies</div>
+      </div>
+      <div class="priority-box" id="priorityBoxWrap" style="display:none;">
+        <div>
+          <div style="font-size:0.7rem;color:rgba(255,255,255,0.45);text-transform:uppercase;letter-spacing:0.06em;margin-bottom:0.3rem;">🎯 Priority Lead</div>
+          <div style="font-family:'Fraunces',serif;font-size:1rem;color:#fff;font-weight:700;" id="priorityName">—</div>
+          <div style="font-size:0.82rem;color:rgba(255,255,255,0.55);margin-top:0.2rem;" id="priorityMeta">—</div>
+        </div>
+        <a id="priorityCallBtn" href="#" class="priority-call-btn">📞 Call Now</a>
       </div>
     </div>
 
@@ -258,7 +304,8 @@ tr.lead-row:hover td{background:rgba(201,151,58,0.04);}
     <!-- Tabs -->
     <div class="tabs">
       <button class="tab-btn active" onclick="switchTab('leads',this)">🎯 My Leads <span class="tab-badge" id="leadsTabBadge" style="display:none;"></span></button>
-      <button class="tab-btn" onclick="switchTab('stats',this)">📊 Performance</button>
+      <button class="tab-btn" onclick="switchTab('pipeline',this)">📊 Pipeline</button>
+      <button class="tab-btn" onclick="switchTab('stats',this)">📈 Performance</button>
       <button class="tab-btn" onclick="switchTab('profile',this)">👤 Profile</button>
       <button class="tab-btn" onclick="switchTab('licenses',this)">🪪 Licenses</button>
       <button class="tab-btn" onclick="switchTab('settings',this)">⚙️ Settings</button>
@@ -275,20 +322,24 @@ tr.lead-row:hover td{background:rgba(201,151,58,0.04);}
       </div>
       <div class="leads-controls">
         <div class="search-wrap">
-          <input class="leads-search" type="text" id="leadsSearch" placeholder="Search by name, phone, email, type, or ZIP..." oninput="setSearch(this.value)">
+          <input class="leads-search" type="text" id="leadSearch" placeholder="Search by name, phone, zip, insurance type..." oninput="filterAndRender()">
         </div>
-        <div class="sort-row">
+        <div style="display:flex;align-items:center;gap:0.6rem;flex-wrap:wrap;">
           <span class="sort-label">Sort:</span>
-          <button class="sort-btn active" onclick="setSort('newest',this)">Newest First</button>
-          <button class="sort-btn" onclick="setSort('oldest',this)">Oldest First</button>
-          <button class="sort-btn" onclick="setSort('type',this)">Type A–Z</button>
-          <button class="sort-btn" onclick="setSort('status',this)">Status</button>
+          <select id="leadSort" onchange="filterAndRender()" style="padding:0.32rem 0.65rem;border-radius:8px;border:1.5px solid var(--border);background:#fff;font-size:0.82rem;font-family:'DM Sans',sans-serif;outline:none;color:var(--text);">
+            <option value="score">Highest Score</option>
+            <option value="newest">Newest First</option>
+            <option value="oldest">Oldest First</option>
+            <option value="type">Insurance Type</option>
+            <option value="status">Status</option>
+          </select>
         </div>
-        <div class="filter-row" id="filterRow"></div>
+        <div class="filter-row" id="filterRow" style="display:flex;gap:0.4rem;flex-wrap:wrap;"></div>
+        <div class="results-count" id="resultsCount"></div>
       </div>
       <div class="table-wrap" id="tableWrap">
         <table>
-          <thead><tr><th>Consumer</th><th>Phone</th><th>Insurance</th><th>Status</th><th>Age</th><th>Callback</th><th>Rating</th><th>Actions</th></tr></thead>
+          <thead><tr><th>Consumer</th><th>Score</th><th>Phone</th><th>Insurance</th><th>Status</th><th>Age</th><th>Callback</th><th>Actions</th></tr></thead>
           <tbody id="leadsTable"></tbody>
         </table>
       </div>
@@ -296,6 +347,15 @@ tr.lead-row:hover td{background:rgba(201,151,58,0.04);}
       <div class="pipeline-wrap" id="pipelineWrap">
         <div class="pipeline-board" id="pipelineBoard"></div>
       </div>
+    </div>
+
+    <!-- PIPELINE TAB -->
+    <div class="tab-panel" id="portal-pipeline">
+      <div class="section-header" style="margin-bottom:1rem;">
+        <h2>Lead Pipeline</h2>
+        <span style="font-size:0.82rem;color:var(--text-muted);">Drag cards or click to update status</span>
+      </div>
+      <div class="pipeline-wrap" id="pipelineTabWrap"></div>
     </div>
 
     <!-- STATS TAB -->
@@ -471,7 +531,8 @@ tr.lead-row:hover td{background:rgba(201,151,58,0.04);}
         <select id="statusSelect" onchange="checkConfetti()">
           <option value="new">🆕 New</option>
           <option value="contacted">📞 Contacted</option>
-          <option value="followup">🔄 Follow Up</option>
+          <option value="followup">📅 Callback Scheduled</option>
+          <option value="quoted">📋 Quoted</option>
           <option value="closed">✅ Closed — Policy Sold!</option>
           <option value="lost">❌ Lost</option>
         </select>
@@ -529,6 +590,8 @@ const db = firebase.database();
 // ════════════════════════════════════════════════════════════════
 const ALL_STATES=['AL','AK','AZ','AR','CA','CO','CT','DE','FL','GA','HI','ID','IL','IN','IA','KS','KY','LA','ME','MD','MA','MI','MN','MS','MO','MT','NE','NV','NH','NJ','NM','NY','NC','ND','OH','OK','OR','PA','RI','SC','SD','TN','TX','UT','VT','VA','WA','WV','WI','WY'];
 const ALL_TYPES=['Auto Insurance','Homeowners Insurance','Renters Insurance','Life Insurance','Health Insurance','Medicare','Other'];
+const LEAD_PRICES={'Auto Insurance':25,'Homeowners Insurance':35,'Renters Insurance':20,'Life Insurance':50,'Health Insurance':45,'Medicare':50,'Other':30};
+const TYPE_EMOJIS={'Auto Insurance':'🚗','Homeowners Insurance':'🏠','Renters Insurance':'🏢','Life Insurance':'❤️','Health Insurance':'🏥','Medicare':'💊','Other':'📋'};
 const RATING_LABELS={1:'Poor',2:'Fair',3:'Good',4:'Very Good',5:'Excellent'};
 const SCRIPTS={
   'Auto Insurance':{opener:"Hi [Name], this is [Your Name] calling about your auto insurance quote. I can usually find people a better rate in just a few minutes. Is now a good time?",questions:['What vehicle(s) are you looking to insure?','Any recent accidents or violations in the last 3 years?','Are you currently insured?','Are you looking for liability only or full coverage?']},
@@ -548,7 +611,7 @@ let currentLeadId = null;
 let myLeads = [];
 let currentRating = 0;
 let currentFilter = 'all';
-let currentSort = 'newest';
+let currentSort = 'score';
 let currentSearch = '';
 let currentView = 'table';
 let dragLeadId = null;
@@ -693,6 +756,7 @@ function loadMyLeads() {
     }
     updateStats();
     renderView();
+    renderPipelineTab();
     checkCallbacks();
     checkNewLeads();
   });
@@ -707,27 +771,68 @@ function updateStats() {
   const contacted = myLeads.filter(l => l.agentStatus && l.agentStatus !== 'new' && l.agentStatus !== 'lost').length;
   const closed = myLeads.filter(l => l.agentStatus === 'closed').length;
   const rate = total > 0 ? Math.round((closed/total)*100) : 0;
+  const now = new Date();
+  const callbacksToday = myLeads.filter(l => l.callbackDate && new Date(l.callbackDate).toDateString() === now.toDateString()).length;
+  const revenue = myLeads.filter(l => l.agentStatus === 'closed').reduce((s, l) => s + (LEAD_PRICES[l.insuranceType]||30), 0);
 
+  // KPI cards
   document.getElementById('statTotal').textContent = total;
   document.getElementById('statNew').textContent = newLeadsCount;
   document.getElementById('statContacted').textContent = contacted;
+  document.getElementById('statCallbacksToday').textContent = callbacksToday;
   document.getElementById('statClosed').textContent = closed;
+  document.getElementById('statRate').textContent = rate + '%';
+  document.getElementById('statRevenue').textContent = '$' + revenue;
+
+  // Performance tab cards
   document.getElementById('s_total').textContent = total;
   document.getElementById('s_contacted').textContent = contacted;
   document.getElementById('s_closed').textContent = closed;
   document.getElementById('s_rate').textContent = rate + '%';
 
+  // New leads tab badge
   const badge = document.getElementById('leadsTabBadge');
   if(newLeadsCount > 0) { badge.textContent = newLeadsCount; badge.style.display = 'inline-block'; }
   else { badge.style.display = 'none'; }
 
-  const statuses = ['new','contacted','followup','closed','lost'];
-  const labels = {new:'🆕 New',contacted:'📞 Contacted',followup:'🔄 Follow Up',closed:'✅ Closed',lost:'❌ Lost'};
+  // Dashboard date
+  document.getElementById('dashDate').textContent = now.toLocaleDateString('en-US',{weekday:'long',month:'long',day:'numeric',year:'numeric'});
+
+  // Dashboard insight
+  const insightEl = document.getElementById('dashInsight');
+  const staleNew = myLeads.filter(l => (!l.agentStatus||l.agentStatus==='new') && (Date.now()-new Date(l.submittedAt||l.matchedAt))>86400000);
+  let insight = '';
+  if(staleNew.length > 0) insight = `⚠️ You have ${staleNew.length} lead${staleNew.length>1?'s':''} waiting for first contact — call them now`;
+  else if(callbacksToday > 0) insight = `📅 You have ${callbacksToday} callback${callbacksToday>1?'s':''} due today`;
+  else if(rate > 25) insight = `🔥 You're crushing it — ${rate}% close rate this month!`;
+  else insight = '💪 Ready to close some deals today?';
+  insightEl.textContent = insight;
+  insightEl.style.display = 'block';
+
+  // Top agent badge
+  document.getElementById('topAgentBadge').style.display = rate > 25 ? 'block' : 'none';
+
+  // Priority lead
+  const uncontacted = myLeads.filter(l => !l.agentStatus||l.agentStatus==='new')
+    .sort((a,b)=>new Date(a.matchedAt||a.submittedAt)-new Date(b.matchedAt||b.submittedAt));
+  const pBox = document.getElementById('priorityBoxWrap');
+  if(uncontacted.length) {
+    const p = uncontacted[0];
+    const hrs = Math.floor((Date.now()-new Date(p.matchedAt||p.submittedAt))/3600000);
+    document.getElementById('priorityName').textContent = p.firstName+' '+p.lastName.charAt(0)+'.';
+    document.getElementById('priorityMeta').textContent = (TYPE_EMOJIS[p.insuranceType]||'📋')+' '+p.insuranceType+' · '+hrs+'h old';
+    document.getElementById('priorityCallBtn').href = 'tel:'+p.phone;
+    pBox.style.display = 'flex';
+  } else { pBox.style.display = 'none'; }
+
+  // Stats breakdown bar chart
+  const statuses = ['new','contacted','followup','quoted','closed','lost'];
+  const labels = {new:'🆕 New',contacted:'📞 Contacted',followup:'📅 Callback',quoted:'📋 Quoted',closed:'✅ Closed',lost:'❌ Lost'};
   document.getElementById('statsBreakdown').innerHTML = statuses.map(s => {
     const count = myLeads.filter(l => (l.agentStatus||'new') === s).length;
     const pct = total > 0 ? Math.round((count/total)*100) : 0;
     return `<div style="display:flex;align-items:center;gap:1rem;padding:0.6rem 0;border-bottom:1px solid var(--cream-dark);">
-      <span style="width:120px;font-size:0.88rem;color:var(--text-muted);">${labels[s]}</span>
+      <span style="width:130px;font-size:0.88rem;color:var(--text-muted);">${labels[s]}</span>
       <div style="flex:1;background:var(--cream);border-radius:100px;height:8px;overflow:hidden;">
         <div style="width:${pct}%;background:var(--gold);height:100%;border-radius:100px;transition:width 0.5s;"></div>
       </div>
@@ -777,15 +882,32 @@ function leadAge(d) {
 }
 
 function badge(s) {
-  const cls={new:'badge-new',contacted:'badge-contacted',followup:'badge-followup',closed:'badge-closed',lost:'badge-lost'};
-  const lbl={new:'🆕 New',contacted:'📞 Contacted',followup:'🔄 Follow Up',closed:'✅ Closed',lost:'❌ Lost'};
+  const cls={new:'badge-new',contacted:'badge-contacted',followup:'badge-followup',quoted:'badge-quoted',closed:'badge-closed',lost:'badge-lost'};
+  const lbl={new:'🆕 New',contacted:'📞 Contacted',followup:'📅 Callback',quoted:'📋 Quoted',closed:'✅ Closed',lost:'❌ Lost'};
   return `<span class="badge ${cls[s]||'badge-new'}">${lbl[s]||'🆕 New'}</span>`;
 }
 
+function getLeadScore(l) {
+  const base={'Medicare':90,'Life Insurance':85,'Health Insurance':80,'Homeowners Insurance':75,'Auto Insurance':70,'Renters Insurance':60,'Other':50};
+  let score = base[l.insuranceType] || 50;
+  if(l.hasEnhancedData) score += 10;
+  const days = Math.floor((Date.now()-new Date(l.submittedAt||l.matchedAt))/86400000);
+  score -= Math.min(days*5, 30);
+  return Math.max(1, Math.min(100, score));
+}
+
+function getScoreBadge(score) {
+  if(score>=80) return `<span class="score-hot">🔥 Hot</span>`;
+  if(score>=60) return `<span class="score-warm">⚡ Warm</span>`;
+  return `<span class="score-cool">❄️ Cool</span>`;
+}
+
 function getFilteredLeads() {
+  const searchVal = (document.getElementById('leadSearch')||{}).value || currentSearch || '';
+  const sortVal = (document.getElementById('leadSort')||{}).value || currentSort;
   let leads = myLeads.slice();
-  if(currentSearch) {
-    const q = currentSearch;
+  if(searchVal) {
+    const q = searchVal.toLowerCase();
     leads = leads.filter(l =>
       (l.firstName+' '+l.lastName).toLowerCase().includes(q) ||
       (l.phone||'').toLowerCase().includes(q) ||
@@ -795,22 +917,23 @@ function getFilteredLeads() {
     );
   }
   if(currentFilter !== 'all') leads = leads.filter(l => (l.agentStatus||'new') === currentFilter);
-  if(currentSort === 'newest') leads.sort((a,b) => new Date(b.matchedAt||b.submittedAt) - new Date(a.matchedAt||a.submittedAt));
-  else if(currentSort === 'oldest') leads.sort((a,b) => new Date(a.matchedAt||a.submittedAt) - new Date(b.matchedAt||b.submittedAt));
-  else if(currentSort === 'type') leads.sort((a,b) => (a.insuranceType||'').localeCompare(b.insuranceType||''));
-  else if(currentSort === 'status') {
-    const ord = {new:0,contacted:1,followup:2,closed:3,lost:4};
-    leads.sort((a,b) => (ord[a.agentStatus||'new']||0) - (ord[b.agentStatus||'new']||0));
+  if(sortVal==='score') leads.sort((a,b)=>getLeadScore(b)-getLeadScore(a));
+  else if(sortVal==='newest') leads.sort((a,b)=>new Date(b.matchedAt||b.submittedAt)-new Date(a.matchedAt||a.submittedAt));
+  else if(sortVal==='oldest') leads.sort((a,b)=>new Date(a.matchedAt||a.submittedAt)-new Date(b.matchedAt||b.submittedAt));
+  else if(sortVal==='type') leads.sort((a,b)=>(a.insuranceType||'').localeCompare(b.insuranceType||''));
+  else if(sortVal==='status') {
+    const ord={new:0,contacted:1,followup:2,quoted:3,closed:4,lost:5};
+    leads.sort((a,b)=>(ord[a.agentStatus||'new']||0)-(ord[b.agentStatus||'new']||0));
   }
   return leads;
 }
 
 function updateFilterPills() {
-  const statuses = ['all','new','contacted','followup','closed','lost'];
-  const labels = {all:'All',new:'🆕 New',contacted:'📞 Contacted',followup:'🔄 Callback',closed:'✅ Closed',lost:'❌ Lost'};
+  const statuses = ['all','new','contacted','followup','quoted','closed','lost'];
+  const labels = {all:'All',new:'New',contacted:'Contacted',followup:'Callback',quoted:'Quoted',closed:'Closed',lost:'Lost'};
   document.getElementById('filterRow').innerHTML = statuses.map(s => {
-    const count = s === 'all' ? myLeads.length : myLeads.filter(l => (l.agentStatus||'new') === s).length;
-    return `<button class="filter-pill${s===currentFilter?' active':''}" onclick="setFilter('${s}')">${labels[s]} <span class="pill-count">${count}</span></button>`;
+    const count = s==='all' ? myLeads.length : myLeads.filter(l=>(l.agentStatus||'new')===s).length;
+    return `<button class="filter-pill${s===currentFilter?' active':''}" onclick="setFilter('${s}',this)">${labels[s]} (${count})</button>`;
   }).join('');
 }
 
@@ -823,22 +946,24 @@ function renderView() {
 function renderTable() {
   const tb = document.getElementById('leadsTable');
   const leads = getFilteredLeads();
+  const rc = document.getElementById('resultsCount');
+  if(rc) rc.textContent = leads.length < myLeads.length ? `Showing ${leads.length} of ${myLeads.length} leads` : `${myLeads.length} lead${myLeads.length!==1?'s':''}`;
   if(!leads.length) {
     tb.innerHTML = `<tr><td colspan="8" style="text-align:center;color:var(--text-muted);padding:3rem;">${myLeads.length?'No leads match your search or filter.':'No leads assigned yet — check back soon!'}</td></tr>`;
     return;
   }
   tb.innerHTML = leads.map(l => {
     const age = leadAge(l.matchedAt||l.submittedAt);
-    const stars = '★'.repeat(l.agentRating||0) + '☆'.repeat(5-(l.agentRating||0));
+    const score = getLeadScore(l);
     const cb = l.callbackDate ? new Date(l.callbackDate).toLocaleDateString() : '—';
     return `<tr class="lead-row" onclick="openLeadModal('${l.id}')">
       <td><strong>${l.firstName} ${l.lastName}</strong><br><span style="font-size:0.75rem;color:var(--text-muted);">${l.zip} · Age ${l.age||'?'}</span></td>
+      <td>${getScoreBadge(score)}</td>
       <td style="font-size:0.82rem;"><a href="tel:${l.phone}" onclick="event.stopPropagation()">${l.phone||'—'}</a></td>
-      <td>${l.insuranceType}</td>
+      <td>${TYPE_EMOJIS[l.insuranceType]||'📋'} ${l.insuranceType}</td>
       <td>${badge(l.agentStatus||'new')}</td>
       <td class="${age.cls}">${age.text}</td>
       <td style="font-size:0.82rem;color:var(--text-muted);">${cb}</td>
-      <td style="color:#f59e0b;font-size:0.85rem;">${stars}</td>
       <td onclick="event.stopPropagation()">
         <a href="tel:${l.phone}" class="quick-call-btn">📞 Call</a>
         <button class="quick-note-btn" onclick="quickNote('${l.id}')">📝</button>
@@ -907,17 +1032,20 @@ function renderPipeline() {
   }).join('');
 }
 
-function setFilter(f) {
+function setFilter(f, btn) {
   currentFilter = f;
-  renderView();
+  document.querySelectorAll('.filter-pill').forEach(p=>p.classList.remove('active'));
+  if(btn) btn.classList.add('active');
+  filterAndRender();
 }
 function setSort(s, btn) {
   currentSort = s;
   document.querySelectorAll('.sort-btn').forEach(b => b.classList.remove('active'));
-  btn.classList.add('active');
+  if(btn) btn.classList.add('active');
   renderView();
 }
 function setSearch(v) { currentSearch = v.toLowerCase(); renderView(); }
+function filterAndRender() { renderView(); }
 function setView(v) {
   currentView = v;
   document.getElementById('viewTableBtn').classList.toggle('active', v==='table');
@@ -1195,9 +1323,9 @@ function updatePassword() {
   document.getElementById('currentPassInput').value = '';
   document.getElementById('newPassInput').value = '';
   document.getElementById('confirmPassInput').value = '';
-  msg.textContent = '✅ Password updated successfully!';
+  msg.textContent = '✅ Password updated! Logging you out in 3 seconds — log back in with your new password.';
   msg.style.color = 'var(--green)'; msg.style.display = 'block';
-  setTimeout(function(){ msg.style.display = 'none'; }, 4000);
+  setTimeout(function(){ doLogout(); }, 3000);
 }
 
 function updateAgency() {
@@ -1209,6 +1337,76 @@ function updateAgency() {
   document.getElementById('pAgency').textContent = agency;
   msg.style.display = 'block';
   setTimeout(function(){ msg.style.display = 'none'; }, 3000);
+}
+
+// ════════════════════════════════════════════════════════════════
+// PIPELINE TAB
+// ════════════════════════════════════════════════════════════════
+function renderPipelineTab() {
+  const wrap = document.getElementById('pipelineTabWrap');
+  if(!wrap) return;
+  const COLS = [
+    {key:'new',     label:'🆕 New',      color:'#c9973a'},
+    {key:'contacted',label:'📞 Contacted',color:'#1a3460'},
+    {key:'followup',label:'📅 Callback',  color:'#d97706'},
+    {key:'quoted',  label:'📋 Quoted',    color:'#7c3aed'},
+    {key:'closed',  label:'🏆 Closed',    color:'#2d7a4f'},
+    {key:'lost',    label:'❌ Lost',      color:'#c0392b'}
+  ];
+  wrap.innerHTML = COLS.map(col => {
+    const cards = myLeads.filter(l=>(l.agentStatus||'new')===col.key);
+    const cardHtml = cards.map(l => {
+      const age = leadAge(l.matchedAt||l.submittedAt);
+      const score = getLeadScore(l);
+      const borderColor = age.cls==='age-fresh'?'#2d7a4f':age.cls==='age-warm'?'#d97706':'#c0392b';
+      const lastNote = (l.agentNotes||[]).slice(-1)[0];
+      return `<div class="pipeline-card" style="border-left-color:${borderColor};" onclick="openLeadModal('${l.id}')">
+        <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:0.3rem;">
+          <span style="font-weight:700;font-size:0.88rem;color:var(--navy);">${l.firstName} ${l.lastName.charAt(0)}.</span>
+          ${getScoreBadge(score)}
+        </div>
+        <div style="font-size:0.78rem;color:var(--gold);font-weight:600;margin-bottom:0.2rem;">${TYPE_EMOJIS[l.insuranceType]||'📋'} ${l.insuranceType}</div>
+        <div style="font-size:0.75rem;color:var(--text-muted);margin-bottom:0.25rem;" class="${age.cls}">${age.text}</div>
+        <div style="font-size:0.78rem;color:var(--text-muted);margin-bottom:0.5rem;">${l.phone}</div>
+        ${lastNote?`<div style="font-size:0.72rem;color:var(--text-muted);background:var(--cream);border-radius:4px;padding:3px 6px;margin-bottom:0.5rem;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">📝 ${lastNote.text}</div>`:''}
+        <a href="tel:${l.phone}" class="pipeline-card-call" onclick="event.stopPropagation()">📞 Call</a>
+      </div>`;
+    }).join('') || `<p style="font-size:0.78rem;color:var(--text-muted);text-align:center;padding:1rem 0;">No leads</p>`;
+    return `<div class="pipeline-col">
+      <div class="pipeline-col-header" style="background:${col.color};">
+        <span>${col.label}</span>
+        <span style="background:rgba(255,255,255,0.25);border-radius:100px;padding:1px 8px;font-size:0.75rem;">${cards.length}</span>
+      </div>
+      ${cardHtml}
+    </div>`;
+  }).join('');
+}
+
+// Profile saves (referenced from HTML)
+function saveBio() {
+  const bio = document.getElementById('bioInput').value.trim();
+  if(!bio) return;
+  db.ref('agents/'+currentAgent.id+'/bio').set(bio);
+  currentAgent.bio = bio;
+  document.getElementById('bioSaved').style.display='block';
+  setTimeout(()=>document.getElementById('bioSaved').style.display='none',3000);
+}
+function saveSpecialty() {
+  const s = document.getElementById('specialtyInput').value.trim();
+  if(!s) return;
+  db.ref('agents/'+currentAgent.id+'/specialty').set(s);
+  currentAgent.specialty = s;
+  alert('✅ Specialty saved!');
+}
+function savePhotoUrl() {
+  const url = document.getElementById('photoUrlInput').value.trim();
+  if(!url) return;
+  db.ref('agents/'+currentAgent.id+'/photoUrl').set(url);
+  currentAgent.photoUrl = url;
+  document.getElementById('profilePhotoImg').src = url;
+  document.getElementById('profilePhotoImg').style.display = 'block';
+  document.getElementById('profileInitials').style.display = 'none';
+  alert('✅ Photo saved!');
 }
 </script>
 </body>
