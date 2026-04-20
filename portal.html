@@ -139,6 +139,59 @@ tr.lead-row:hover td{background:rgba(201,151,58,0.04);}
   .tab-btn{font-size:0.78rem;padding:0.5rem 0.3rem;}
   .content{padding:1.5rem 4%;}
 }
+/* ── LEADS CONTROLS ── */
+.leads-controls{display:flex;flex-direction:column;gap:0.7rem;margin-bottom:1.2rem;}
+.search-wrap{position:relative;}
+.search-wrap::before{content:'🔍';position:absolute;left:0.85rem;top:50%;transform:translateY(-50%);font-size:0.9rem;pointer-events:none;}
+.leads-search{width:100%;padding:0.75rem 1rem 0.75rem 2.7rem;border:1.5px solid var(--border);border-radius:10px;font-size:0.95rem;font-family:'DM Sans',sans-serif;background:var(--white);outline:none;transition:border-color 0.2s;box-sizing:border-box;}
+.leads-search:focus{border-color:var(--gold);}
+.sort-row,.filter-row{display:flex;gap:0.4rem;flex-wrap:wrap;align-items:center;}
+.sort-label{font-size:0.72rem;color:var(--text-muted);font-weight:700;text-transform:uppercase;letter-spacing:0.05em;white-space:nowrap;}
+.sort-btn{padding:0.32rem 0.65rem;border-radius:8px;border:1.5px solid var(--border);background:var(--white);color:var(--text-muted);font-size:0.78rem;font-weight:500;cursor:pointer;font-family:'DM Sans',sans-serif;transition:all 0.15s;}
+.sort-btn.active{background:var(--navy);color:#fff;border-color:var(--navy);}
+.filter-pill{display:inline-flex;align-items:center;gap:0.3rem;padding:0.32rem 0.7rem;border-radius:100px;border:1.5px solid var(--border);background:var(--white);color:var(--text-muted);font-size:0.82rem;font-weight:500;cursor:pointer;font-family:'DM Sans',sans-serif;transition:all 0.15s;}
+.filter-pill.active{background:var(--navy);color:#fff;border-color:var(--navy);}
+.pill-count{background:var(--cream-dark);color:var(--text-muted);border-radius:100px;padding:0.05rem 0.4rem;font-size:0.69rem;font-weight:700;}
+.filter-pill.active .pill-count{background:rgba(255,255,255,0.2);color:#fff;}
+.view-toggle{display:flex;gap:0.4rem;margin-left:auto;}
+.view-btn{padding:0.35rem 0.75rem;border-radius:8px;border:1.5px solid var(--border);background:var(--white);color:var(--text-muted);font-size:0.82rem;cursor:pointer;font-family:'DM Sans',sans-serif;transition:all 0.15s;}
+.view-btn.active{background:var(--gold);color:var(--navy);border-color:var(--gold);font-weight:700;}
+.tab-badge{background:var(--red);color:#fff;border-radius:100px;font-size:0.67rem;font-weight:700;padding:0.08rem 0.45rem;margin-left:0.3rem;vertical-align:middle;display:inline-block;}
+.quick-call-btn{background:var(--green);color:#fff;border:none;padding:0.25rem 0.55rem;border-radius:6px;font-size:0.73rem;font-weight:700;cursor:pointer;font-family:'DM Sans',sans-serif;white-space:nowrap;text-decoration:none;display:inline-block;}
+.quick-note-btn{background:var(--navy);color:var(--gold);border:none;padding:0.25rem 0.55rem;border-radius:6px;font-size:0.73rem;font-weight:600;cursor:pointer;font-family:'DM Sans',sans-serif;white-space:nowrap;margin-left:0.3rem;}
+/* ── VIEW CLASSES ── */
+#portal-leads.view-table .table-wrap{display:block;}
+#portal-leads.view-table .mobile-cards{display:none;}
+#portal-leads.view-table .pipeline-wrap{display:none;}
+#portal-leads.view-pipeline .table-wrap{display:none;}
+#portal-leads.view-pipeline .mobile-cards{display:none;}
+#portal-leads.view-pipeline .pipeline-wrap{display:block;}
+@media(max-width:640px){
+  #portal-leads.view-table .table-wrap{display:none;}
+  #portal-leads.view-table .mobile-cards{display:block;}
+}
+/* ── MOBILE CARDS ── */
+.mobile-cards{display:none;}
+.mobile-card{background:var(--white);border-radius:14px;padding:1rem 1.2rem;margin-bottom:0.8rem;border:1px solid var(--border);box-shadow:0 2px 8px rgba(13,31,60,0.05);cursor:pointer;}
+.mobile-card-top{display:flex;align-items:center;justify-content:space-between;margin-bottom:0.5rem;}
+.mobile-card-name{font-family:'Fraunces',serif;font-size:1rem;font-weight:700;color:var(--navy);}
+.mobile-card-row{display:flex;align-items:center;gap:1rem;flex-wrap:wrap;margin-bottom:0.35rem;}
+.mobile-card-info{font-size:0.82rem;color:var(--text-muted);}
+.mobile-card-call{display:block;width:100%;background:var(--gold);color:var(--navy);border:none;padding:0.75rem;border-radius:10px;font-size:0.92rem;font-weight:700;cursor:pointer;font-family:'DM Sans',sans-serif;text-align:center;text-decoration:none;margin-top:0.6rem;letter-spacing:0.01em;box-sizing:border-box;}
+/* ── PIPELINE ── */
+.pipeline-wrap{overflow-x:auto;padding-bottom:1rem;}
+.pipeline-board{display:flex;gap:1rem;min-width:860px;}
+.pipeline-col{flex:1;min-width:155px;background:var(--cream-dark);border-radius:14px;padding:0.9rem;}
+.pipeline-col-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:0.75rem;}
+.pipeline-col-title{font-family:'Fraunces',serif;font-size:0.85rem;font-weight:700;color:var(--navy);}
+.pipeline-col-count{background:var(--navy);color:#fff;border-radius:100px;font-size:0.68rem;font-weight:700;padding:0.1rem 0.5rem;}
+.pipeline-card{background:var(--white);border-radius:10px;padding:0.75rem;margin-bottom:0.6rem;border:1px solid var(--border);cursor:grab;transition:box-shadow 0.15s;}
+.pipeline-card:hover{box-shadow:0 4px 16px rgba(13,31,60,0.1);}
+.pipeline-card.dragging{opacity:0.45;cursor:grabbing;}
+.pipeline-card-name{font-weight:700;font-size:0.86rem;color:var(--navy);margin-bottom:0.25rem;}
+.pipeline-card-type{font-size:0.73rem;color:var(--gold);font-weight:600;margin-bottom:0.2rem;}
+.pipeline-card-age{font-size:0.7rem;color:var(--text-muted);}
+.pipeline-card-call{display:block;width:100%;background:var(--gold);color:var(--navy);border:none;padding:0.38rem;border-radius:6px;font-size:0.73rem;font-weight:700;cursor:pointer;font-family:'DM Sans',sans-serif;margin-top:0.5rem;text-align:center;text-decoration:none;box-sizing:border-box;}
 </style>
 </head>
 <body>
@@ -204,7 +257,7 @@ tr.lead-row:hover td{background:rgba(201,151,58,0.04);}
 
     <!-- Tabs -->
     <div class="tabs">
-      <button class="tab-btn active" onclick="switchTab('leads',this)">🎯 My Leads</button>
+      <button class="tab-btn active" onclick="switchTab('leads',this)">🎯 My Leads <span class="tab-badge" id="leadsTabBadge" style="display:none;"></span></button>
       <button class="tab-btn" onclick="switchTab('stats',this)">📊 Performance</button>
       <button class="tab-btn" onclick="switchTab('profile',this)">👤 Profile</button>
       <button class="tab-btn" onclick="switchTab('licenses',this)">🪪 Licenses</button>
@@ -212,16 +265,36 @@ tr.lead-row:hover td{background:rgba(201,151,58,0.04);}
     </div>
 
     <!-- LEADS TAB -->
-    <div class="tab-panel active" id="portal-leads">
+    <div class="tab-panel active view-table" id="portal-leads">
       <div class="section-header">
         <h2>Your Leads</h2>
-        <span style="font-size:0.82rem;color:var(--text-muted);">Click a lead to call and update status</span>
+        <div class="view-toggle">
+          <button class="view-btn active" id="viewTableBtn" onclick="setView('table')">☰ Table</button>
+          <button class="view-btn" id="viewPipelineBtn" onclick="setView('pipeline')">⬛ Pipeline</button>
+        </div>
       </div>
-      <div class="table-wrap">
+      <div class="leads-controls">
+        <div class="search-wrap">
+          <input class="leads-search" type="text" id="leadsSearch" placeholder="Search by name, phone, email, type, or ZIP..." oninput="setSearch(this.value)">
+        </div>
+        <div class="sort-row">
+          <span class="sort-label">Sort:</span>
+          <button class="sort-btn active" onclick="setSort('newest',this)">Newest First</button>
+          <button class="sort-btn" onclick="setSort('oldest',this)">Oldest First</button>
+          <button class="sort-btn" onclick="setSort('type',this)">Type A–Z</button>
+          <button class="sort-btn" onclick="setSort('status',this)">Status</button>
+        </div>
+        <div class="filter-row" id="filterRow"></div>
+      </div>
+      <div class="table-wrap" id="tableWrap">
         <table>
-          <thead><tr><th>Consumer</th><th>Email</th><th>Insurance</th><th>Status</th><th>Age</th><th>Callback</th><th>Rating</th><th>Notes</th></tr></thead>
+          <thead><tr><th>Consumer</th><th>Phone</th><th>Insurance</th><th>Status</th><th>Age</th><th>Callback</th><th>Rating</th><th>Actions</th></tr></thead>
           <tbody id="leadsTable"></tbody>
         </table>
+      </div>
+      <div class="mobile-cards" id="mobileCards"></div>
+      <div class="pipeline-wrap" id="pipelineWrap">
+        <div class="pipeline-board" id="pipelineBoard"></div>
       </div>
     </div>
 
@@ -474,6 +547,11 @@ let currentAgent = null;
 let currentLeadId = null;
 let myLeads = [];
 let currentRating = 0;
+let currentFilter = 'all';
+let currentSort = 'newest';
+let currentSearch = '';
+let currentView = 'table';
+let dragLeadId = null;
 
 // ════════════════════════════════════════════════════════════════
 // LOGIN — reads from Firebase, works on any device
@@ -614,7 +692,7 @@ function loadMyLeads() {
       ).sort((a,b) => new Date(b.matchedAt||b.submittedAt) - new Date(a.matchedAt||a.submittedAt));
     }
     updateStats();
-    renderTable();
+    renderView();
     checkCallbacks();
     checkNewLeads();
   });
@@ -638,6 +716,10 @@ function updateStats() {
   document.getElementById('s_contacted').textContent = contacted;
   document.getElementById('s_closed').textContent = closed;
   document.getElementById('s_rate').textContent = rate + '%';
+
+  const badge = document.getElementById('leadsTabBadge');
+  if(newLeadsCount > 0) { badge.textContent = newLeadsCount; badge.style.display = 'inline-block'; }
+  else { badge.style.display = 'none'; }
 
   const statuses = ['new','contacted','followup','closed','lost'];
   const labels = {new:'🆕 New',contacted:'📞 Contacted',followup:'🔄 Follow Up',closed:'✅ Closed',lost:'❌ Lost'};
@@ -700,24 +782,166 @@ function badge(s) {
   return `<span class="badge ${cls[s]||'badge-new'}">${lbl[s]||'🆕 New'}</span>`;
 }
 
+function getFilteredLeads() {
+  let leads = myLeads.slice();
+  if(currentSearch) {
+    const q = currentSearch;
+    leads = leads.filter(l =>
+      (l.firstName+' '+l.lastName).toLowerCase().includes(q) ||
+      (l.phone||'').toLowerCase().includes(q) ||
+      (l.email||'').toLowerCase().includes(q) ||
+      (l.insuranceType||'').toLowerCase().includes(q) ||
+      (l.zip||'').toLowerCase().includes(q)
+    );
+  }
+  if(currentFilter !== 'all') leads = leads.filter(l => (l.agentStatus||'new') === currentFilter);
+  if(currentSort === 'newest') leads.sort((a,b) => new Date(b.matchedAt||b.submittedAt) - new Date(a.matchedAt||a.submittedAt));
+  else if(currentSort === 'oldest') leads.sort((a,b) => new Date(a.matchedAt||a.submittedAt) - new Date(b.matchedAt||b.submittedAt));
+  else if(currentSort === 'type') leads.sort((a,b) => (a.insuranceType||'').localeCompare(b.insuranceType||''));
+  else if(currentSort === 'status') {
+    const ord = {new:0,contacted:1,followup:2,closed:3,lost:4};
+    leads.sort((a,b) => (ord[a.agentStatus||'new']||0) - (ord[b.agentStatus||'new']||0));
+  }
+  return leads;
+}
+
+function updateFilterPills() {
+  const statuses = ['all','new','contacted','followup','closed','lost'];
+  const labels = {all:'All',new:'🆕 New',contacted:'📞 Contacted',followup:'🔄 Callback',closed:'✅ Closed',lost:'❌ Lost'};
+  document.getElementById('filterRow').innerHTML = statuses.map(s => {
+    const count = s === 'all' ? myLeads.length : myLeads.filter(l => (l.agentStatus||'new') === s).length;
+    return `<button class="filter-pill${s===currentFilter?' active':''}" onclick="setFilter('${s}')">${labels[s]} <span class="pill-count">${count}</span></button>`;
+  }).join('');
+}
+
+function renderView() {
+  updateFilterPills();
+  if(currentView === 'pipeline') renderPipeline();
+  else { renderTable(); renderMobileCards(); }
+}
+
 function renderTable() {
   const tb = document.getElementById('leadsTable');
-  if(!myLeads.length) { tb.innerHTML = '<tr><td colspan="8" style="text-align:center;color:var(--text-muted);padding:3rem;">No leads assigned yet — check back soon!</td></tr>'; return; }
-  tb.innerHTML = myLeads.map(l => {
+  const leads = getFilteredLeads();
+  if(!leads.length) {
+    tb.innerHTML = `<tr><td colspan="8" style="text-align:center;color:var(--text-muted);padding:3rem;">${myLeads.length?'No leads match your search or filter.':'No leads assigned yet — check back soon!'}</td></tr>`;
+    return;
+  }
+  tb.innerHTML = leads.map(l => {
     const age = leadAge(l.matchedAt||l.submittedAt);
     const stars = '★'.repeat(l.agentRating||0) + '☆'.repeat(5-(l.agentRating||0));
     const cb = l.callbackDate ? new Date(l.callbackDate).toLocaleDateString() : '—';
     return `<tr class="lead-row" onclick="openLeadModal('${l.id}')">
       <td><strong>${l.firstName} ${l.lastName}</strong><br><span style="font-size:0.75rem;color:var(--text-muted);">${l.zip} · Age ${l.age||'?'}</span></td>
-      <td style="font-size:0.82rem;">${l.email||'—'}${l.email?`<button class="copy-btn" onclick="event.stopPropagation();copyText('${l.email}')">Copy</button>`:''}</td>
+      <td style="font-size:0.82rem;"><a href="tel:${l.phone}" onclick="event.stopPropagation()">${l.phone||'—'}</a></td>
       <td>${l.insuranceType}</td>
       <td>${badge(l.agentStatus||'new')}</td>
       <td class="${age.cls}">${age.text}</td>
       <td style="font-size:0.82rem;color:var(--text-muted);">${cb}</td>
       <td style="color:#f59e0b;font-size:0.85rem;">${stars}</td>
-      <td style="color:var(--text-muted);font-size:0.82rem;">${(l.agentNotes||[]).length?'📝'+(l.agentNotes||[]).length:'—'}</td>
+      <td onclick="event.stopPropagation()">
+        <a href="tel:${l.phone}" class="quick-call-btn">📞 Call</a>
+        <button class="quick-note-btn" onclick="quickNote('${l.id}')">📝</button>
+      </td>
     </tr>`;
   }).join('');
+}
+
+function renderMobileCards() {
+  const container = document.getElementById('mobileCards');
+  const leads = getFilteredLeads();
+  if(!leads.length) {
+    container.innerHTML = `<p style="text-align:center;color:var(--text-muted);padding:2rem;">${myLeads.length?'No leads match your search or filter.':'No leads assigned yet — check back soon!'}</p>`;
+    return;
+  }
+  container.innerHTML = leads.map(l => {
+    const age = leadAge(l.matchedAt||l.submittedAt);
+    return `<div class="mobile-card" onclick="openLeadModal('${l.id}')">
+      <div class="mobile-card-top">
+        <span class="mobile-card-name">${l.firstName} ${l.lastName}</span>
+        ${badge(l.agentStatus||'new')}
+      </div>
+      <div class="mobile-card-row">
+        <span class="mobile-card-info">📱 ${l.phone||'—'}</span>
+        <span class="mobile-card-info">🏷️ ${l.insuranceType}</span>
+      </div>
+      <div class="mobile-card-row">
+        <span class="mobile-card-info">📍 ${l.zip}</span>
+        <span class="mobile-card-info ${age.cls}">⏱ ${age.text}</span>
+      </div>
+      <a href="tel:${l.phone}" class="mobile-card-call" onclick="event.stopPropagation()">📞 CALL NOW — ${l.phone||'—'}</a>
+    </div>`;
+  }).join('');
+}
+
+function renderPipeline() {
+  const board = document.getElementById('pipelineBoard');
+  const statuses = ['new','contacted','followup','closed','lost'];
+  const titles = {new:'🆕 New',contacted:'📞 Contacted',followup:'🔄 Callback',closed:'✅ Closed',lost:'❌ Lost'};
+  let leads = myLeads.slice();
+  if(currentSearch) {
+    const q = currentSearch;
+    leads = leads.filter(l =>
+      (l.firstName+' '+l.lastName).toLowerCase().includes(q) ||
+      (l.phone||'').toLowerCase().includes(q) ||
+      (l.insuranceType||'').toLowerCase().includes(q)
+    );
+  }
+  board.innerHTML = statuses.map(s => {
+    const col = leads.filter(l => (l.agentStatus||'new') === s);
+    return `<div class="pipeline-col" ondragover="event.preventDefault()" ondrop="dropCard('${s}',event)">
+      <div class="pipeline-col-header">
+        <span class="pipeline-col-title">${titles[s]}</span>
+        <span class="pipeline-col-count">${col.length}</span>
+      </div>
+      ${col.map(l => {
+        const age = leadAge(l.matchedAt||l.submittedAt);
+        return `<div class="pipeline-card" draggable="true" ondragstart="dragCard('${l.id}',event)" onclick="openLeadModal('${l.id}')">
+          <div class="pipeline-card-name">${l.firstName} ${l.lastName}</div>
+          <div class="pipeline-card-type">${l.insuranceType}</div>
+          <div class="pipeline-card-age ${age.cls}">${age.text}</div>
+          <a href="tel:${l.phone}" class="pipeline-card-call" onclick="event.stopPropagation()">📞 Call Now</a>
+        </div>`;
+      }).join('')}
+    </div>`;
+  }).join('');
+}
+
+function setFilter(f) {
+  currentFilter = f;
+  renderView();
+}
+function setSort(s, btn) {
+  currentSort = s;
+  document.querySelectorAll('.sort-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  renderView();
+}
+function setSearch(v) { currentSearch = v.toLowerCase(); renderView(); }
+function setView(v) {
+  currentView = v;
+  document.getElementById('viewTableBtn').classList.toggle('active', v==='table');
+  document.getElementById('viewPipelineBtn').classList.toggle('active', v==='pipeline');
+  const panel = document.getElementById('portal-leads');
+  panel.classList.remove('view-table','view-pipeline');
+  panel.classList.add('view-'+v);
+  renderView();
+}
+function dragCard(id, e) { dragLeadId = id; e.dataTransfer.effectAllowed = 'move'; }
+function dropCard(status, e) {
+  e.preventDefault();
+  if(!dragLeadId) return;
+  db.ref('leads/'+dragLeadId).update({agentStatus:status});
+  dragLeadId = null;
+}
+function quickNote(leadId) {
+  const text = prompt('Quick note for this lead:');
+  if(!text || !text.trim()) return;
+  const lead = myLeads.find(l => l.id === leadId);
+  if(!lead) return;
+  const notes = lead.agentNotes || [];
+  notes.push({text: text.trim(), date: new Date().toLocaleString()});
+  db.ref('leads/'+leadId+'/agentNotes').set(notes);
 }
 
 function copyText(t) { if(!t)return; navigator.clipboard.writeText(t).then(()=>alert('✅ Copied!')).catch(()=>{}); }
@@ -938,7 +1162,8 @@ function updatePassword() {
     msg.textContent = 'Please enter your current password.';
     msg.style.color = 'var(--red)'; msg.style.display = 'block'; return;
   }
-  if(current !== currentAgent.password) {
+  const storedPass = currentAgent.portalPassword || currentAgent.password;
+  if(current !== storedPass) {
     msg.textContent = 'Current password is incorrect.';
     msg.style.color = 'var(--red)'; msg.style.display = 'block'; return;
   }
@@ -950,8 +1175,23 @@ function updatePassword() {
     msg.textContent = 'Passwords do not match.';
     msg.style.color = 'var(--red)'; msg.style.display = 'block'; return;
   }
-  db.ref('agents/' + currentAgent.id + '/password').set(newPass);
+  const updates = {};
+  updates['agents/'+currentAgent.id+'/portalPassword'] = newPass;
+  updates['agents/'+currentAgent.id+'/password'] = newPass;
+  db.ref().update(updates);
+  currentAgent.portalPassword = newPass;
   currentAgent.password = newPass;
+  fetch('https://onecallshield-emails.chris-santoro55.workers.dev', {
+    method: 'POST',
+    headers: {'Content-Type':'application/json'},
+    body: JSON.stringify({
+      type: 'update_agent_password',
+      agentId: currentAgent.id,
+      agentEmail: currentAgent.email,
+      agentName: currentAgent.firstName+' '+currentAgent.lastName,
+      newPassword: newPass
+    })
+  }).catch(()=>{});
   document.getElementById('currentPassInput').value = '';
   document.getElementById('newPassInput').value = '';
   document.getElementById('confirmPassInput').value = '';
