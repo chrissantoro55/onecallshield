@@ -7,6 +7,7 @@
 <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,600;0,9..144,700&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
 <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-database-compat.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
 <style>
 :root{--navy:#0d1f3c;--navy-mid:#1a3460;--gold:#c9973a;--gold-light:#e8b96a;--cream:#f8f4ee;--cream-dark:#ede7dc;--white:#fff;--text:#1a1a2e;--text-muted:#5a6480;--green:#2d7a4f;--green-light:#e8f5ee;--red:#c0392b;--red-light:#fdf0ef;--border:rgba(13,31,60,0.08);}
 *{margin:0;padding:0;box-sizing:border-box;}
@@ -97,11 +98,8 @@ tr.lead-row:hover td{background:rgba(201,151,58,0.04);}
 .info-value a{color:var(--gold);text-decoration:none;}
 .info-value.gold{color:var(--gold);}
 .call-btn{display:block;width:100%;background:var(--green);color:#fff;border:none;padding:1rem;border-radius:10px;font-size:1rem;font-weight:700;cursor:pointer;font-family:'DM Sans',sans-serif;margin-bottom:1.2rem;text-align:center;text-decoration:none;letter-spacing:0.02em;}
-.script-box{background:rgba(13,31,60,0.03);border:1px solid rgba(13,31,60,0.1);border-radius:10px;padding:1rem 1.2rem;margin-bottom:1.2rem;}
-.script-box h5{font-family:'Fraunces',serif;color:var(--navy);font-size:0.9rem;font-weight:600;margin-bottom:0.5rem;}
-.script-box p{font-size:0.85rem;color:var(--text-muted);line-height:1.6;margin-bottom:0.5rem;}
-.script-box ul{padding-left:1.2rem;}
-.script-box ul li{font-size:0.83rem;color:var(--text-muted);line-height:1.7;}
+.script-box{margin-bottom:0;}
+.script-known-inline{color:#4ade80;font-size:0.78rem;font-style:italic;}
 .status-row{display:flex;align-items:center;gap:0.8rem;margin-bottom:1rem;padding:0.9rem 1rem;background:var(--cream);border-radius:10px;}
 .status-row label{font-size:0.8rem;color:var(--text-muted);font-weight:500;white-space:nowrap;}
 .status-row select{flex:1;background:#fff;border:1.5px solid rgba(13,31,60,0.12);border-radius:8px;padding:0.55rem 0.8rem;font-size:0.9rem;font-family:'DM Sans',sans-serif;color:var(--navy);outline:none;}
@@ -212,6 +210,31 @@ tr.lead-row:hover td{background:rgba(201,151,58,0.04);}
 .pipeline-card{background:#fff;margin:8px;border-radius:10px;padding:12px;cursor:pointer;border-left:4px solid #ccc;box-shadow:0 1px 4px rgba(0,0,0,0.06);transition:transform 0.15s;}
 .pipeline-card:hover{transform:translateY(-2px);}
 .badge-quoted{background:rgba(124,58,237,0.1);color:#7c3aed;}
+/* ── PHASE 2 TIMELINE ── */
+.timeline-wrap{margin-top:1.2rem;}
+.timeline-wrap h4{font-family:'Fraunces',serif;font-size:1rem;color:var(--navy);font-weight:600;margin-bottom:0.8rem;}
+.timeline-list{display:flex;flex-direction:column;gap:0;max-height:200px;overflow-y:auto;}
+.timeline-item{display:flex;gap:10px;padding:8px 0;border-bottom:1px solid var(--cream-dark);font-size:0.82rem;color:var(--text-muted);}
+.timeline-icon{font-size:1rem;flex-shrink:0;width:20px;text-align:center;}
+/* ── PHASE 2 CHARTS ── */
+.chart-grid{display:grid;grid-template-columns:1fr 1fr;gap:1rem;margin-bottom:1rem;}
+.chart-card{background:#fff;border-radius:14px;padding:1.2rem;border:1px solid var(--cream-dark);}
+.chart-card h4{font-family:'Fraunces',serif;font-size:0.95rem;color:var(--navy);margin-bottom:1rem;}
+/* ── PHASE 2 BADGES ── */
+.badge-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:0.8rem;margin-top:1rem;}
+.badge-card{border-radius:12px;padding:1rem;text-align:center;border:1.5px solid transparent;}
+.badge-card.earned{background:rgba(201,151,58,0.1);border-color:var(--gold);}
+.badge-card.locked{background:var(--cream);border-color:var(--cream-dark);opacity:0.6;}
+.badge-icon{font-size:1.8rem;margin-bottom:0.4rem;}
+.badge-name{font-size:0.78rem;font-weight:700;color:var(--navy);}
+.badge-req{font-size:0.7rem;color:var(--text-muted);margin-top:0.2rem;}
+/* ── PHASE 2 OBJECTIONS ── */
+.objection-toggle{width:100%;background:rgba(201,151,58,0.1);border:1px solid rgba(201,151,58,0.3);border-radius:8px;padding:8px 14px;font-size:0.82rem;font-weight:600;color:var(--gold);cursor:pointer;text-align:left;margin-top:0.8rem;}
+.objection-list{display:none;margin-top:0.5rem;border-radius:8px;overflow:hidden;}
+.objection-item{padding:10px 14px;border-bottom:1px solid rgba(255,255,255,0.07);}
+.objection-q{font-size:0.8rem;color:rgba(255,255,255,0.5);margin-bottom:4px;}
+.objection-a{font-size:0.82rem;color:#fff;line-height:1.5;}
+@media(max-width:600px){.chart-grid{grid-template-columns:1fr;}.badge-grid{grid-template-columns:repeat(2,1fr);}}
 </style>
 </head>
 <body>
@@ -366,9 +389,27 @@ tr.lead-row:hover td{background:rgba(201,151,58,0.04);}
         <div class="stat-card"><span class="stat-card-num green" id="s_closed">0</span><div class="stat-card-label">Policies Sold 🏆</div></div>
         <div class="stat-card"><span class="stat-card-num gold" id="s_rate">0%</span><div class="stat-card-label">Close Rate</div></div>
       </div>
-      <div style="background:var(--white);border-radius:16px;padding:1.5rem;border:1px solid var(--border);">
+      <div class="chart-grid">
+        <div class="chart-card">
+          <h4>Lead Type Breakdown</h4>
+          <canvas id="chartTypes" height="220"></canvas>
+        </div>
+        <div class="chart-card">
+          <h4>Status Breakdown</h4>
+          <canvas id="chartStatus" height="220"></canvas>
+        </div>
+      </div>
+      <div class="chart-card" style="margin-bottom:1rem;">
+        <h4>Weekly Lead Volume (Last 8 Weeks)</h4>
+        <canvas id="chartWeekly" height="120"></canvas>
+      </div>
+      <div style="background:var(--white);border-radius:16px;padding:1.5rem;border:1px solid var(--border);margin-bottom:1rem;">
         <h3 style="font-family:'Fraunces',serif;font-size:1rem;color:var(--navy);margin-bottom:1rem;">Lead Status Breakdown</h3>
         <div id="statsBreakdown"></div>
+      </div>
+      <div class="chart-card">
+        <h4>🏆 Achievements</h4>
+        <div class="badge-grid" id="achievementGrid"></div>
       </div>
     </div>
 
@@ -559,6 +600,10 @@ tr.lead-row:hover td{background:rgba(201,151,58,0.04);}
           <textarea id="noteInput" placeholder="Add a note..."></textarea>
           <button class="add-note-btn" onclick="addNote()">+ Add</button>
         </div>
+      </div>
+      <div class="timeline-wrap">
+        <h4>📋 Activity Timeline</h4>
+        <div class="timeline-list" id="timelineList"></div>
       </div>
     </div>
     <div class="modal-footer">
@@ -1098,12 +1143,7 @@ function openLeadModal(id) {
     <div class="info-item"><div class="info-label">TCPA Consent</div><div class="info-value" style="font-size:0.8rem;color:var(--green);">✅ ${new Date(l.submittedAt).toLocaleString()}</div></div>
     ${l.lifeType?`<div class="info-item"><div class="info-label">Life Type</div><div class="info-value">${l.lifeType}</div></div><div class="info-item"><div class="info-label">Face Amount</div><div class="info-value">${l.faceAmount||'—'}</div></div>`:``}`;
 
-  const script = SCRIPTS[l.insuranceType] || SCRIPTS['Other'];
-  document.getElementById('scriptBox').innerHTML = `
-    <h5>💬 Opening Script</h5>
-    <p style="font-style:italic;">"${script.opener}"</p>
-    <h5 style="margin-top:0.8rem;">🎯 Key Questions</h5>
-    <ul>${script.questions.map(q=>`<li>${q}</li>`).join('')}</ul>`;
+  document.getElementById('scriptBox').innerHTML = buildSmartScript(l);
 
   document.getElementById('statusSelect').value = l.agentStatus || 'new';
   document.getElementById('callbackInput').value = l.callbackDate ? new Date(l.callbackDate).toISOString().slice(0,16) : '';
@@ -1128,6 +1168,8 @@ function openLeadModal(id) {
     }
   }
 
+  renderTimeline(l.timeline||[]);
+  logActivity(id, '👁️', 'Lead viewed — ' + l.insuranceType);
   document.getElementById('leadModal').classList.add('open');
 }
 
@@ -1166,6 +1208,7 @@ function addNote() {
   notes.push({text, date: new Date().toLocaleString()});
   // Save to Firebase
   db.ref('leads/' + currentLeadId + '/agentNotes').set(notes);
+  logActivity(currentLeadId, '📝', 'Note added: ' + text.substring(0,60) + (text.length>60?'…':''));
   renderNotes(notes);
   document.getElementById('noteInput').value = '';
 }
@@ -1179,6 +1222,9 @@ function saveLeadChanges() {
     callbackDate: callbackVal ? new Date(callbackVal).toISOString() : '',
     agentRating: currentRating
   });
+  const statusLabels={new:'🆕 New',contacted:'📞 Contacted',followup:'📅 Callback Scheduled',quoted:'📋 Quoted',closed:'✅ Closed',lost:'❌ Lost'};
+  logActivity(currentLeadId, '📞', 'Status updated → ' + (statusLabels[status]||status));
+  if(callbackVal) logActivity(currentLeadId, '📅', 'Callback scheduled: ' + new Date(callbackVal).toLocaleString());
   if(status === 'closed') launchConfetti();
   closeModal();
   alert('✅ Lead updated!' + (status==='closed'?' 🎉 Congratulations!':''));
@@ -1228,6 +1274,7 @@ function switchTab(name, btn) {
   document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
   document.getElementById('portal-'+name).classList.add('active');
   btn.classList.add('active');
+  if(name === 'stats') setTimeout(renderCharts, 50);
 }
 
 function doLogout() {
@@ -1407,6 +1454,219 @@ function savePhotoUrl() {
   document.getElementById('profilePhotoImg').style.display = 'block';
   document.getElementById('profileInitials').style.display = 'none';
   alert('✅ Photo saved!');
+}
+
+// ════════════════════════════════════════════════════════════════
+// SMART SCRIPT ENGINE
+// ════════════════════════════════════════════════════════════════
+const OBJECTIONS = {
+  'Medicare':[
+    {q:'I already have coverage',a:"Great news — there's no conflict. I can review what you have and make sure you're not missing benefits or overpaying."},
+    {q:"I'm not turning 65 yet",a:"Perfect timing — the best time to plan is before your window opens. I can walk you through your options now so you're ready."},
+    {q:'My doctor told me what to get',a:"Doctors are great, but Medicare specialists know the plans. Let me make sure the plan they mentioned is actually the best fit for you."}
+  ],
+  'Auto Insurance':[
+    {q:"I'm happy with my current carrier",a:"That's great! Many people I work with felt the same way — until I found them a better rate for the same coverage. Takes 5 minutes."},
+    {q:'I already got quotes online',a:"Online quotes are a starting point. I have access to rates you can't get online, plus bundling discounts."},
+    {q:"I don't have time right now",a:"I completely respect that. Can I call you back at a specific time? Most people save money in under 10 minutes."}
+  ],
+  'Life Insurance':[
+    {q:"I can't afford it",a:"Term life is surprisingly affordable — often less than a streaming subscription. Let me show you actual numbers with no obligation."},
+    {q:'I have life insurance through work',a:"Group life from work typically only covers 1-2x salary and disappears if you change jobs. Personal coverage fills that gap."},
+    {q:'I need to talk to my spouse first',a:"Absolutely — would it help if we scheduled a quick call with both of you? I can walk through options together."}
+  ],
+  'Homeowners Insurance':[
+    {q:'I just renewed my policy',a:"Perfect timing — you can switch any time and get prorated. If I can save you money, there's no reason to wait."},
+    {q:'My mortgage company handles it',a:"They place coverage for their protection, not yours. I can make sure you have the right coverage at the best rate."},
+    {q:"I've been with the same company for years",a:"Loyalty rarely gets rewarded in insurance. Let me do a quick comparison — you might be surprised."}
+  ],
+  'Health Insurance':[
+    {q:'I get insurance through work',a:"Many people supplement employer plans for gaps in coverage or to lower out-of-pocket costs. Worth exploring."},
+    {q:"It's too expensive",a:"That's exactly why people call me — I shop multiple carriers to find plans that fit your budget and needs."},
+    {q:"I'm healthy so I don't need it",a:"The best time to get coverage is when you're healthy — premiums are lower and you won't be denied for pre-existing conditions."}
+  ],
+  'Renters Insurance':[
+    {q:'My landlord has insurance',a:"Your landlord's policy covers the building, not your belongings. Renters insurance is typically under $20/month for full protection."},
+    {q:"I don't have much stuff",a:"It's not just about belongings — it covers liability too. If someone gets hurt in your apartment, you're protected."},
+    {q:"I'll think about it",a:"Renters insurance is one of the simplest decisions in insurance. Takes 5 minutes and could save you thousands."}
+  ],
+  'Other':[
+    {q:'I need to think about it',a:"Totally understood. What specific questions do you have? I'd rather address them now than have you worry about it."},
+    {q:"I'm just shopping around",a:"That's smart! I'll make sure you have the best option in front of you so you can make a confident decision."},
+    {q:"I'm not ready",a:"No pressure at all. Can I ask what would need to change for this to feel right? I might be able to address it now."}
+  ]
+};
+
+function buildSmartScript(lead) {
+  const type = lead.insuranceType || 'Other';
+  const script = SCRIPTS[type] || SCRIPTS['Other'];
+  const objections = OBJECTIONS[type] || OBJECTIONS['Other'];
+
+  const opener = script.opener.replace('[Name]', lead.firstName||'there');
+
+  let enhancedNote = '';
+  if(lead.hasEnhancedData) {
+    if(type==='Medicare' && lead.medicareStatus) enhancedNote = `<div style="color:#4ade80;font-size:0.78rem;font-style:italic;margin-top:0.4rem;">✅ Already know: Currently <strong>${lead.medicareStatus}</strong></div>`;
+    else if(type==='Auto Insurance' && lead.vehicleYear) enhancedNote = `<div style="color:#4ade80;font-size:0.78rem;font-style:italic;margin-top:0.4rem;">✅ Already know: ${lead.vehicleYear} vehicle</div>`;
+    else if(type==='Life Insurance' && lead.lifeType) enhancedNote = `<div style="color:#4ade80;font-size:0.78rem;font-style:italic;margin-top:0.4rem;">✅ Already know: Looking for <strong>${lead.lifeType}</strong></div>`;
+    else if(type==='Homeowners Insurance' && lead.homeYear) enhancedNote = `<div style="color:#4ade80;font-size:0.78rem;font-style:italic;margin-top:0.4rem;">✅ Already know: Home from <strong>${lead.homeYear}</strong></div>`;
+  }
+
+  const knownMap = {
+    lifeType: q => q.toLowerCase().includes('term') || q.toLowerCase().includes('whole'),
+    faceAmount: q => q.toLowerCase().includes('coverage amount'),
+    vehicleYear: q => q.toLowerCase().includes('vehicle'),
+    medicareStatus: q => q.toLowerCase().includes('enrolled') || q.toLowerCase().includes('turning 65')
+  };
+
+  const questionItems = script.questions.map(q => {
+    let knownVal = null;
+    if(lead.lifeType && knownMap.lifeType(q)) knownVal = lead.lifeType;
+    else if(lead.faceAmount && knownMap.faceAmount(q)) knownVal = lead.faceAmount;
+    else if(lead.vehicleYear && knownMap.vehicleYear(q)) knownVal = lead.vehicleYear;
+    else if(lead.medicareStatus && knownMap.medicareStatus(q)) knownVal = lead.medicareStatus;
+    if(knownVal) return `<li><span class="script-known-inline">✅ Already know: ${knownVal}</span></li>`;
+    return `<li style="color:rgba(255,255,255,0.85);font-size:0.83rem;line-height:1.7;">${q}</li>`;
+  }).join('');
+
+  const objHtml = objections.map(o =>
+    `<div class="objection-item">
+      <div class="objection-q">"${o.q}"</div>
+      <div class="objection-a">${o.a}</div>
+    </div>`
+  ).join('');
+
+  return `<div style="background:#0d1f3c;border-radius:10px;padding:1rem 1.2rem;margin-bottom:1.2rem;">
+    <h5 style="font-family:'Fraunces',serif;color:var(--gold);font-size:0.9rem;font-weight:600;margin-bottom:0.5rem;">💬 Opening Script</h5>
+    <p style="font-style:italic;color:#fff;font-size:0.85rem;line-height:1.6;">"${opener}"</p>
+    ${enhancedNote}
+    <h5 style="font-family:'Fraunces',serif;color:var(--gold);font-size:0.9rem;font-weight:600;margin:0.8rem 0 0.5rem;">🎯 Key Questions</h5>
+    <ul style="padding-left:1.2rem;">${questionItems}</ul>
+    <button class="objection-toggle" onclick="var l=this.nextElementSibling;l.style.display=l.style.display==='block'?'none':'block';">💡 Objection Handlers</button>
+    <div class="objection-list">${objHtml}</div>
+  </div>`;
+}
+
+// ════════════════════════════════════════════════════════════════
+// ACTIVITY TIMELINE
+// ════════════════════════════════════════════════════════════════
+function renderTimeline(timeline) {
+  const wrap = document.getElementById('timelineList');
+  if(!wrap) return;
+  if(!timeline || !timeline.length) {
+    wrap.innerHTML = '<p style="font-size:0.8rem;color:var(--text-muted);text-align:center;padding:0.5rem;">No activity yet</p>';
+    return;
+  }
+  wrap.innerHTML = [...timeline].reverse().map(t =>
+    `<div class="timeline-item">
+      <span class="timeline-icon">${t.icon}</span>
+      <div>
+        <span style="color:var(--text);font-size:0.82rem;">${t.text}</span>
+        <span style="display:block;font-size:0.72rem;color:var(--text-muted);margin-top:2px;">${t.date}</span>
+      </div>
+    </div>`
+  ).join('');
+}
+
+function logActivity(leadId, icon, text) {
+  if(!leadId) return;
+  const lead = myLeads.find(l => l.id === leadId);
+  if(!lead) return;
+  const timeline = (lead.timeline || []).slice();
+  timeline.push({icon, text, date: new Date().toLocaleString()});
+  db.ref('leads/' + leadId + '/timeline').set(timeline);
+  if(leadId === currentLeadId) renderTimeline(timeline);
+}
+
+// ════════════════════════════════════════════════════════════════
+// PERFORMANCE CHARTS
+// ════════════════════════════════════════════════════════════════
+let _charts = {};
+function renderCharts() {
+  const types = ['Auto Insurance','Homeowners Insurance','Renters Insurance','Life Insurance','Health Insurance','Medicare','Other'];
+  const statuses = ['new','contacted','followup','quoted','closed','lost'];
+  const typeColors = ['#c9973a','#1a3460','#2d7a4f','#7c3aed','#d97706','#2196f3','#9e9e9e'];
+  const statusColors = ['#c9973a','#1a3460','#d97706','#7c3aed','#2d7a4f','#c0392b'];
+
+  Object.values(_charts).forEach(c => { try { c.destroy(); } catch(e){} });
+  _charts = {};
+
+  const ctxTypes = document.getElementById('chartTypes');
+  if(ctxTypes) {
+    const typeCounts = types.map(t => myLeads.filter(l => l.insuranceType === t).length);
+    _charts.types = new Chart(ctxTypes, {
+      type: 'doughnut',
+      data: {
+        labels: types.map(t => t.replace(' Insurance','')),
+        datasets: [{data: typeCounts, backgroundColor: typeColors, borderWidth: 2, borderColor: '#fff'}]
+      },
+      options: {plugins:{legend:{position:'right',labels:{font:{size:10},boxWidth:12}}},cutout:'65%'}
+    });
+  }
+
+  const ctxStatus = document.getElementById('chartStatus');
+  if(ctxStatus) {
+    const statusCounts = statuses.map(s => myLeads.filter(l => (l.agentStatus||'new') === s).length);
+    _charts.status = new Chart(ctxStatus, {
+      type: 'bar',
+      data: {
+        labels: ['New','Contacted','Callback','Quoted','Closed','Lost'],
+        datasets: [{data: statusCounts, backgroundColor: statusColors, borderRadius: 6, borderSkipped: false}]
+      },
+      options: {plugins:{legend:{display:false}},scales:{y:{ticks:{stepSize:1},grid:{color:'rgba(0,0,0,0.05)'}},x:{grid:{display:false}}}}
+    });
+  }
+
+  const ctxWeekly = document.getElementById('chartWeekly');
+  if(ctxWeekly) {
+    const now = new Date();
+    const weekLabels = [], weekCounts = [];
+    for(let i = 7; i >= 0; i--) {
+      const wEnd = new Date(now); wEnd.setDate(now.getDate() - i * 7);
+      const wStart = new Date(wEnd); wStart.setDate(wEnd.getDate() - 6);
+      weekLabels.push('W' + (8 - i));
+      weekCounts.push(myLeads.filter(l => {
+        const d = new Date(l.matchedAt||l.submittedAt);
+        return d >= wStart && d <= wEnd;
+      }).length);
+    }
+    _charts.weekly = new Chart(ctxWeekly, {
+      type: 'line',
+      data: {
+        labels: weekLabels,
+        datasets: [{data: weekCounts, borderColor:'#c9973a', backgroundColor:'rgba(201,151,58,0.1)', fill:true, tension:0.4, pointBackgroundColor:'#c9973a', pointRadius:4}]
+      },
+      options: {plugins:{legend:{display:false}},scales:{y:{ticks:{stepSize:1},grid:{color:'rgba(0,0,0,0.05)'}},x:{grid:{display:false}}}}
+    });
+  }
+
+  checkBadges();
+}
+
+function checkBadges() {
+  const total = myLeads.length;
+  const closed = myLeads.filter(l => l.agentStatus === 'closed').length;
+  const contacted = myLeads.filter(l => l.agentStatus && l.agentStatus !== 'new').length;
+  const rate = total > 0 ? Math.round((closed/total)*100) : 0;
+
+  const BADGES = [
+    {icon:'🎯', name:'First Contact',  req:'Contact your first lead',      earned: contacted >= 1},
+    {icon:'🏆', name:'First Close',    req:'Close your first policy',       earned: closed >= 1},
+    {icon:'⚡', name:'Closer',         req:'Close 5 policies',              earned: closed >= 5},
+    {icon:'🔥', name:'On Fire',        req:'Close 10 policies',             earned: closed >= 10},
+    {icon:'💯', name:'Century',        req:'Receive 100 leads',             earned: total >= 100},
+    {icon:'📊', name:'25% Close Rate', req:'Maintain 25%+ close rate',     earned: rate >= 25}
+  ];
+
+  const grid = document.getElementById('achievementGrid');
+  if(!grid) return;
+  grid.innerHTML = BADGES.map(b =>
+    `<div class="badge-card ${b.earned?'earned':'locked'}">
+      <div class="badge-icon">${b.icon}</div>
+      <div class="badge-name">${b.name}</div>
+      <div class="badge-req">${b.earned?'✅ Earned':b.req}</div>
+    </div>`
+  ).join('');
 }
 </script>
 </body>
