@@ -235,6 +235,41 @@ tr.lead-row:hover td{background:rgba(201,151,58,0.04);}
 .objection-q{font-size:0.8rem;color:rgba(255,255,255,0.5);margin-bottom:4px;}
 .objection-a{font-size:0.82rem;color:#fff;line-height:1.5;}
 @media(max-width:600px){.chart-grid{grid-template-columns:1fr;}.badge-grid{grid-template-columns:repeat(2,1fr);}}
+/* ── PHASE 3 MOBILE NAV ── */
+.mobile-bottom-nav{display:none;position:fixed;bottom:0;left:0;right:0;background:var(--navy);border-top:2px solid var(--gold);z-index:100;padding:0 0 env(safe-area-inset-bottom);}
+.mob-nav-btn{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:8px 4px;background:none;border:none;cursor:pointer;color:rgba(255,255,255,0.4);font-family:'DM Sans',sans-serif;position:relative;}
+.mob-nav-btn.active{color:var(--gold);}
+.mob-nav-icon{font-size:1.3rem;line-height:1;}
+.mob-nav-label{font-size:0.6rem;font-weight:600;text-transform:uppercase;letter-spacing:0.05em;margin-top:3px;}
+.mob-nav-badge{position:absolute;top:4px;right:calc(50% - 18px);background:#c0392b;color:#fff;border-radius:100px;font-size:0.6rem;font-weight:700;padding:1px 5px;min-width:16px;text-align:center;display:none;}
+/* ── PHASE 3 MOBILE LEAD CARDS ── */
+#mobileLeadCards{display:none;}
+.mob-lead-card{background:#fff;border-radius:14px;padding:16px;margin-bottom:12px;border-left:4px solid #ccc;box-shadow:0 2px 8px rgba(13,31,60,0.08);}
+.mob-lead-name{font-family:'Fraunces',serif;font-size:1.05rem;font-weight:700;color:var(--navy);}
+.mob-lead-type{font-size:0.85rem;color:var(--text-muted);margin:4px 0;}
+.mob-lead-actions{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:12px;}
+.mob-call-btn{background:var(--gold);color:var(--navy);border:none;border-radius:10px;padding:12px;font-weight:700;font-size:0.9rem;cursor:pointer;font-family:'DM Sans',sans-serif;text-decoration:none;display:block;text-align:center;}
+.mob-view-btn{background:var(--navy);color:#fff;border:none;border-radius:10px;padding:12px;font-weight:700;font-size:0.9rem;cursor:pointer;font-family:'DM Sans',sans-serif;width:100%;}
+/* ── PHASE 3 BANNER ── */
+.new-lead-banner{position:fixed;top:0;left:0;right:0;z-index:999;background:var(--navy);border-bottom:3px solid var(--gold);padding:12px 20px;display:flex;align-items:center;justify-content:space-between;gap:1rem;flex-wrap:wrap;transform:translateY(-100%);transition:transform 0.3s ease;}
+.new-lead-banner.show{transform:translateY(0);}
+/* ── PHASE 3 POLISH ── */
+.tab-panel.active{animation:fadeIn 0.2s ease;}
+@keyframes fadeIn{from{opacity:0;transform:translateY(4px);}to{opacity:1;transform:translateY(0);}}
+.empty-state{text-align:center;padding:3rem 1rem;}
+.empty-shield{font-size:4rem;animation:pulse 2s ease-in-out infinite;display:block;margin-bottom:1rem;}
+@keyframes pulse{0%,100%{transform:scale(1);opacity:1;}50%{transform:scale(1.08);opacity:0.8;}}
+.sync-indicator{font-size:0.72rem;color:var(--text-muted);text-align:right;margin-top:0.3rem;}
+.login-screen{background:linear-gradient(135deg,#0d1f3c 0%,#1a3460 50%,#0d1f3c 100%);background-size:400% 400%;animation:gradientShift 8s ease infinite;}
+@keyframes gradientShift{0%{background-position:0% 50%;}50%{background-position:100% 50%;}100%{background-position:0% 50%;}}
+.login-card{box-shadow:0 30px 70px rgba(0,0,0,0.45);}
+@media(max-width:768px){
+  .mobile-bottom-nav{display:flex;}
+  .tabs{display:none;}
+  #portal-leads .table-wrap{display:none!important;}
+  #mobileLeadCards{display:block;}
+  .main{padding-bottom:72px;}
+}
 </style>
 </head>
 <body>
@@ -248,6 +283,7 @@ tr.lead-row:hover td{background:rgba(201,151,58,0.04);}
     <input type="email" id="portalEmail" placeholder="Your email address" onkeydown="if(event.key==='Enter')doPortalLogin()">
     <input type="password" id="portalPass" placeholder="Your portal password" onkeydown="if(event.key==='Enter')doPortalLogin()">
     <button class="login-btn" id="loginBtn" onclick="doPortalLogin()">Sign In →</button>
+    <p style="color:rgba(201,151,58,0.65);font-size:0.82rem;margin-top:0.6rem;letter-spacing:0.01em;">Your leads are waiting 🎯</p>
     <p class="login-error" id="loginError">Invalid email or password. Please try again.</p>
     <button onclick="document.getElementById('forgotMsg').style.display='block'" style="background:none;border:none;color:rgba(255,255,255,0.35);font-size:0.78rem;cursor:pointer;font-family:'DM Sans',sans-serif;margin-top:0.5rem;text-decoration:underline;">Forgot password?</button>
     <p id="forgotMsg" style="display:none;background:rgba(255,255,255,0.07);border-radius:8px;padding:0.7rem;color:rgba(255,255,255,0.6);font-size:0.8rem;margin-top:0.6rem;">Contact chris@onecallshield.com to reset your password.</p>
@@ -307,14 +343,19 @@ tr.lead-row:hover td{background:rgba(201,151,58,0.04);}
       </div>
     </div>
 
-    <!-- New Lead Alert -->
-    <div class="new-lead-alert" id="newLeadAlert" style="display:none;">
-      <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:0.8rem;">
-        <div>
-          <div style="font-family:'Fraunces',serif;color:var(--gold);font-size:0.95rem;font-weight:700;" id="newLeadAlertTitle">🎯 New lead!</div>
-          <div style="color:rgba(255,255,255,0.5);font-size:0.78rem;margin-top:0.15rem;" id="newLeadAlertSub">Contact them now for best results!</div>
+    <!-- New Lead Banner (fixed top) -->
+    <div class="new-lead-banner" id="newLeadAlert">
+      <div style="display:flex;align-items:center;gap:1rem;flex:1;min-width:0;">
+        <div style="width:4px;height:40px;background:var(--gold);border-radius:2px;flex-shrink:0;"></div>
+        <div style="flex:1;min-width:0;">
+          <div style="font-family:'Fraunces',serif;color:var(--gold);font-size:0.95rem;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;" id="newLeadAlertTitle">🎯 New lead!</div>
+          <div style="color:rgba(255,255,255,0.5);font-size:0.72rem;margin-top:2px;">Auto-closes in <span id="bannerCountdown">8</span>s</div>
         </div>
-        <button onclick="document.getElementById('newLeadAlert').style.display='none'" style="background:rgba(255,255,255,0.1);color:#fff;border:none;padding:0.5rem 1rem;border-radius:8px;font-size:0.82rem;cursor:pointer;font-family:'DM Sans',sans-serif;">Dismiss</button>
+      </div>
+      <div style="display:flex;gap:8px;flex-shrink:0;align-items:center;">
+        <a id="newLeadCallBtn" href="#" style="background:var(--gold);color:var(--navy);border:none;padding:8px 14px;border-radius:8px;font-size:0.82rem;font-weight:700;cursor:pointer;font-family:'DM Sans',sans-serif;text-decoration:none;white-space:nowrap;">📞 Call Now</a>
+        <button id="newLeadViewBtn" style="background:transparent;color:#fff;border:1.5px solid rgba(255,255,255,0.35);padding:7px 14px;border-radius:8px;font-size:0.82rem;font-weight:600;cursor:pointer;font-family:'DM Sans',sans-serif;white-space:nowrap;">View Lead</button>
+        <button onclick="dismissBanner()" style="background:rgba(255,255,255,0.1);color:rgba(255,255,255,0.5);border:none;padding:7px 10px;border-radius:8px;font-size:0.9rem;cursor:pointer;">✕</button>
       </div>
     </div>
 
@@ -359,6 +400,7 @@ tr.lead-row:hover td{background:rgba(201,151,58,0.04);}
         </div>
         <div class="filter-row" id="filterRow" style="display:flex;gap:0.4rem;flex-wrap:wrap;"></div>
         <div class="results-count" id="resultsCount"></div>
+        <div class="sync-indicator" id="syncIndicator"></div>
       </div>
       <div class="table-wrap" id="tableWrap">
         <table>
@@ -367,6 +409,7 @@ tr.lead-row:hover td{background:rgba(201,151,58,0.04);}
         </table>
       </div>
       <div class="mobile-cards" id="mobileCards"></div>
+      <div id="mobileLeadCards"></div>
       <div class="pipeline-wrap" id="pipelineWrap">
         <div class="pipeline-board" id="pipelineBoard"></div>
       </div>
@@ -554,6 +597,30 @@ tr.lead-row:hover td{background:rgba(201,151,58,0.04);}
     </div>
 
   </div>
+
+  <nav class="mobile-bottom-nav" id="mobileNav">
+    <button class="mob-nav-btn active" onclick="switchTab('leads',this);setMobNav(this)">
+      <span class="mob-nav-icon">🎯</span>
+      <span class="mob-nav-label">Leads</span>
+      <span class="mob-nav-badge" id="mobBadgeLeads"></span>
+    </button>
+    <button class="mob-nav-btn" onclick="switchTab('pipeline',this);setMobNav(this)">
+      <span class="mob-nav-icon">📊</span>
+      <span class="mob-nav-label">Pipeline</span>
+    </button>
+    <button class="mob-nav-btn" onclick="switchTab('stats',this);setMobNav(this)">
+      <span class="mob-nav-icon">📈</span>
+      <span class="mob-nav-label">Stats</span>
+    </button>
+    <button class="mob-nav-btn" onclick="switchTab('profile',this);setMobNav(this)">
+      <span class="mob-nav-icon">👤</span>
+      <span class="mob-nav-label">Profile</span>
+    </button>
+    <button class="mob-nav-btn" onclick="switchTab('settings',this);setMobNav(this)">
+      <span class="mob-nav-icon">⚙️</span>
+      <span class="mob-nav-label">Settings</span>
+    </button>
+  </nav>
 </div>
 
 <!-- LEAD MODAL -->
@@ -804,6 +871,8 @@ function loadMyLeads() {
     renderPipelineTab();
     checkCallbacks();
     checkNewLeads();
+    const si = document.getElementById('syncIndicator');
+    if(si) si.textContent = '🔄 Live — last updated ' + new Date().toLocaleTimeString([],{hour:'2-digit',minute:'2-digit',second:'2-digit'});
   });
 }
 
@@ -835,10 +904,12 @@ function updateStats() {
   document.getElementById('s_closed').textContent = closed;
   document.getElementById('s_rate').textContent = rate + '%';
 
-  // New leads tab badge
+  // New leads tab badge (desktop + mobile)
   const badge = document.getElementById('leadsTabBadge');
   if(newLeadsCount > 0) { badge.textContent = newLeadsCount; badge.style.display = 'inline-block'; }
   else { badge.style.display = 'none'; }
+  const mobBadge = document.getElementById('mobBadgeLeads');
+  if(mobBadge) { mobBadge.textContent = newLeadsCount > 0 ? newLeadsCount : ''; mobBadge.style.display = newLeadsCount > 0 ? 'block' : 'none'; }
 
   // Dashboard date
   document.getElementById('dashDate').textContent = now.toLocaleDateString('en-US',{weekday:'long',month:'long',day:'numeric',year:'numeric'});
@@ -886,18 +957,35 @@ function updateStats() {
   }).join('');
 }
 
+let _bannerTimer = null;
 function checkNewLeads() {
-  const newLeads = myLeads.filter(l => !l.agentStatus || l.agentStatus === 'new');
-  const alert = document.getElementById('newLeadAlert');
-  if(!newLeads.length) { alert.style.display = 'none'; return; }
-  alert.style.display = 'block';
-  if(newLeads.length === 1) {
-    document.getElementById('newLeadAlertTitle').textContent = '🎯 New lead — ' + newLeads[0].firstName + ' ' + newLeads[0].lastName;
-    document.getElementById('newLeadAlertSub').textContent = newLeads[0].insuranceType + ' · Call now!';
-  } else {
-    document.getElementById('newLeadAlertTitle').textContent = '🎯 ' + newLeads.length + ' new leads waiting!';
-    document.getElementById('newLeadAlertSub').textContent = 'Contact them now — the sooner you call, the higher your close rate.';
-  }
+  const newLeads = myLeads.filter(l => !l.agentStatus || l.agentStatus === 'new')
+    .sort((a,b) => new Date(b.matchedAt||b.submittedAt) - new Date(a.matchedAt||a.submittedAt));
+  const banner = document.getElementById('newLeadAlert');
+  if(!newLeads.length) { banner.classList.remove('show'); return; }
+  const l = newLeads[0];
+  document.getElementById('newLeadAlertTitle').textContent =
+    newLeads.length === 1
+      ? `🎯 New Lead: ${l.firstName} — ${l.insuranceType} just arrived!`
+      : `🎯 ${newLeads.length} new leads waiting — ${l.firstName} is the newest!`;
+  document.getElementById('newLeadCallBtn').href = 'tel:' + l.phone;
+  const viewBtn = document.getElementById('newLeadViewBtn');
+  viewBtn.onclick = function() { openLeadModal(l.id); dismissBanner(); };
+  banner.classList.add('show');
+  if(_bannerTimer) clearInterval(_bannerTimer);
+  let secs = 8;
+  const cd = document.getElementById('bannerCountdown');
+  if(cd) cd.textContent = secs;
+  _bannerTimer = setInterval(() => {
+    secs--;
+    if(cd) cd.textContent = secs;
+    if(secs <= 0) { clearInterval(_bannerTimer); _bannerTimer = null; dismissBanner(); }
+  }, 1000);
+}
+function dismissBanner() {
+  if(_bannerTimer) { clearInterval(_bannerTimer); _bannerTimer = null; }
+  const b = document.getElementById('newLeadAlert');
+  if(b) b.classList.remove('show');
 }
 
 function checkCallbacks() {
@@ -990,13 +1078,24 @@ function renderView() {
 
 function renderTable() {
   const tb = document.getElementById('leadsTable');
+  const mlc = document.getElementById('mobileLeadCards');
   const leads = getFilteredLeads();
   const rc = document.getElementById('resultsCount');
   if(rc) rc.textContent = leads.length < myLeads.length ? `Showing ${leads.length} of ${myLeads.length} leads` : `${myLeads.length} lead${myLeads.length!==1?'s':''}`;
+
   if(!leads.length) {
-    tb.innerHTML = `<tr><td colspan="8" style="text-align:center;color:var(--text-muted);padding:3rem;">${myLeads.length?'No leads match your search or filter.':'No leads assigned yet — check back soon!'}</td></tr>`;
+    const emptyHtml = myLeads.length
+      ? `<p style="text-align:center;color:var(--text-muted);padding:2rem;">No leads match your search or filter.</p>`
+      : `<div class="empty-state">
+          <span class="empty-shield">🛡️</span>
+          <h3 style="font-family:'Fraunces',serif;color:var(--navy);font-size:1.2rem;margin-bottom:0.5rem;">No leads yet — you're all set up and ready!</h3>
+          <p style="color:var(--text-muted);font-size:0.88rem;max-width:340px;margin:0 auto;">Your first lead will appear here instantly when matched by the admin.</p>
+        </div>`;
+    tb.innerHTML = `<tr><td colspan="8">${emptyHtml}</td></tr>`;
+    if(mlc) mlc.innerHTML = emptyHtml;
     return;
   }
+
   tb.innerHTML = leads.map(l => {
     const age = leadAge(l.matchedAt||l.submittedAt);
     const score = getLeadScore(l);
@@ -1015,6 +1114,31 @@ function renderTable() {
       </td>
     </tr>`;
   }).join('');
+
+  if(mlc) {
+    mlc.innerHTML = leads.map(l => {
+      const age = leadAge(l.matchedAt||l.submittedAt);
+      const score = getLeadScore(l);
+      const borderColor = age.cls==='age-fresh'?'#2d7a4f':age.cls==='age-warm'?'#d97706':'#c0392b';
+      const received = new Date(l.matchedAt||l.submittedAt).toLocaleDateString();
+      return `<div class="mob-lead-card" style="border-left-color:${borderColor};">
+        <div style="display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:6px;">
+          <span class="mob-lead-name">${l.firstName} ${l.lastName}</span>
+          ${getScoreBadge(score)}
+        </div>
+        <div class="mob-lead-type">${TYPE_EMOJIS[l.insuranceType]||'📋'} ${l.insuranceType} <span class="${age.cls}" style="margin-left:8px;">· ${age.text}</span></div>
+        <div style="display:flex;align-items:center;gap:8px;margin-bottom:4px;">
+          ${badge(l.agentStatus||'new')}
+          <span style="font-size:0.75rem;color:var(--text-muted);">Received ${received}</span>
+        </div>
+        ${l.hasEnhancedData?`<span style="background:rgba(201,151,58,0.12);color:var(--gold);font-size:0.72rem;font-weight:700;padding:2px 8px;border-radius:100px;">⭐ Profile Complete</span>`:''}
+        <div class="mob-lead-actions">
+          <a href="tel:${l.phone}" class="mob-call-btn">📞 Call Now</a>
+          <button class="mob-view-btn" onclick="openLeadModal('${l.id}')">View Details →</button>
+        </div>
+      </div>`;
+    }).join('');
+  }
 }
 
 function renderMobileCards() {
@@ -1416,7 +1540,17 @@ function renderPipelineTab() {
         <div style="font-size:0.75rem;color:var(--text-muted);margin-bottom:0.25rem;" class="${age.cls}">${age.text}</div>
         <div style="font-size:0.78rem;color:var(--text-muted);margin-bottom:0.5rem;">${l.phone}</div>
         ${lastNote?`<div style="font-size:0.72rem;color:var(--text-muted);background:var(--cream);border-radius:4px;padding:3px 6px;margin-bottom:0.5rem;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">📝 ${lastNote.text}</div>`:''}
-        <a href="tel:${l.phone}" class="pipeline-card-call" onclick="event.stopPropagation()">📞 Call</a>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:4px;">
+          <a href="tel:${l.phone}" class="pipeline-card-call" onclick="event.stopPropagation()">📞 Call</a>
+          <button onclick="event.stopPropagation();togglePipelineNote('${l.id}')" style="background:rgba(201,151,58,0.1);border:1px solid rgba(201,151,58,0.3);border-radius:6px;padding:0.32rem;font-size:0.73rem;font-weight:700;color:var(--gold);cursor:pointer;font-family:'DM Sans',sans-serif;text-align:center;">📝 Note</button>
+        </div>
+        <div id="pnote-${l.id}" style="display:none;margin-top:8px;" onclick="event.stopPropagation()">
+          <textarea id="pnote-ta-${l.id}" placeholder="Quick note..." style="width:100%;border:1.5px solid var(--cream-dark);border-radius:6px;padding:6px;font-size:0.78rem;font-family:'DM Sans',sans-serif;height:58px;resize:none;outline:none;box-sizing:border-box;"></textarea>
+          <div style="display:grid;grid-template-columns:1fr auto;gap:4px;margin-top:4px;">
+            <button onclick="savePipelineNote('${l.id}')" style="background:var(--gold);color:var(--navy);border:none;border-radius:6px;padding:5px;font-size:0.73rem;font-weight:700;cursor:pointer;font-family:'DM Sans',sans-serif;">Save Note</button>
+            <button onclick="togglePipelineNote('${l.id}')" style="background:var(--cream-dark);color:var(--text-muted);border:none;border-radius:6px;padding:5px 8px;font-size:0.73rem;cursor:pointer;font-family:'DM Sans',sans-serif;">✕</button>
+          </div>
+        </div>
       </div>`;
     }).join('') || `<p style="font-size:0.78rem;color:var(--text-muted);text-align:center;padding:1rem 0;">No leads</p>`;
     return `<div class="pipeline-col">
@@ -1455,6 +1589,54 @@ function savePhotoUrl() {
   document.getElementById('profileInitials').style.display = 'none';
   alert('✅ Photo saved!');
 }
+
+// ════════════════════════════════════════════════════════════════
+// PHASE 3 — MOBILE NAV + PIPELINE NOTE + KEYBOARD SHORTCUTS
+// ════════════════════════════════════════════════════════════════
+function setMobNav(btn) {
+  document.querySelectorAll('.mob-nav-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+}
+
+function togglePipelineNote(id) {
+  const el = document.getElementById('pnote-' + id);
+  if(!el) return;
+  el.style.display = el.style.display === 'block' ? 'none' : 'block';
+  if(el.style.display === 'block') {
+    const ta = document.getElementById('pnote-ta-' + id);
+    if(ta) setTimeout(() => ta.focus(), 50);
+  }
+}
+
+function savePipelineNote(id) {
+  const ta = document.getElementById('pnote-ta-' + id);
+  if(!ta || !ta.value.trim()) return;
+  const lead = myLeads.find(l => l.id === id);
+  if(!lead) return;
+  const notes = (lead.agentNotes || []).slice();
+  notes.push({text: ta.value.trim(), date: new Date().toLocaleString()});
+  db.ref('leads/' + id + '/agentNotes').set(notes);
+  logActivity(id, '📝', 'Note added: ' + ta.value.trim().substring(0, 50));
+  ta.value = '';
+  togglePipelineNote(id);
+}
+
+// Keyboard shortcuts
+document.addEventListener('keydown', function(e) {
+  if(e.key === 'Escape') {
+    const modal = document.getElementById('leadModal');
+    if(modal && modal.classList.contains('open')) { closeModal(); return; }
+    dismissBanner();
+  }
+  if(e.key === '/' && !['INPUT','TEXTAREA','SELECT'].includes(document.activeElement.tagName)) {
+    const panel = document.getElementById('portal-leads');
+    if(panel && panel.classList.contains('active')) {
+      e.preventDefault();
+      const search = document.getElementById('leadSearch');
+      if(search) search.focus();
+    }
+  }
+});
 
 // ════════════════════════════════════════════════════════════════
 // SMART SCRIPT ENGINE
