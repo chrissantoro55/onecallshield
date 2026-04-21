@@ -2,6 +2,8 @@
 <html lang="en">
 <head>
 <!-- Google tag (gtag.js) -->
+<script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-database-compat.js"></script>
 <script async src="https://www.googletagmanager.com/gtag/js?id=AW-18074640566"></script>
 <script>
   window.dataLayer = window.dataLayer || [];
@@ -1755,8 +1757,13 @@
 <section class="counter-section">
   <div class="counter-inner">
     <div class="counter-item">
-      <span class="counter-num">Beta</span>
-      <span class="counter-label">Launch Phase</span>
+      <span class="counter-num">5</span>
+      <span class="counter-label">Licensed Agents Ready</span>
+    </div>
+    <div class="counter-divider"></div>
+    <div class="counter-item">
+      <span class="counter-num">4 Hrs</span>
+      <span class="counter-label">Average Match Time</span>
     </div>
     <div class="counter-divider"></div>
     <div class="counter-item">
@@ -1765,13 +1772,13 @@
     </div>
     <div class="counter-divider"></div>
     <div class="counter-item">
-      <span class="counter-num">1</span>
-      <span class="counter-label">Agent Per Customer</span>
+      <span class="counter-num">0</span>
+      <span class="counter-label">Spam Calls Guaranteed</span>
     </div>
     <div class="counter-divider"></div>
     <div class="counter-item">
-      <span class="counter-num">0</span>
-      <span class="counter-label">Spam Calls Guaranteed</span>
+      <span class="counter-num" id="liveHelpedCounter" style="color:var(--gold);">0</span>
+      <span class="counter-label">Consumers Helped 🔥</span>
     </div>
   </div>
 </section>
@@ -1977,6 +1984,7 @@
         <input type="checkbox" id="consent">
         <p>I consent to receive calls, texts, and/or emails from <strong>one licensed insurance agent</strong> matched by OneCallShield. My information will <strong>NOT</strong> be shared with multiple agents or third parties.</p>
       </div>
+      <p style="text-align:center;font-size:0.85rem;color:rgba(255,255,255,0.7);margin-bottom:0.8rem;padding:10px 14px;background:rgba(201,151,58,0.1);border-radius:10px;border:1px solid rgba(201,151,58,0.2);">⚡ Most consumers are matched within 4 hours — submit now and hear from your agent today.</p>
       <button class="form-submit" onclick="submitForm()">🛡️ Get My Matched Agent Now — It's Free</button>
       <div class="form-trust">
         <span class="form-trust-item">🔒 Secure & encrypted</span>
@@ -2264,6 +2272,7 @@
       <li><a href="/privacy.html">Privacy Policy</a></li>
       <li><a href="/terms.html">Terms of Service</a></li>
     </ul>
+    <p style="font-size:0.85rem;color:rgba(255,255,255,0.4);margin-top:1rem;">📧 Questions? <a href="mailto:chris@onecallshield.com" style="color:var(--gold);text-decoration:none;font-weight:600;">chris@onecallshield.com</a></p>
   </div>
   <div class="footer-inner">
     <p class="footer-copy">© 2026 OneCallShield LLC. All rights reserved. OneCallShield is not an insurance company or agent. We connect consumers with licensed insurance professionals.</p>
@@ -3144,6 +3153,32 @@ function rmqRetake(){
   document.getElementById('rmqForm').style.display='block';
   rmqCoverage='';
 }
+</script>
+<script>
+const _fbApp = firebase.initializeApp({
+  apiKey: "AIzaSyBoEo4t1s-yPmVYo2fCRzZWnD_ApS2mUMo",
+  authDomain: "onecallshield.firebaseapp.com",
+  databaseURL: "https://onecallshield-default-rtdb.firebaseio.com",
+  projectId: "onecallshield",
+  storageBucket: "onecallshield.firebasestorage.app",
+  messagingSenderId: "1020973095687",
+  appId: "1:1020973095687:web:713cf8942241b59e3ac3a2"
+}, "counter-app");
+const _fbDb = firebase.database(_fbApp);
+function animateCounter(el, target) {
+  let start = 0;
+  const step = Math.ceil(target / 60) || 1;
+  const timer = setInterval(function() {
+    start += step;
+    if(start >= target) { start = target; clearInterval(timer); }
+    el.textContent = start.toLocaleString();
+  }, 16);
+}
+_fbDb.ref('leads').on('value', function(snap) {
+  const count = snap.val() ? Object.keys(snap.val()).length : 0;
+  const el = document.getElementById('liveHelpedCounter');
+  if(el) animateCounter(el, count);
+});
 </script>
 </body>
 </html>
