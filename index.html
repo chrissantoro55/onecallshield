@@ -1994,6 +1994,9 @@
       <p style="text-align:center;font-size:0.8rem;color:rgba(255,255,255,0.4);margin-top:0.8rem;">⚡ We typically match consumers within 4 hours. Submit now to get your agent today.</p>
     </div>
     <div class="success-message" id="successMsg">
+      <noscript>
+        <img height="1" width="1" style="display:none" src="https://www.googletagmanager.com/gtag/js?id=AW-18074640566" alt="">
+      </noscript>
 
       <!-- Step 1: Confirmation strip -->
       <div class="success-top">
@@ -3030,6 +3033,14 @@
     var formInner = document.querySelector('.form-inner');
     if(formInner) { formInner.style.maxWidth = '800px'; formInner.style.textAlign = 'left'; }
     document.getElementById('successMsg').style.display = 'block';
+    // Google Ads conversion tracking — fires when lead is successfully submitted
+    try {
+      gtag('event', 'conversion', {
+        'send_to': 'AW-18074640566/lead_submitted',
+        'value': 1.0,
+        'currency': 'USD'
+      });
+    } catch(e) {}
     // Scroll to success message first — give consumer the win before showing optional form
     setTimeout(() => {
       const el = document.getElementById('successMsg');
