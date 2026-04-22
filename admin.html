@@ -676,6 +676,29 @@ function statusBadge(s){
   const lbl={pending:'⏳ Pending',approved:'✅ Approved',rejected:'❌ Rejected',unmatched:'🆕 Unmatched',matched:'✅ Matched'};
   return `<span class="badge ${cls[s]||''}">${lbl[s]||s}</span>`;
 }
+function getStateFromZip(zip){
+  if(!zip)return'';
+  const n=parseInt(String(zip).replace(/\D/g,'').padStart(5,'0'),10);
+  if(isNaN(n)||n<501)return'';
+  const r=[
+    [501,544,'NY'],[600,988,'PR'],[1001,2791,'MA'],[2801,2940,'RI'],
+    [3001,3897,'NH'],[3900,4992,'ME'],[5001,5907,'VT'],[6001,6928,'CT'],
+    [7001,8989,'NJ'],[10001,14975,'NY'],[15001,19640,'PA'],[19701,19980,'DE'],
+    [20001,20597,'DC'],[20601,21930,'MD'],[22001,24658,'VA'],[24701,26886,'WV'],
+    [27006,28909,'NC'],[29001,29948,'SC'],[30001,31999,'GA'],[32004,34997,'FL'],
+    [35004,36925,'AL'],[37010,38589,'TN'],[38601,39776,'MS'],[40003,42788,'KY'],
+    [43001,45999,'OH'],[46001,47997,'IN'],[48001,49971,'MI'],[50001,52809,'IA'],
+    [53001,54990,'WI'],[55001,56763,'MN'],[57001,57799,'SD'],[58001,58856,'ND'],
+    [59001,59937,'MT'],[60001,62999,'IL'],[63001,65899,'MO'],[66002,67954,'KS'],
+    [68001,69367,'NE'],[70001,71497,'LA'],[71601,72959,'AR'],[73001,74966,'OK'],
+    [75001,79999,'TX'],[80001,81658,'CO'],[82001,83128,'WY'],[83200,83876,'ID'],
+    [84001,84784,'UT'],[85001,86556,'AZ'],[87001,88441,'NM'],[88510,88589,'TX'],
+    [89001,89883,'NV'],[90001,96162,'CA'],[96701,96898,'HI'],[97001,97920,'OR'],
+    [98001,99403,'WA'],[99501,99950,'AK']
+  ];
+  for(let i=0;i<r.length;i++){if(n>=r[i][0]&&n<=r[i][1])return r[i][2];}
+  return'';
+}
 
 // ─── LOGIN ────────────────────────────────────────────────────────────────────
 
@@ -775,13 +798,16 @@ function renderAll(){
 // ─── LEADS TABLE ─────────────────────────────────────────────────────────────
 function renderLeadsTable(tbId,leads,compact){
   const tb=document.getElementById(tbId);
-  if(!leads.length){tb.innerHTML=`<tr><td colspan="9" style="text-align:center;color:var(--text-muted);padding:2rem;">No leads yet</td></tr>`;return;}
-  tb.innerHTML=leads.map(l=>`<tr style="cursor:pointer;" onclick="openLeadDetail('${l.id}')" title="Click to view lead details">
-    <td><strong>${l.firstName} ${l.lastName}</strong><br><span style="font-size:0.74rem;color:var(--text-muted);">${l.phone}</span></td>
+  if(!leads.length){tb.innerHTML=`<tr><td colspan="${compact?7:9}" style="text-align:center;color:var(--text-muted);padding:2rem;">No leads yet</td></tr>`;return;}
+  tb.innerHTML=leads.map(l=>{
+    const st=l.state||getStateFromZip(l.zip);
+    const zipCell=l.zip+(st?' · '+st:'');
+    return`<tr style="cursor:pointer;" onclick="openLeadDetail('${l.id}')" title="Click to view lead details">
+    <td><strong>${l.firstName} ${l.lastName}</strong>${compact?`<br><span style="font-size:0.74rem;color:var(--text-muted);">${l.phone}</span>`:''}</td>
+    ${compact?'':`<td><a href="tel:${l.phone}" style="color:var(--gold);font-weight:700;text-decoration:none;">${l.phone}</a></td>`}
     <td>${l.insuranceType}</td>
-    ${compact?'':'<td>'+(l.age||'—')+'</td>'}
-    <td>${l.zip}</td>
-    ${compact?'':'<td style="font-size:0.8rem;">'+(l.contactTime||'Anytime')+'</td>'}
+    ${compact?`<td>${zipCell}</td><td>${l.age||'—'}</td>`:`<td>${l.age||'—'}</td><td>${zipCell}</td>`}
+    ${compact?'':`<td style="font-size:0.8rem;">${l.contactTime||'Anytime'}</td>`}
     <td style="font-size:0.8rem;">${timeAgo(l.submittedAt)}</td>
     <td>${statusBadge(l.status)}</td>
     <td onclick="event.stopPropagation()">
@@ -789,7 +815,7 @@ function renderLeadsTable(tbId,leads,compact){
         ?`<button class="action-btn btn-match" onclick="openMatchModal('${l.id}')">🎯 Match</button>`
         :`<span style="color:var(--green);font-size:0.78rem;font-weight:700;">✓ Matched</span>`}
     </td>
-  </tr>`).join('');
+  </tr>`;}).join('');
 }
 
 // ─── LEADS CARDS (mobile) ─────────────────────────────────────────────────────
@@ -806,7 +832,7 @@ function renderLeadsCards(containerId,leads){
       <div class="m-card-header">
         <div>
           <div class="m-card-title">${l.firstName} ${l.lastName}</div>
-          <div class="m-card-sub">${l.insuranceType} · ZIP ${l.zip}</div>
+          <div class="m-card-sub">${l.insuranceType} · ${l.zip}${(l.state||getStateFromZip(l.zip))?' · '+(l.state||getStateFromZip(l.zip)):''}</div>
           ${isUrgent?'<span class="urgent-tag">⚡ Needs Assignment</span>':''}
         </div>
         ${statusBadge(l.status)}
@@ -1108,8 +1134,8 @@ function openLeadDetail(leadId){
         <div style="font-size:0.95rem;color:var(--navy);font-weight:700;">${lead.age||'—'}</div>
       </div>
       <div style="background:var(--cream);border-radius:12px;padding:1rem;">
-        <div style="font-size:0.68rem;color:var(--text-muted);text-transform:uppercase;letter-spacing:0.07em;font-weight:700;margin-bottom:0.3rem;">📍 ZIP Code</div>
-        <div style="font-size:0.95rem;color:var(--navy);font-weight:700;">${lead.zip}</div>
+        <div style="font-size:0.68rem;color:var(--text-muted);text-transform:uppercase;letter-spacing:0.07em;font-weight:700;margin-bottom:0.3rem;">📍 ZIP / State</div>
+        <div style="font-size:0.95rem;color:var(--navy);font-weight:700;">${lead.zip}${(lead.state||getStateFromZip(lead.zip))?' · '+(lead.state||getStateFromZip(lead.zip)):''}</div>
       </div>
       <div style="background:var(--cream);border-radius:12px;padding:1rem;">
         <div style="font-size:0.68rem;color:var(--text-muted);text-transform:uppercase;letter-spacing:0.07em;font-weight:700;margin-bottom:0.3rem;">⏰ Contact Time</div>
@@ -1343,6 +1369,7 @@ function confirmMatch(){
       status:'matched',
       matchedAgentId:selectedMatchAgent,
       matchedAt:new Date().toISOString(),
+      state:freshLead.state||getStateFromZip(freshLead.zip),
       agentEmail:agent.email,
       agentFirstName:agent.firstName,
       agentLastName:agent.lastName,
