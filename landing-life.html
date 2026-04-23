@@ -1,0 +1,456 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Free Life Insurance Quote NY — OneCallShield</title>
+  <meta name="description" content="Free life insurance quotes in New York. One form, one licensed agent, one call. No spam. Takes 60 seconds.">
+  <meta name="robots" content="noindex, nofollow">
+
+  <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,600;0,9..144,700&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+
+  <!-- Google Ads -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id=AW-18074640566"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+    gtag('config', 'AW-18074640566');
+  </script>
+
+  <!-- Firebase -->
+  <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-database-compat.js"></script>
+
+  <style>
+    :root {
+      --navy: #0d1f3c;
+      --navy-mid: #1a3260;
+      --gold: #c9973a;
+      --gold-light: rgba(201,151,58,0.12);
+      --cream: #f8f4ee;
+      --cream-dark: #ede8e0;
+      --green: #2d7a4f;
+      --green-light: rgba(45,122,79,0.08);
+      --red: #c0392b;
+      --text: #1a1a2e;
+      --text-muted: #6b7280;
+    }
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: 'DM Sans', sans-serif; background: var(--cream); color: var(--text); min-height: 100vh; }
+    .page { max-width: 560px; margin: 0 auto; padding: 1.5rem 1rem 3rem; }
+    .brand { display: flex; align-items: center; justify-content: center; gap: 0.55rem; margin-bottom: 1.5rem; }
+    .brand-shield { width: 38px; height: 38px; background: var(--navy); border-radius: 50% 50% 50% 50% / 60% 60% 40% 40%; display: flex; align-items: center; justify-content: center; font-size: 1.1rem; flex-shrink: 0; }
+    .brand-name { font-family: 'Fraunces', serif; font-size: 1.2rem; font-weight: 700; color: var(--navy); letter-spacing: -0.01em; }
+    .headline { font-family: 'Fraunces', serif; font-size: 1.75rem; font-weight: 700; color: var(--navy); text-align: center; line-height: 1.2; margin-bottom: 0.6rem; }
+    .subline { text-align: center; font-size: 0.95rem; color: var(--text-muted); line-height: 1.5; margin-bottom: 1.2rem; }
+    .trust-icons { display: flex; align-items: center; justify-content: center; gap: 0.5rem; font-size: 0.8rem; color: var(--text-muted); margin-bottom: 1.5rem; flex-wrap: wrap; }
+    .trust-icons span { display: flex; align-items: center; gap: 0.25rem; }
+    .trust-sep { color: var(--cream-dark); font-size: 1rem; }
+    .proof-bar { background: var(--navy); border-radius: 12px; display: flex; align-items: center; justify-content: space-around; padding: 0.9rem 1rem; margin-bottom: 1.5rem; }
+    .proof-item { text-align: center; }
+    .proof-num { font-family: 'Fraunces', serif; font-size: 1.2rem; font-weight: 700; color: var(--gold); display: block; }
+    .proof-label { font-size: 0.68rem; color: rgba(255,255,255,0.5); text-transform: uppercase; letter-spacing: 0.05em; white-space: nowrap; }
+    .proof-sep { width: 1px; height: 36px; background: rgba(255,255,255,0.1); }
+    .form-card { background: #fff; border-radius: 18px; padding: 1.6rem 1.4rem; box-shadow: 0 2px 20px rgba(13,31,60,0.08); border: 1px solid rgba(13,31,60,0.06); }
+    .form-card-title { font-family: 'Fraunces', serif; font-size: 1.05rem; font-weight: 700; color: var(--navy); margin-bottom: 1.2rem; text-align: center; }
+    .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 0.8rem; margin-bottom: 0.8rem; }
+    .form-group { display: flex; flex-direction: column; gap: 0.3rem; }
+    .form-group.full { grid-column: 1 / -1; }
+    .form-group label { font-size: 0.75rem; font-weight: 700; color: var(--navy); text-transform: uppercase; letter-spacing: 0.05em; }
+    .form-group input, .form-group select, .form-group textarea { width: 100%; background: var(--cream); border: 1.5px solid rgba(13,31,60,0.1); border-radius: 10px; padding: 0.7rem 0.85rem; font-size: 0.95rem; font-family: 'DM Sans', sans-serif; color: var(--text); outline: none; transition: border-color 0.2s, background 0.2s; -webkit-appearance: none; appearance: none; }
+    .form-group input:focus, .form-group select:focus { border-color: var(--gold); background: #fff; }
+    .form-group input.error, .form-group select.error { border-color: var(--red); }
+    .life-section { margin-bottom: 0.8rem; }
+    .life-section-label { font-size: 0.72rem; font-weight: 700; color: var(--gold); text-transform: uppercase; letter-spacing: 0.07em; margin-bottom: 0.6rem; padding: 0.4rem 0.8rem; background: var(--gold-light); border-radius: 6px; display: inline-block; }
+    #specificTimeGroup { margin-top: 0.8rem; display: none; }
+    .consent-row { display: flex; gap: 0.75rem; align-items: flex-start; margin: 1rem 0; padding: 0.9rem; background: var(--cream); border-radius: 10px; border: 1.5px solid rgba(13,31,60,0.08); }
+    .consent-row input[type="checkbox"] { width: 18px; height: 18px; flex-shrink: 0; margin-top: 2px; accent-color: var(--navy); cursor: pointer; }
+    .consent-row label { font-size: 0.8rem; color: var(--text-muted); line-height: 1.5; cursor: pointer; }
+    .submit-btn { width: 100%; background: var(--gold); color: var(--navy); border: none; padding: 1rem 1.5rem; border-radius: 12px; font-size: 1rem; font-weight: 700; font-family: 'Fraunces', serif; cursor: pointer; transition: transform 0.15s, box-shadow 0.15s; box-shadow: 0 4px 16px rgba(201,151,58,0.35); letter-spacing: -0.01em; }
+    .submit-btn:hover { transform: translateY(-1px); box-shadow: 0 6px 20px rgba(201,151,58,0.4); }
+    .submit-btn:active { transform: translateY(0); }
+    .submit-btn:disabled { opacity: 0.7; cursor: not-allowed; transform: none; }
+    .submit-sub { text-align: center; font-size: 0.8rem; color: var(--text-muted); margin-top: 0.6rem; }
+    .urgency-line { text-align: center; font-size: 0.82rem; color: var(--gold); font-weight: 600; margin-top: 0.5rem; }
+    .btn-trust-row { display: flex; align-items: center; justify-content: center; gap: 0.6rem; margin-top: 0.8rem; font-size: 0.75rem; color: var(--text-muted); flex-wrap: wrap; }
+    .btn-trust-row span { display: flex; align-items: center; gap: 0.25rem; }
+    .form-error { background: rgba(192,57,43,0.08); border: 1px solid rgba(192,57,43,0.2); border-radius: 8px; padding: 0.6rem 0.9rem; font-size: 0.82rem; color: var(--red); margin-bottom: 0.8rem; display: none; }
+    #successState { display: none; }
+    .success-card { background: #fff; border-radius: 18px; padding: 2rem 1.4rem; text-align: center; box-shadow: 0 2px 20px rgba(13,31,60,0.08); border: 1px solid rgba(13,31,60,0.06); }
+    .success-check { width: 72px; height: 72px; background: var(--green-light); border: 3px solid var(--green); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 2rem; margin: 0 auto 1.2rem; animation: popIn 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275) both; }
+    @keyframes popIn { from { transform: scale(0); opacity: 0; } to { transform: scale(1); opacity: 1; } }
+    .success-title { font-family: 'Fraunces', serif; font-size: 1.5rem; font-weight: 700; color: var(--navy); margin-bottom: 0.6rem; }
+    .success-body { font-size: 0.92rem; color: var(--text-muted); line-height: 1.6; margin-bottom: 0.6rem; }
+    .success-nospam { font-size: 0.8rem; color: var(--green); font-weight: 600; }
+    @keyframes slideUp { from { transform: translateY(16px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
+    @keyframes pulseGold { 0%,100% { box-shadow: 0 0 0 0 rgba(201,151,58,0); } 50% { box-shadow: 0 0 0 6px rgba(201,151,58,0.25); } }
+    .enhanced-attention { animation: pulseGold 2s ease 0.6s 3; }
+    .enhanced-widget { margin-top: 1.2rem; border-radius: 16px; overflow: hidden; border: 2px solid var(--gold); animation: slideUp 0.5s ease 0.3s both; }
+    .enhanced-header { background: linear-gradient(135deg,var(--navy),var(--navy-mid)); padding: 1.2rem 1.4rem; display: flex; align-items: center; gap: 0.8rem; }
+    .enhanced-header-title { font-family: 'Fraunces',serif; color: #fff; font-size: 1rem; font-weight: 700; margin-bottom: 0.15rem; }
+    .enhanced-header-sub { color: rgba(255,255,255,0.4); font-size: 0.75rem; }
+    .enhanced-body { background: var(--cream); padding: 1.2rem 1.4rem; }
+    .enhanced-voluntary { background: rgba(201,151,58,0.08); border: 1px solid rgba(201,151,58,0.2); border-radius: 8px; padding: 0.6rem 0.9rem; margin-bottom: 1rem; font-size: 0.78rem; color: var(--text-muted); text-align: center; }
+    .enhanced-field { margin-bottom: 0.9rem; }
+    .enhanced-field label { display: block; font-size: 0.78rem; font-weight: 700; color: var(--navy); text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 0.35rem; }
+    .enhanced-field input, .enhanced-field select, .enhanced-field textarea { width: 100%; background: #fff; border: 1.5px solid rgba(13,31,60,0.12); border-radius: 8px; padding: 0.65rem 0.8rem; font-size: 0.88rem; font-family: 'DM Sans',sans-serif; outline: none; color: var(--text); box-sizing: border-box; transition: border-color 0.2s; -webkit-appearance: none; appearance: none; }
+    .enhanced-field input:focus, .enhanced-field select:focus, .enhanced-field textarea:focus { border-color: var(--gold); }
+    .enhanced-field textarea { resize: none; height: 70px; }
+    .enhanced-row { display: grid; grid-template-columns: 1fr 1fr; gap: 0.8rem; }
+    .enhanced-submit { width: 100%; background: var(--navy); color: var(--gold); border: none; padding: 0.9rem; border-radius: 10px; font-size: 0.9rem; font-weight: 700; cursor: pointer; font-family: 'DM Sans',sans-serif; margin-top: 0.4rem; transition: background 0.2s; }
+    .enhanced-submit:hover { background: var(--navy-mid); }
+    .enhanced-skip { width: 100%; background: none; border: none; color: var(--text-muted); font-size: 0.82rem; cursor: pointer; font-family: 'DM Sans',sans-serif; margin-top: 0.5rem; text-decoration: underline; padding: 0.4rem; }
+    .enhanced-done { background: var(--green-light); border-radius: 12px; padding: 1.2rem; text-align: center; margin-top: 1.2rem; border: 1.5px solid rgba(45,122,79,0.2); }
+    .enhanced-done-icon { font-size: 1.8rem; margin-bottom: 0.4rem; }
+    .enhanced-done-text { font-size: 0.9rem; color: var(--green); font-weight: 700; }
+    .enhanced-done-sub { font-size: 0.8rem; color: var(--text-muted); margin-top: 0.2rem; }
+    @media (max-width: 420px) {
+      .headline { font-size: 1.45rem; }
+      .form-row { grid-template-columns: 1fr; }
+      .form-group.full { grid-column: 1; }
+      .enhanced-row { grid-template-columns: 1fr; }
+      .btn-trust-row { gap: 0.4rem; font-size: 0.7rem; }
+    }
+  </style>
+</head>
+<body>
+<div class="page">
+
+  <div class="brand">
+    <div class="brand-shield">❤️</div>
+    <span class="brand-name">OneCallShield</span>
+  </div>
+
+  <h1 class="headline">Get a Free Life Insurance Quote in 60 Seconds</h1>
+  <p class="subline">One licensed NY life insurance specialist will call you — no spam, no sharing, 100% free</p>
+
+  <div class="trust-icons">
+    <span>🔒 Secure</span>
+    <span class="trust-sep">·</span>
+    <span>✅ TCPA Compliant</span>
+    <span class="trust-sep">·</span>
+    <span>🚫 Zero Spam</span>
+  </div>
+
+  <div class="proof-bar">
+    <div class="proof-item">
+      <span class="proof-num">1</span>
+      <span class="proof-label">Agent Only</span>
+    </div>
+    <div class="proof-sep"></div>
+    <div class="proof-item">
+      <span class="proof-num">0</span>
+      <span class="proof-label">Spam Calls</span>
+    </div>
+    <div class="proof-sep"></div>
+    <div class="proof-item">
+      <span class="proof-num">100%</span>
+      <span class="proof-label">Free</span>
+    </div>
+  </div>
+
+  <div id="formState">
+    <div class="form-card">
+      <div class="form-card-title">Your Free Life Insurance Quote</div>
+
+      <div id="formError" class="form-error"></div>
+
+      <div class="form-row">
+        <div class="form-group">
+          <label for="firstName">First Name</label>
+          <input type="text" id="firstName" placeholder="Jane" autocomplete="given-name">
+        </div>
+        <div class="form-group">
+          <label for="lastName">Last Name</label>
+          <input type="text" id="lastName" placeholder="Smith" autocomplete="family-name">
+        </div>
+      </div>
+
+      <div class="form-row">
+        <div class="form-group">
+          <label for="phone">Phone Number</label>
+          <input type="tel" id="phone" placeholder="(555) 000-0000" autocomplete="tel">
+        </div>
+        <div class="form-group">
+          <label for="email">Email Address</label>
+          <input type="email" id="email" placeholder="jane@email.com" autocomplete="email">
+        </div>
+      </div>
+
+      <div class="form-row">
+        <div class="form-group">
+          <label for="zip">ZIP Code</label>
+          <input type="tel" id="zip" placeholder="10001" maxlength="5">
+        </div>
+        <div class="form-group">
+          <label for="age">Your Age</label>
+          <input type="tel" id="age" placeholder="35">
+        </div>
+      </div>
+
+      <div class="form-row">
+        <div class="form-group full">
+          <label for="insuranceType">Insurance Type</label>
+          <select id="insuranceType" onchange="handleInsuranceType()">
+            <option value="">Select insurance type...</option>
+            <option value="Auto Insurance">Auto Insurance</option>
+            <option value="Homeowners Insurance">Homeowners Insurance</option>
+            <option value="Renters Insurance">Renters Insurance</option>
+            <option value="Life Insurance" selected>Life Insurance</option>
+            <option value="Health Insurance">Health Insurance</option>
+            <option value="Medicare">Medicare</option>
+            <option value="Other">Other</option>
+          </select>
+        </div>
+      </div>
+
+      <div id="lifeTypeRow" style="display:block;">
+        <div class="life-section">
+          <div class="life-section-label">Life Insurance Details</div>
+          <div class="form-row">
+            <div class="form-group full">
+              <label for="lifeType">Type of Life Insurance</label>
+              <select id="lifeType" onchange="handleLifeType()">
+                <option value="">Select type...</option>
+                <option value="Term Life Insurance">Term Life Insurance</option>
+                <option value="Whole Life Insurance">Whole Life Insurance</option>
+                <option value="Unsure">Unsure — I need guidance</option>
+              </select>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div id="lifeDetailsRow" style="display:none;">
+        <div class="form-row">
+          <div class="form-group">
+            <label for="faceAmount">Desired Face Amount</label>
+            <select id="faceAmount">
+              <option value="">Select amount...</option>
+              <option value="$50,000">$50,000</option>
+              <option value="$100,000">$100,000</option>
+              <option value="$150,000">$150,000</option>
+              <option value="$250,000">$250,000</option>
+              <option value="$500,000">$500,000</option>
+              <option value="$750,000">$750,000</option>
+              <option value="$1,000,000">$1,000,000</option>
+              <option value="$1,000,000+">$1,000,000+</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label for="healthStatus">Health Status</label>
+            <select id="healthStatus">
+              <option value="">Select status...</option>
+              <option value="Good">Good</option>
+              <option value="Fair">Fair</option>
+              <option value="Some Health Issues">Some Health Issues</option>
+            </select>
+          </div>
+        </div>
+      </div>
+
+      <div class="form-row">
+        <div class="form-group full">
+          <label for="contactTime">Preferred Contact Time</label>
+          <select id="contactTime" onchange="handleContactTime()">
+            <option value="">Select a time...</option>
+            <option value="Morning (8am–12pm)">Morning (8am–12pm)</option>
+            <option value="Afternoon (12pm–5pm)">Afternoon (12pm–5pm)</option>
+            <option value="Evening (5pm–8pm)">Evening (5pm–8pm)</option>
+            <option value="Anytime">Anytime</option>
+            <option value="Specific Time">Specific Time</option>
+          </select>
+        </div>
+      </div>
+
+      <div id="specificTimeGroup" class="form-row">
+        <div class="form-group full">
+          <label for="specificTime">Enter Specific Time</label>
+          <input type="text" id="specificTime" placeholder="e.g. Tuesday 3pm EST">
+        </div>
+      </div>
+
+      <div class="consent-row">
+        <input type="checkbox" id="consent">
+        <label for="consent">I consent to be contacted by one licensed insurance agent matched by OneCallShield. My info will NOT be shared with multiple agents or third parties.</label>
+      </div>
+
+      <button class="submit-btn" id="submitBtn" onclick="submitForm()">🛡️ Get My Free Quote Now — It's Free</button>
+      <p class="submit-sub">⚡ Most consumers matched within 4 hours</p>
+      <p class="urgency-line">⚡ Rates go up every year you wait — lock in your rate today</p>
+
+      <div class="btn-trust-row">
+        <span>🔒 Secure &amp; encrypted</span>
+        <span>✅ TCPA compliant</span>
+        <span>🚫 No spam guaranteed</span>
+      </div>
+    </div>
+  </div>
+
+  <div id="successState">
+    <div class="success-card">
+      <div class="success-check">✅</div>
+      <div class="success-title" id="successTitle">You're all set! 🎉</div>
+      <p class="success-body">We're matching you with one licensed agent now. Expect a call at your preferred time.</p>
+      <p class="success-nospam">No spam. No sharing. Just one call from one agent.</p>
+    </div>
+    <div id="enhancedWidget"></div>
+  </div>
+
+</div>
+
+<script>
+  function getStateFromZip(zip) {
+    if (!zip) return 'N/A';
+    const p = String(zip).replace(/\D/g, '').padStart(5, '0').substring(0, 3);
+    const n = parseInt(p, 10);
+    if (isNaN(n)) return 'N/A';
+    const r = [
+      [10,27,'NY'],[28,29,'NJ'],[30,34,'NJ'],[60,69,'CT'],[70,89,'NJ'],
+      [100,149,'NY'],[150,196,'PA'],[197,199,'DE'],[200,205,'DC'],[206,219,'MD'],
+      [220,246,'VA'],[247,268,'WV'],[269,299,'SC'],[300,319,'GA'],[320,349,'FL'],
+      [350,369,'AL'],[370,385,'TN'],[386,397,'MS'],[398,399,'GA'],[400,427,'KY'],
+      [428,459,'OH'],[460,479,'IN'],[480,499,'MI'],[500,528,'IA'],[530,549,'WI'],
+      [550,567,'MN'],[570,577,'SD'],[580,588,'ND'],[590,599,'MT'],[600,631,'IL'],
+      [633,693,'MO'],[700,714,'LA'],[716,729,'AR'],[730,749,'OK'],[750,799,'TX'],
+      [800,816,'CO'],[820,831,'WY'],[832,838,'ID'],[840,847,'UT'],[850,865,'AZ'],
+      [870,884,'NM'],[889,898,'NV'],[900,961,'CA'],[967,968,'HI'],[970,979,'OR'],
+      [980,994,'WA'],[995,999,'AK'],[1,9,'MA'],[28,29,'RI'],[30,38,'NH'],[39,49,'ME'],[50,59,'VT']
+    ];
+    for (let i = 0; i < r.length; i++) { if (n >= r[i][0] && n <= r[i][1]) return r[i][2]; }
+    return 'N/A';
+  }
+
+  function handleInsuranceType() {
+    const type = document.getElementById('insuranceType').value;
+    const lifeTypeRow = document.getElementById('lifeTypeRow');
+    const lifeDetailsRow = document.getElementById('lifeDetailsRow');
+    if (type === 'Life Insurance') { lifeTypeRow.style.display = 'block'; }
+    else { lifeTypeRow.style.display = 'none'; lifeDetailsRow.style.display = 'none'; document.getElementById('lifeType').value = ''; document.getElementById('faceAmount').value = ''; document.getElementById('healthStatus').value = ''; }
+  }
+
+  function handleLifeType() {
+    const val = document.getElementById('lifeType').value;
+    document.getElementById('lifeDetailsRow').style.display = val ? 'block' : 'none';
+    if (!val) { document.getElementById('faceAmount').value = ''; document.getElementById('healthStatus').value = ''; }
+  }
+
+  function handleContactTime() {
+    const val = document.getElementById('contactTime').value;
+    document.getElementById('specificTimeGroup').style.display = val === 'Specific Time' ? 'grid' : 'none';
+    if (val !== 'Specific Time') document.getElementById('specificTime').value = '';
+  }
+
+  function submitForm() {
+    const errEl = document.getElementById('formError');
+    errEl.style.display = 'none';
+    const firstName = document.getElementById('firstName').value.trim();
+    const lastName = document.getElementById('lastName').value.trim();
+    const phone = document.getElementById('phone').value.trim();
+    const email = document.getElementById('email').value.trim();
+    const zip = document.getElementById('zip').value.trim();
+    const age = document.getElementById('age').value.trim();
+    const insuranceType = document.getElementById('insuranceType').value;
+    const contactTimeVal = document.getElementById('contactTime').value;
+    const specificTime = document.getElementById('specificTime').value.trim();
+    const contactTime = contactTimeVal === 'Specific Time' && specificTime ? specificTime : contactTimeVal;
+    const lifeType = document.getElementById('lifeType').value;
+    const faceAmount = document.getElementById('faceAmount').value;
+    const healthStatus = document.getElementById('healthStatus').value;
+    const consent = document.getElementById('consent');
+
+    if (!firstName) { showError('Please enter your first name.'); return; }
+    if (!phone || phone.replace(/\D/g,'').length < 10) { showError('Please enter a valid 10-digit phone number.'); return; }
+    if (!email || !email.includes('@')) { showError('Please enter a valid email address.'); return; }
+    if (!zip || zip.replace(/\D/g,'').length < 5) { showError('Please enter a valid 5-digit ZIP code.'); return; }
+    if (!insuranceType) { showError('Please select an insurance type.'); return; }
+    if (!contactTime) { showError('Please select a preferred contact time.'); return; }
+    if (!consent.checked) { showError('Please check the consent box to continue.'); return; }
+
+    const btn = document.getElementById('submitBtn');
+    btn.textContent = 'Submitting...'; btn.disabled = true;
+
+    const lead = {
+      id: 'L-' + Date.now(), submittedAt: new Date().toISOString(),
+      firstName, lastName, phone, email, zip, state: getStateFromZip(zip),
+      age: age || 'Not provided', insuranceType, contactTime,
+      lifeType: lifeType || '', faceAmount: faceAmount || '', healthStatus: healthStatus || '',
+      status: 'unmatched', matchedAgentId: null, matchedAt: null, source: 'landing-life'
+    };
+
+    fetch('https://onecallshield-default-rtdb.firebaseio.com/leads/' + lead.id + '.json', { method: 'PUT', headers: {'Content-Type': 'application/json'}, body: JSON.stringify(lead) }).catch(function(err) { console.error('Firebase error:', err); });
+    fetch('https://onecallshield-emails.chris-santoro55.workers.dev', { method: 'POST', headers: {'Content-Type': 'application/json'}, body: JSON.stringify({ type: 'new_lead', firstName, lastName, phone, email, age: age || 'N/A', zip, insuranceType, contactTime, lifeType: lifeType || 'N/A', faceAmount: faceAmount || 'N/A', healthStatus: healthStatus || 'N/A', leadId: lead.id }) }).catch(function(err) { console.error('Worker error:', err); });
+    try { gtag('event', 'conversion', { 'send_to': 'AW-18074640566/sLzxCIr3wJgcELbB1KpD', 'value': 1.0, 'currency': 'USD' }); } catch(e) {}
+
+    document.getElementById('formState').style.display = 'none';
+    document.getElementById('successState').style.display = 'block';
+    document.getElementById('successTitle').textContent = 'You\'re all set, ' + firstName + '! 🎉';
+    setTimeout(function() { buildEnhancedWidget(lead); }, 1800);
+  }
+
+  function showError(msg) {
+    const el = document.getElementById('formError');
+    el.textContent = msg; el.style.display = 'block';
+    el.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+    const btn = document.getElementById('submitBtn');
+    btn.textContent = '🛡️ Get My Free Quote Now — It\'s Free'; btn.disabled = false;
+  }
+
+  const ENHANCED_FIELDS = {
+    'Auto Insurance': { icon: '🚗', label: 'Auto Insurance Details', sub: 'Help your agent prepare an accurate quote', fields: [ {id:'ev_year', label:'Vehicle Year', type:'select', options:['Select year...','2025','2024','2023','2022','2021','2020','2019','2018','2017','2016','2015','2014','2013','2012','2011','2010','2009 or older']}, {id:'ev_make', label:'Vehicle Make', type:'text', placeholder:'e.g. Toyota, Ford, Honda'}, {id:'ev_model', label:'Vehicle Model', type:'text', placeholder:'e.g. Camry, F-150, Civic'}, {id:'ev_mileage', label:'Approximate Mileage', type:'select', options:['Select mileage...','Under 10,000','10,000 - 25,000','25,000 - 50,000','50,000 - 75,000','75,000 - 100,000','Over 100,000']}, {id:'ev_violations', label:'Violations in Last 3 Years', type:'select', options:['Select...','None','1 minor violation','2+ minor violations','1 major violation','DUI/DWI']}, {id:'ev_current_insurer', label:'Current Insurance Company', type:'text', placeholder:'e.g. Geico, State Farm, or None'}, {id:'ev_current_rate', label:'Current Monthly Rate', type:'text', placeholder:'e.g. $120/month or Not sure'}, {id:'ev_coverage', label:'Coverage Level Desired', type:'select', options:['Select...','Liability only (minimum)','Full coverage','Not sure — agent will advise']} ] },
+    'Homeowners Insurance': { icon: '🏠', label: 'Home Details', sub: 'Help your agent find the best homeowners rate', fields: [ {id:'eh_year_built', label:'Year Home Was Built', type:'text', placeholder:'e.g. 1995'}, {id:'eh_sqft', label:'Approximate Square Footage', type:'select', options:['Select...','Under 1,000 sq ft','1,000 - 1,500 sq ft','1,500 - 2,000 sq ft','2,000 - 2,500 sq ft','2,500 - 3,000 sq ft','Over 3,000 sq ft']}, {id:'eh_value', label:'Estimated Home Value', type:'select', options:['Select...','Under $150,000','$150,000 - $250,000','$250,000 - $350,000','$350,000 - $500,000','$500,000 - $750,000','Over $750,000']}, {id:'eh_roof', label:'Roof Age (Years)', type:'select', options:['Select...','0-5 years','6-10 years','11-15 years','16-20 years','Over 20 years','Not sure']}, {id:'eh_construction', label:'Home Construction Type', type:'select', options:['Select...','Wood frame','Brick','Stone','Stucco','Mixed/Not sure']}, {id:'eh_claims', label:'Claims in Last 5 Years', type:'select', options:['Select...','None','1 claim','2 claims','3+ claims']}, {id:'eh_current_insurer', label:'Current Insurance Company', type:'text', placeholder:'e.g. State Farm, Allstate, or None'}, {id:'eh_current_rate', label:'Current Annual Premium', type:'text', placeholder:'e.g. $1,200/year or Not sure'} ] },
+    'Renters Insurance': { icon: '🏢', label: 'Renters Details', sub: 'A few details to help find your best rate', fields: [ {id:'er_property_value', label:'Estimated Value of Belongings', type:'select', options:['Select...','Under $10,000','$10,000 - $25,000','$25,000 - $50,000','$50,000 - $75,000','Over $75,000','Not sure']}, {id:'er_unit_type', label:'Type of Rental', type:'select', options:['Select...','Apartment','House','Condo','Townhouse','Studio','Other']}, {id:'er_current_insurer', label:'Current Renters Insurance', type:'text', placeholder:'Current company or None'}, {id:'er_special_items', label:'High Value Items to Cover?', type:'text', placeholder:'e.g. Jewelry, Electronics, Musical instruments'} ] },
+    'Life Insurance': { icon: '❤️', label: 'Life Insurance Details', sub: 'A few more details to help your agent prepare', fields: [ {id:'el_term_length', label:'Preferred Term Length', type:'select', options:['Select...','10 years','15 years','20 years','25 years','30 years','Not sure — agent will advise']}, {id:'el_tobacco', label:'Tobacco Use in Last 12 Months', type:'select', options:['Select...','No — never','No — quit more than 12 months ago','Yes — current user']}, {id:'el_occupation', label:'Occupation', type:'text', placeholder:'e.g. Teacher, Contractor, Nurse'}, {id:'el_beneficiary', label:'Primary Beneficiary Relationship', type:'select', options:['Select...','Spouse/Partner','Child','Parent','Sibling','Business partner','Other']}, {id:'el_existing', label:'Existing Life Insurance Coverage', type:'text', placeholder:'e.g. $200,000 through employer or None'}, {id:'el_riders', label:'Any Riders or Add-ons Interested In?', type:'select', options:['Select...','Disability waiver','Critical illness','Accidental death','Child rider','Not sure']} ] },
+    'Health Insurance': { icon: '🏥', label: 'Health Insurance Details', sub: 'Help your agent find the right plan for you', fields: [ {id:'eh2_household', label:'Household Size', type:'select', options:['Select...','Just me','Me + spouse/partner','Me + 1 child','Me + 2+ children','Family of 4+']}, {id:'eh2_income', label:'Annual Household Income', type:'select', options:['Select...','Under $25,000','$25,000 - $50,000','$50,000 - $75,000','$75,000 - $100,000','$100,000 - $150,000','Over $150,000','Prefer not to say']}, {id:'eh2_current', label:'Current Coverage Status', type:'select', options:['Select...','No coverage currently','COBRA','Marketplace plan','Employer plan ending soon','Self-employed']}, {id:'eh2_deductible', label:'Preferred Deductible Range', type:'select', options:['Select...','Low deductible (higher premium)','Medium deductible (balanced)','High deductible (lower premium)','Not sure']}, {id:'eh2_doctors', label:'Preferred Doctors or Specialists', type:'text', placeholder:'e.g. Dr. Smith at NYC Health or None'}, {id:'eh2_medications', label:'Ongoing Prescription Medications', type:'text', placeholder:'List any regular medications or None'} ] },
+    'Medicare': { icon: '💊', label: 'Medicare Details', sub: 'Help your specialist find your best plan', fields: [ {id:'em_current', label:'Current Medicare Status', type:'select', options:['Select...','Not yet enrolled — turning 65 soon','Part A only','Part A and B','Part A, B and D','Medicare Advantage plan','Medicare Supplement plan']}, {id:'em_plan_type', label:'Plan Type Interest', type:'select', options:['Select...','Medicare Supplement (Medigap)','Medicare Advantage','Not sure — need guidance']}, {id:'em_doctors', label:'Current Doctors You Want to Keep', type:'text', placeholder:'e.g. Dr. Johnson at Memorial Hospital'}, {id:'em_medications', label:'Current Prescription Medications', type:'text', placeholder:'List medications your agent should know about'}, {id:'em_budget', label:'Monthly Budget for Premium', type:'select', options:['Select...','$0 (prefer Advantage)','Under $50','$50 - $100','$100 - $150','$150 - $200','Over $200']}, {id:'em_concerns', label:'Biggest Coverage Concern', type:'select', options:['Select...','Hospital stays','Specialist visits','Prescription costs','Dental & vision','Travel coverage','Overall cost']} ] },
+    'Other': { icon: '📋', label: 'Tell Us More', sub: 'Help your agent understand exactly what you need', fields: [ {id:'eo_description', label:'Describe What You Need', type:'textarea', placeholder:'Tell us more about the insurance you are looking for...'}, {id:'eo_current', label:'Do You Currently Have Any Coverage?', type:'select', options:['Select...','No coverage','Some coverage — looking to switch','Adding to existing coverage']}, {id:'eo_budget', label:'Monthly Budget', type:'text', placeholder:'e.g. $50/month or Not sure'}, {id:'eo_urgency', label:'How Soon Do You Need Coverage?', type:'select', options:['Select...','Immediately','Within 30 days','Within 3 months','Just exploring options']} ] }
+  };
+
+  function buildEnhancedWidget(lead) {
+    var data = ENHANCED_FIELDS[lead.insuranceType]; if (!data) return;
+    var el = document.getElementById('enhancedWidget'); if (!el) return;
+    var fieldsHtml = '', i = 0, fields = data.fields;
+    while (i < fields.length) {
+      var f = fields[i];
+      if (f.type !== 'textarea' && i + 1 < fields.length && fields[i+1].type !== 'textarea') {
+        fieldsHtml += '<div class="enhanced-row">' + buildField(f) + buildField(fields[i+1]) + '</div>'; i += 2;
+      } else { fieldsHtml += buildField(f); i++; }
+    }
+    var _id = lead.id, _type = lead.insuranceType;
+    el.innerHTML = '<div class="enhanced-widget enhanced-attention"><div class="enhanced-header"><div style="font-size:1.8rem;flex-shrink:0;">' + data.icon + '</div><div style="flex:1;text-align:left;"><div class="enhanced-header-title">⚡ Help your agent help you — optional</div><div class="enhanced-header-sub">The more you share now, the more prepared your agent will be for your call</div></div><div style="background:var(--gold);color:var(--navy);font-size:0.65rem;font-weight:700;padding:0.2rem 0.55rem;border-radius:100px;white-space:nowrap;align-self:flex-start;flex-shrink:0;">OPTIONAL</div></div><div class="enhanced-body"><div class="enhanced-voluntary">The more details you provide, the better your quote will be. Skip anything you prefer not to share.</div>' + fieldsHtml + '<button class="enhanced-submit" id="enhancedSubmitBtn">Send This to My Agent →</button><button class="enhanced-skip" onclick="skipEnhanced()">No thanks, skip this step</button></div></div>';
+    var btn = document.getElementById('enhancedSubmitBtn');
+    if (btn) btn.addEventListener('click', function() { submitEnhanced(_id, _type); });
+  }
+
+  function buildField(f) {
+    var input = '';
+    if (f.type === 'select') { input = '<select id="' + f.id + '">' + f.options.map(function(o){ return '<option value="' + (o.includes('Select') || o.includes('select') ? '' : o) + '">' + o + '</option>'; }).join('') + '</select>'; }
+    else if (f.type === 'textarea') { input = '<textarea id="' + f.id + '" placeholder="' + f.placeholder + '"></textarea>'; }
+    else { input = '<input type="text" id="' + f.id + '" placeholder="' + (f.placeholder||'') + '">'; }
+    return '<div class="enhanced-field"><label>' + f.label + '</label>' + input + '</div>';
+  }
+
+  function skipEnhanced() { var el = document.getElementById('enhancedWidget'); if (el) el.innerHTML = ''; }
+
+  async function submitEnhanced(leadId, insuranceType) {
+    var data = ENHANCED_FIELDS[insuranceType]; if (!data) return;
+    var extraData = { hasEnhancedData: true, enhancedSubmittedAt: new Date().toISOString() }, hasData = false;
+    data.fields.forEach(function(f) { var el = document.getElementById(f.id); if (el && el.value && el.value.trim()) { extraData[f.label] = el.value.trim(); hasData = true; } });
+    if (!hasData) { alert('Please fill in at least one field before submitting.'); return; }
+    var btn = document.getElementById('enhancedSubmitBtn');
+    if (btn) { btn.disabled = true; btn.textContent = 'Sending...'; }
+    var saved = false;
+    try {
+      var res = await fetch('https://onecallshield-default-rtdb.firebaseio.com/leads/' + leadId + '.json', { method: 'PATCH', headers: {'Content-Type': 'application/json'}, body: JSON.stringify(extraData) });
+      if (res.ok) saved = true; else console.error('Firebase PATCH failed:', res.status);
+    } catch(e) { console.error('Enhanced save error:', e); }
+    var widget = document.getElementById('enhancedWidget');
+    if (widget) {
+      if (saved) { widget.innerHTML = '<div class="enhanced-done"><div class="enhanced-done-icon">🎯</div><div class="enhanced-done-text">Perfect — your agent has everything they need!</div><div class="enhanced-done-sub">Your detailed profile has been sent. Expect a well-prepared call.</div></div>'; }
+      else { if (btn) { btn.disabled = false; btn.textContent = 'Send This to My Agent →'; } alert('Could not save. Please try again.'); }
+    }
+  }
+</script>
+</body>
+</html>

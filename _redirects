@@ -1,2 +1,6 @@
 /status/*  /status.html    200
 /landing    /landing.html    200
+/landing-auto     /landing-auto.html     200
+/landing-home     /landing-home.html     200
+/landing-life     /landing-life.html     200
+/landing-medicare /landing-medicare.html 200
