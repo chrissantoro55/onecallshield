@@ -106,10 +106,19 @@
     .enhanced-done-icon { font-size: 1.8rem; margin-bottom: 0.4rem; }
     .enhanced-done-text { font-size: 0.9rem; color: var(--green); font-weight: 700; }
     .enhanced-done-sub { font-size: 0.8rem; color: var(--text-muted); margin-top: 0.2rem; }
-    @media (max-width: 420px) {
-      .headline { font-size: 1.45rem; }
+    @media (max-width: 480px) {
+      .page { padding: 0.9rem 0.85rem 2rem; }
+      .brand { margin-bottom: 0.9rem; }
+      .headline { font-size: 1.3rem; margin-bottom: 0.4rem; }
+      .subline { font-size: 0.88rem; margin-bottom: 0.8rem; }
+      .trust-icons { display: grid; grid-template-columns: 1fr 1fr; justify-items: center; gap: 0.4rem; margin-bottom: 1rem; }
+      .trust-sep { display: none; }
+      .proof-bar { margin-bottom: 1rem; }
+      .form-card { padding: 1.2rem 1rem; }
       .form-row { grid-template-columns: 1fr; }
       .form-group.full { grid-column: 1; }
+      .form-group input, .form-group select, .form-group textarea { min-height: 52px; font-size: 1rem; }
+      .submit-btn { min-height: 60px; font-size: 1.1rem; }
       .enhanced-row { grid-template-columns: 1fr; }
       .btn-trust-row { gap: 0.4rem; font-size: 0.7rem; }
     }
@@ -183,11 +192,11 @@
       <div class="form-row">
         <div class="form-group">
           <label for="zip">ZIP Code</label>
-          <input type="tel" id="zip" placeholder="10001" maxlength="5">
+          <input type="tel" id="zip" placeholder="10001" maxlength="5" autocomplete="postal-code" inputmode="numeric">
         </div>
         <div class="form-group">
           <label for="age">Your Age</label>
-          <input type="tel" id="age" placeholder="65">
+          <input type="tel" id="age" placeholder="65" inputmode="numeric">
         </div>
       </div>
 
