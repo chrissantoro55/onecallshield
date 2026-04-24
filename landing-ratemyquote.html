@@ -1,0 +1,692 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Is Your Insurance Rate Too High? Find Out Free — OneCallShield</title>
+  <meta name="description" content="Check if you're overpaying for insurance in seconds. See your market rate, then get matched with one licensed agent to beat it. Free. No spam.">
+  <meta name="robots" content="noindex, nofollow">
+
+  <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,600;0,9..144,700&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+
+  <!-- Google Ads -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id=AW-18074640566"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+    gtag('config', 'AW-18074640566');
+  </script>
+
+  <!-- Firebase -->
+  <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-database-compat.js"></script>
+
+  <style>
+    :root {
+      --navy: #0d1f3c;
+      --navy-mid: #1a3260;
+      --gold: #c9973a;
+      --gold-light: rgba(201,151,58,0.12);
+      --cream: #f8f4ee;
+      --cream-dark: #ede8e0;
+      --green: #2d7a4f;
+      --green-light: rgba(45,122,79,0.08);
+      --red: #c0392b;
+      --amber: #b7791f;
+      --text: #1a1a2e;
+      --text-muted: #6b7280;
+    }
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: 'DM Sans', sans-serif; background: var(--cream); color: var(--text); min-height: 100vh; }
+    .page { max-width: 580px; margin: 0 auto; padding: 1.5rem 1rem 3rem; }
+
+    .brand { display: flex; align-items: center; justify-content: center; gap: 0.55rem; margin-bottom: 1.2rem; }
+    .brand-shield { width: 36px; height: 36px; background: var(--navy); border-radius: 50% 50% 50% 50% / 60% 60% 40% 40%; display: flex; align-items: center; justify-content: center; font-size: 1rem; flex-shrink: 0; }
+    .brand-name { font-family: 'Fraunces', serif; font-size: 1.15rem; font-weight: 700; color: var(--navy); letter-spacing: -0.01em; }
+
+    .step-indicator { display: flex; align-items: center; justify-content: center; gap: 0.5rem; margin-bottom: 0.6rem; font-size: 0.75rem; font-weight: 600; }
+    .step { display: flex; align-items: center; gap: 0.3rem; color: var(--text-muted); transition: color 0.3s; }
+    .step.active { color: var(--navy); }
+    .step.done { color: var(--green); }
+    .step-num { width: 20px; height: 20px; border-radius: 50%; border: 2px solid currentColor; display: flex; align-items: center; justify-content: center; font-size: 0.65rem; font-weight: 700; }
+    .step.active .step-num { background: var(--gold); border-color: var(--gold); color: var(--navy); }
+    .step.done .step-num { background: var(--green); border-color: var(--green); color: #fff; }
+    .step-arrow { color: var(--cream-dark); font-size: 1rem; }
+
+    .progress-bar { height: 4px; background: var(--cream-dark); border-radius: 2px; margin-bottom: 1.4rem; overflow: hidden; }
+    .progress-fill { height: 100%; background: var(--gold); border-radius: 2px; transition: width 0.6s ease; }
+
+    .headline { font-family: 'Fraunces', serif; font-size: 1.75rem; font-weight: 700; color: var(--navy); text-align: center; line-height: 1.2; margin-bottom: 0.5rem; }
+    .subline { text-align: center; font-size: 0.95rem; color: var(--text-muted); line-height: 1.5; margin-bottom: 1rem; }
+    .trust-bar { display: flex; align-items: center; justify-content: center; gap: 0.5rem; font-size: 0.78rem; color: var(--text-muted); margin-bottom: 1.4rem; flex-wrap: wrap; }
+    .trust-bar span { display: flex; align-items: center; gap: 0.2rem; }
+    .trust-sep { color: var(--cream-dark); }
+
+    .rmq-card { background: #fff; border-radius: 18px; padding: 1.6rem 1.4rem; box-shadow: 0 2px 20px rgba(13,31,60,0.08); border: 1px solid rgba(13,31,60,0.06); }
+    .rmq-card-title { font-family: 'Fraunces', serif; font-size: 1.05rem; font-weight: 700; color: var(--navy); margin-bottom: 1.2rem; text-align: center; }
+
+    .field-group { display: flex; flex-direction: column; gap: 0.3rem; margin-bottom: 0.9rem; }
+    .field-group label { font-size: 0.75rem; font-weight: 700; color: var(--navy); text-transform: uppercase; letter-spacing: 0.05em; }
+    .field-group input, .field-group select { width: 100%; background: var(--cream); border: 1.5px solid rgba(13,31,60,0.1); border-radius: 10px; padding: 0.75rem 0.9rem; font-size: 0.95rem; font-family: 'DM Sans', sans-serif; color: var(--text); outline: none; transition: border-color 0.2s, background 0.2s; -webkit-appearance: none; appearance: none; min-height: 52px; }
+    .field-group input:focus, .field-group select:focus { border-color: var(--gold); background: #fff; }
+    .field-group input.error, .field-group select.error { border-color: var(--red); }
+    .field-group input[readonly] { color: var(--text-muted); cursor: default; }
+    .field-row { display: grid; grid-template-columns: 1fr 1fr; gap: 0.8rem; }
+
+    .premium-wrap { position: relative; }
+    .premium-prefix { position: absolute; left: 0.9rem; top: 50%; transform: translateY(-50%); color: var(--text-muted); font-size: 0.95rem; font-weight: 600; pointer-events: none; z-index: 1; }
+    .premium-wrap input { padding-left: 1.6rem; }
+
+    .coverage-label { font-size: 0.75rem; font-weight: 700; color: var(--navy); text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 0.5rem; display: block; }
+    .coverage-btns { display: flex; flex-wrap: wrap; gap: 0.5rem; margin-bottom: 0.9rem; }
+    .coverage-btn { background: var(--cream); border: 1.5px solid rgba(13,31,60,0.12); border-radius: 8px; padding: 0.55rem 0.85rem; font-size: 0.85rem; font-family: 'DM Sans', sans-serif; color: var(--text); cursor: pointer; transition: border-color 0.2s, background 0.2s, color 0.2s; }
+    .coverage-btn:hover { border-color: var(--gold); }
+    .coverage-btn.selected { background: var(--navy); border-color: var(--navy); color: #fff; font-weight: 600; }
+
+    .form-error { background: rgba(192,57,43,0.08); border: 1px solid rgba(192,57,43,0.2); border-radius: 8px; padding: 0.6rem 0.9rem; font-size: 0.82rem; color: var(--red); margin-bottom: 0.8rem; display: none; }
+
+    .check-btn { width: 100%; background: var(--gold); color: var(--navy); border: none; padding: 1rem 1.5rem; min-height: 60px; border-radius: 12px; font-size: 1.1rem; font-weight: 700; font-family: 'Fraunces', serif; cursor: pointer; transition: transform 0.15s, box-shadow 0.15s; box-shadow: 0 4px 16px rgba(201,151,58,0.35); letter-spacing: -0.01em; }
+    .check-btn:hover { transform: translateY(-1px); box-shadow: 0 6px 20px rgba(201,151,58,0.4); }
+    .check-btn:active { transform: translateY(0); }
+    .check-btn:disabled { opacity: 0.7; cursor: not-allowed; transform: none; }
+
+    .loading-state { text-align: center; padding: 2.5rem 1rem; }
+    .loading-spinner { width: 48px; height: 48px; border: 4px solid var(--cream-dark); border-top-color: var(--gold); border-radius: 50%; animation: spin 0.8s linear infinite; margin: 0 auto 1rem; }
+    @keyframes spin { to { transform: rotate(360deg); } }
+    .loading-text { font-family: 'Fraunces', serif; font-size: 1.1rem; font-weight: 700; color: var(--navy); }
+    .loading-sub { font-size: 0.85rem; color: var(--text-muted); margin-top: 0.3rem; }
+
+    @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+    .fade-in { animation: fadeIn 0.45s ease both; }
+
+    .verdict-box { border-radius: 16px; padding: 1.4rem; margin-bottom: 1.2rem; }
+    .verdict-box.overpaying { background: rgba(192,57,43,0.07); border: 1.5px solid rgba(192,57,43,0.25); }
+    .verdict-box.fair { background: rgba(183,121,31,0.07); border: 1.5px solid rgba(183,121,31,0.25); }
+    .verdict-box.great { background: var(--green-light); border: 1.5px solid rgba(45,122,79,0.25); }
+    .verdict-icon { font-size: 2.2rem; text-align: center; margin-bottom: 0.5rem; }
+    .verdict-title { font-family: 'Fraunces', serif; font-size: 1.4rem; font-weight: 700; text-align: center; margin-bottom: 0.3rem; }
+    .verdict-box.overpaying .verdict-title { color: var(--red); }
+    .verdict-box.fair .verdict-title { color: var(--amber); }
+    .verdict-box.great .verdict-title { color: var(--green); }
+    .verdict-amount { text-align: center; font-size: 1rem; font-weight: 700; margin-bottom: 0.5rem; color: var(--text); }
+    .verdict-detail { text-align: center; font-size: 0.87rem; color: var(--text-muted); line-height: 1.5; }
+
+    .compare-table { background: #fff; border-radius: 14px; padding: 1.2rem 1.4rem; margin-bottom: 1.2rem; box-shadow: 0 2px 12px rgba(13,31,60,0.06); border: 1px solid rgba(13,31,60,0.06); }
+    .compare-title { font-size: 0.75rem; font-weight: 700; color: var(--navy); text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 0.9rem; }
+    .compare-row { display: flex; justify-content: space-between; align-items: center; padding: 0.5rem 0; border-bottom: 1px solid rgba(13,31,60,0.05); font-size: 0.88rem; }
+    .compare-row:last-child { border-bottom: none; }
+    .compare-label { color: var(--text-muted); }
+    .compare-val { font-weight: 700; color: var(--navy); }
+    .compare-val.red { color: var(--red); }
+    .compare-val.green { color: var(--green); }
+
+    .cta-box { background: var(--navy); border-radius: 16px; padding: 1.4rem; margin-bottom: 1.4rem; }
+    .cta-headline { font-family: 'Fraunces', serif; font-size: 1.1rem; font-weight: 700; color: #fff; margin-bottom: 0.5rem; line-height: 1.3; }
+    .cta-sub { font-size: 0.87rem; color: rgba(255,255,255,0.65); line-height: 1.55; }
+
+    .lead-form-card { background: #fff; border-radius: 18px; padding: 1.6rem 1.4rem; box-shadow: 0 2px 20px rgba(13,31,60,0.08); border: 1px solid rgba(13,31,60,0.06); }
+    .lead-form-title { font-family: 'Fraunces', serif; font-size: 1.05rem; font-weight: 700; color: var(--navy); margin-bottom: 0.4rem; text-align: center; }
+    .lead-form-sub { text-align: center; font-size: 0.82rem; color: var(--text-muted); margin-bottom: 1.2rem; }
+
+    .insurance-prefilled { background: var(--cream); border: 1.5px solid rgba(13,31,60,0.1); border-radius: 10px; padding: 0.75rem 0.9rem; font-size: 0.95rem; color: var(--text); display: flex; align-items: center; justify-content: space-between; min-height: 52px; }
+    .prefilled-badge { background: var(--gold-light); color: var(--gold); font-size: 0.68rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em; padding: 0.2rem 0.5rem; border-radius: 4px; flex-shrink: 0; }
+
+    .consent-row { display: flex; gap: 0.75rem; align-items: flex-start; margin: 1rem 0; padding: 0.9rem; background: var(--cream); border-radius: 10px; border: 1.5px solid rgba(13,31,60,0.08); }
+    .consent-row input[type="checkbox"] { width: 18px; height: 18px; flex-shrink: 0; margin-top: 2px; accent-color: var(--navy); cursor: pointer; }
+    .consent-row label { font-size: 0.8rem; color: var(--text-muted); line-height: 1.5; cursor: pointer; }
+
+    .submit-btn { width: 100%; background: var(--gold); color: var(--navy); border: none; padding: 1rem 1.5rem; min-height: 60px; border-radius: 12px; font-size: 1rem; font-weight: 700; font-family: 'Fraunces', serif; cursor: pointer; transition: transform 0.15s, box-shadow 0.15s; box-shadow: 0 4px 16px rgba(201,151,58,0.35); letter-spacing: -0.01em; }
+    .submit-btn:hover { transform: translateY(-1px); box-shadow: 0 6px 20px rgba(201,151,58,0.4); }
+    .submit-btn:active { transform: translateY(0); }
+    .submit-btn:disabled { opacity: 0.7; cursor: not-allowed; transform: none; }
+    .submit-sub { text-align: center; font-size: 0.8rem; color: var(--text-muted); margin-top: 0.6rem; }
+
+    #successState { display: none; }
+    .success-card { background: #fff; border-radius: 18px; padding: 2rem 1.4rem; text-align: center; box-shadow: 0 2px 20px rgba(13,31,60,0.08); border: 1px solid rgba(13,31,60,0.06); }
+    .success-check { width: 72px; height: 72px; background: var(--green-light); border: 3px solid var(--green); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 2rem; margin: 0 auto 1.2rem; animation: popIn 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275) both; }
+    @keyframes popIn { from { transform: scale(0); opacity: 0; } to { transform: scale(1); opacity: 1; } }
+    .success-title { font-family: 'Fraunces', serif; font-size: 1.5rem; font-weight: 700; color: var(--navy); margin-bottom: 0.6rem; }
+    .success-body { font-size: 0.92rem; color: var(--text-muted); line-height: 1.6; margin-bottom: 0.6rem; }
+    .success-rate-summary { background: var(--cream); border-radius: 10px; padding: 0.8rem 1rem; margin: 0.8rem 0; font-size: 0.85rem; color: var(--navy); font-weight: 600; border: 1px solid var(--cream-dark); }
+    .success-nospam { font-size: 0.8rem; color: var(--green); font-weight: 600; }
+
+    @keyframes slideUp { from { transform: translateY(16px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
+    @keyframes pulseGold { 0%,100% { box-shadow: 0 0 0 0 rgba(201,151,58,0); } 50% { box-shadow: 0 0 0 6px rgba(201,151,58,0.25); } }
+    .enhanced-attention { animation: pulseGold 2s ease 0.6s 3; }
+    .enhanced-widget { margin-top: 1.2rem; border-radius: 16px; overflow: hidden; border: 2px solid var(--gold); animation: slideUp 0.5s ease 0.3s both; }
+    .enhanced-header { background: linear-gradient(135deg,var(--navy),var(--navy-mid)); padding: 1.2rem 1.4rem; display: flex; align-items: center; gap: 0.8rem; }
+    .enhanced-header-title { font-family: 'Fraunces',serif; color: #fff; font-size: 1rem; font-weight: 700; margin-bottom: 0.15rem; }
+    .enhanced-header-sub { color: rgba(255,255,255,0.4); font-size: 0.75rem; }
+    .enhanced-body { background: var(--cream); padding: 1.2rem 1.4rem; }
+    .enhanced-voluntary { background: rgba(201,151,58,0.08); border: 1px solid rgba(201,151,58,0.2); border-radius: 8px; padding: 0.6rem 0.9rem; margin-bottom: 1rem; font-size: 0.78rem; color: var(--text-muted); text-align: center; }
+    .enhanced-field { margin-bottom: 0.9rem; }
+    .enhanced-field label { display: block; font-size: 0.78rem; font-weight: 700; color: var(--navy); text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 0.35rem; }
+    .enhanced-field input, .enhanced-field select, .enhanced-field textarea { width: 100%; background: #fff; border: 1.5px solid rgba(13,31,60,0.12); border-radius: 8px; padding: 0.65rem 0.8rem; font-size: 0.88rem; font-family: 'DM Sans',sans-serif; outline: none; color: var(--text); box-sizing: border-box; transition: border-color 0.2s; -webkit-appearance: none; appearance: none; }
+    .enhanced-field input:focus, .enhanced-field select:focus, .enhanced-field textarea:focus { border-color: var(--gold); }
+    .enhanced-field textarea { resize: none; height: 70px; }
+    .enhanced-row { display: grid; grid-template-columns: 1fr 1fr; gap: 0.8rem; }
+    .enhanced-submit { width: 100%; background: var(--navy); color: var(--gold); border: none; padding: 0.9rem; border-radius: 10px; font-size: 0.9rem; font-weight: 700; cursor: pointer; font-family: 'DM Sans',sans-serif; margin-top: 0.4rem; transition: background 0.2s; }
+    .enhanced-submit:hover { background: var(--navy-mid); }
+    .enhanced-skip { width: 100%; background: none; border: none; color: var(--text-muted); font-size: 0.82rem; cursor: pointer; font-family: 'DM Sans',sans-serif; margin-top: 0.5rem; text-decoration: underline; padding: 0.4rem; }
+    .enhanced-done { background: var(--green-light); border-radius: 12px; padding: 1.2rem; text-align: center; margin-top: 1.2rem; border: 1.5px solid rgba(45,122,79,0.2); }
+    .enhanced-done-icon { font-size: 1.8rem; margin-bottom: 0.4rem; }
+    .enhanced-done-text { font-size: 0.9rem; color: var(--green); font-weight: 700; }
+    .enhanced-done-sub { font-size: 0.8rem; color: var(--text-muted); margin-top: 0.2rem; }
+
+    @media (max-width: 480px) {
+      .page { padding: 0.9rem 0.85rem 2rem; }
+      .headline { font-size: 1.3rem; }
+      .subline { font-size: 0.88rem; }
+      .field-row { grid-template-columns: 1fr; }
+      .enhanced-row { grid-template-columns: 1fr; }
+      .trust-bar { gap: 0.4rem; font-size: 0.72rem; }
+    }
+  </style>
+</head>
+<body>
+<div class="page">
+
+  <div class="step-indicator">
+    <div class="step active" id="stepDot1">
+      <div class="step-num">1</div>
+      <span>Check Your Rate</span>
+    </div>
+    <div class="step-arrow">→</div>
+    <div class="step" id="stepDot2">
+      <div class="step-num">2</div>
+      <span>Get Matched</span>
+    </div>
+  </div>
+  <div class="progress-bar">
+    <div class="progress-fill" id="progressFill" style="width:50%;"></div>
+  </div>
+
+  <div class="brand">
+    <div class="brand-shield">🛡️</div>
+    <span class="brand-name">OneCallShield</span>
+  </div>
+
+  <!-- STEP 1 -->
+  <div id="step1">
+    <h1 class="headline">Is Your Insurance Rate Too High?</h1>
+    <p class="subline">Enter your info below and see what you should be paying in 10 seconds. Free.</p>
+
+    <div class="trust-bar">
+      <span>🔒 Secure</span>
+      <span class="trust-sep">·</span>
+      <span>✅ No spam</span>
+      <span class="trust-sep">·</span>
+      <span>🚫 Zero obligation</span>
+    </div>
+
+    <div class="rmq-card">
+      <div class="rmq-card-title">🔍 Rate My Quote</div>
+      <div id="rmqError" class="form-error"></div>
+
+      <div class="field-group">
+        <label for="rmqInsuranceType">Insurance Type</label>
+        <select id="rmqInsuranceType" onchange="handleRmqInsuranceType()">
+          <option value="">Select insurance type...</option>
+          <option value="auto">Auto Insurance</option>
+          <option value="home">Homeowners Insurance</option>
+          <option value="renters">Renters Insurance</option>
+          <option value="life">Life Insurance</option>
+          <option value="health">Health Insurance</option>
+          <option value="medicare">Medicare</option>
+        </select>
+      </div>
+
+      <div class="field-group">
+        <label for="rmqPremium">Current Monthly Premium</label>
+        <div class="premium-wrap">
+          <span class="premium-prefix">$</span>
+          <input type="number" id="rmqPremium" placeholder="0" min="1" max="9999" inputmode="numeric">
+        </div>
+      </div>
+
+      <div class="field-row">
+        <div class="field-group">
+          <label for="rmqAge">Your Age</label>
+          <input type="tel" id="rmqAge" placeholder="35" inputmode="numeric">
+        </div>
+        <div class="field-group">
+          <label for="rmqZip">ZIP Code</label>
+          <input type="tel" id="rmqZip" placeholder="10001" maxlength="5" autocomplete="postal-code" inputmode="numeric">
+        </div>
+      </div>
+
+      <div id="coverageLevelSection" style="display:none;">
+        <span class="coverage-label">Coverage Level</span>
+        <div class="coverage-btns" id="coverageBtns"></div>
+      </div>
+
+      <button class="check-btn" id="checkBtn" onclick="checkMyRate()">Check My Rate →</button>
+    </div>
+  </div>
+
+  <!-- STEP 2 -->
+  <div id="step2" style="display:none;">
+
+    <div id="loadingState" class="rmq-card">
+      <div class="loading-state">
+        <div class="loading-spinner"></div>
+        <div class="loading-text">Analyzing your rate...</div>
+        <div class="loading-sub">Comparing against market data for your profile</div>
+      </div>
+    </div>
+
+    <div id="resultsSection" style="display:none;">
+      <div id="verdictBox" class="verdict-box fade-in"></div>
+      <div id="compareTable" class="compare-table fade-in"></div>
+      <div id="ctaBox" class="cta-box fade-in"></div>
+
+      <div class="lead-form-card fade-in">
+        <div class="lead-form-title">Get Your Free Agent Match</div>
+        <div class="lead-form-sub">Takes 30 seconds — completely free</div>
+
+        <div id="leadFormError" class="form-error"></div>
+
+        <div class="field-row">
+          <div class="field-group">
+            <label for="firstName">First Name</label>
+            <input type="text" id="firstName" placeholder="Jane" autocomplete="given-name">
+          </div>
+          <div class="field-group">
+            <label for="lastName">Last Name</label>
+            <input type="text" id="lastName" placeholder="Smith" autocomplete="family-name">
+          </div>
+        </div>
+
+        <div class="field-row">
+          <div class="field-group">
+            <label for="phone">Phone Number</label>
+            <input type="tel" id="phone" placeholder="(555) 000-0000" autocomplete="tel">
+          </div>
+          <div class="field-group">
+            <label for="email">Email Address</label>
+            <input type="email" id="email" placeholder="jane@email.com" autocomplete="email">
+          </div>
+        </div>
+
+        <div class="field-row">
+          <div class="field-group">
+            <label for="leadZip">ZIP Code</label>
+            <input type="tel" id="leadZip" placeholder="10001" maxlength="5" autocomplete="postal-code" inputmode="numeric" readonly>
+          </div>
+          <div class="field-group">
+            <label for="leadAge">Your Age</label>
+            <input type="tel" id="leadAge" placeholder="35" inputmode="numeric" readonly>
+          </div>
+        </div>
+
+        <div class="field-group">
+          <label>Insurance Type</label>
+          <div class="insurance-prefilled">
+            <span id="insurancePrefilledText"></span>
+            <span class="prefilled-badge">Pre-filled</span>
+          </div>
+        </div>
+
+        <div class="field-group">
+          <label for="contactTime">Preferred Contact Time</label>
+          <select id="contactTime">
+            <option value="">Select a time...</option>
+            <option value="Morning (8am–12pm)">Morning (8am–12pm)</option>
+            <option value="Afternoon (12pm–5pm)">Afternoon (12pm–5pm)</option>
+            <option value="Evening (5pm–8pm)">Evening (5pm–8pm)</option>
+            <option value="Anytime">Anytime</option>
+          </select>
+        </div>
+
+        <div class="consent-row">
+          <input type="checkbox" id="consent">
+          <label for="consent">I consent to be contacted by one licensed insurance agent matched by OneCallShield. My info will NOT be shared with multiple agents or third parties.</label>
+        </div>
+
+        <button class="submit-btn" id="submitBtn" onclick="submitLeadForm()">🛡️ Get My Free Agent Match Now →</button>
+        <p class="submit-sub">⚡ Most consumers matched within 4 hours — completely free</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- SUCCESS STATE -->
+  <div id="successState">
+    <div class="success-card">
+      <div class="success-check">✅</div>
+      <div class="success-title" id="successTitle">You're all set! 🎉</div>
+      <p class="success-body" id="successBody">We're matching you with one licensed specialist now.</p>
+      <div class="success-rate-summary" id="successRateSummary"></div>
+      <p class="success-nospam">Expect a call at your preferred time. One agent. One call. No spam.</p>
+    </div>
+    <div id="enhancedWidget"></div>
+  </div>
+
+</div>
+<script>
+  var _rmqData = null;
+
+  const RMQ_DATA = {
+    auto: {'Liability Only':{avg:85,low:55,high:130},'Standard Coverage':{avg:148,low:95,high:220},'Full Coverage':{avg:194,low:130,high:290}},
+    home: {'Basic':{avg:110,low:75,high:160},'Standard':{avg:168,low:110,high:250},'Premium':{avg:235,low:155,high:360}},
+    renters: {'Basic':{avg:14,low:9,high:22},'Standard':{avg:22,low:14,high:34},'Premium':{avg:35,low:22,high:55}},
+    life: {'Term - Low':{avg:28,low:18,high:45},'Term - Mid':{avg:55,low:35,high:85},'Whole Life':{avg:185,low:120,high:290}},
+    health: {'Bronze Plan':{avg:368,low:280,high:490},'Silver Plan':{avg:476,low:360,high:640},'Gold Plan':{avg:596,low:450,high:800}},
+    medicare: {'Plan G':{avg:148,low:98,high:215},'Plan N':{avg:118,low:78,high:175},'Plan F':{avg:175,low:115,high:255}}
+  };
+
+  const COVERAGE_OPTIONS = {
+    auto: ['Liability Only','Standard Coverage','Full Coverage'],
+    home: ['Basic','Standard','Premium'],
+    renters: ['Basic','Standard','Premium'],
+    life: ['Term - Low','Term - Mid','Whole Life'],
+    health: ['Bronze Plan','Silver Plan','Gold Plan'],
+    medicare: ['Plan G','Plan N','Plan F']
+  };
+
+  const TYPE_LABELS = {
+    auto: 'Auto Insurance', home: 'Homeowners Insurance', renters: 'Renters Insurance',
+    life: 'Life Insurance', health: 'Health Insurance', medicare: 'Medicare'
+  };
+
+  var _selectedCoverage = '';
+
+  function handleRmqInsuranceType() {
+    var type = document.getElementById('rmqInsuranceType').value;
+    var section = document.getElementById('coverageLevelSection');
+    var btns = document.getElementById('coverageBtns');
+    _selectedCoverage = '';
+    if (!type) { section.style.display = 'none'; btns.innerHTML = ''; return; }
+    var options = COVERAGE_OPTIONS[type];
+    btns.innerHTML = options.map(function(o) {
+      return '<button type="button" class="coverage-btn" onclick="selectCoverage(this,\'' + o + '\')">' + o + '</button>';
+    }).join('');
+    section.style.display = 'block';
+  }
+
+  function selectCoverage(btn, val) {
+    _selectedCoverage = val;
+    document.querySelectorAll('.coverage-btn').forEach(function(b) { b.classList.remove('selected'); });
+    btn.classList.add('selected');
+  }
+
+  function getRegionalMultiplier(zip) {
+    var p = parseInt(String(zip).replace(/\D/g,'').padStart(5,'0').substring(0,3), 10);
+    if (isNaN(p)) return 1.0;
+    if ((p >= 900 && p <= 961) || (p >= 100 && p <= 149) || p === 70 || p === 71 || (p >= 330 && p <= 349)) return 1.28;
+    if ((p >= 460 && p <= 479) || (p >= 490 && p <= 499)) return 0.82;
+    return 1.0;
+  }
+
+  function getAgeMultiplier(typeKey, age) {
+    var a = parseInt(age, 10);
+    if (isNaN(a)) return 1.0;
+    if (typeKey === 'auto') {
+      if (a < 25) return 1.35;
+      if (a < 30) return 1.12;
+      if (a > 70) return 1.18;
+    } else if (typeKey === 'life' || typeKey === 'health' || typeKey === 'medicare') {
+      if (a > 60) return 1.4;
+      if (a > 50) return 1.2;
+      if (a < 35) return 0.82;
+    }
+    return 1.0;
+  }
+
+  function checkMyRate() {
+    var errEl = document.getElementById('rmqError');
+    errEl.style.display = 'none';
+    var type = document.getElementById('rmqInsuranceType').value;
+    var premiumRaw = document.getElementById('rmqPremium').value;
+    var premium = parseFloat(premiumRaw);
+    var age = document.getElementById('rmqAge').value.trim();
+    var zip = document.getElementById('rmqZip').value.trim();
+
+    if (!type) { showRmqError('Please select an insurance type.'); return; }
+    if (!premiumRaw || isNaN(premium) || premium <= 0) { showRmqError('Please enter your current monthly premium.'); return; }
+    if (!age || isNaN(parseInt(age, 10))) { showRmqError('Please enter your age.'); return; }
+    if (!zip || zip.replace(/\D/g,'').length < 5) { showRmqError('Please enter a valid 5-digit ZIP code.'); return; }
+    if (!_selectedCoverage) { showRmqError('Please select your coverage level.'); return; }
+
+    var baseData = RMQ_DATA[type][_selectedCoverage];
+    var regMult = getRegionalMultiplier(zip);
+    var ageMult = getAgeMultiplier(type, age);
+    var adjustedAvg = Math.round(baseData.avg * regMult * ageMult);
+    var adjustedLow = Math.round(baseData.low * regMult * ageMult);
+    var adjustedHigh = Math.round(baseData.high * regMult * ageMult);
+    var diff = Math.round(premium - adjustedAvg);
+    var pct = diff / adjustedAvg;
+    var verdict = pct > 0.15 ? 'overpaying' : pct < -0.10 ? 'great' : 'fair';
+    var annualDiff = Math.abs(diff) * 12;
+
+    _rmqData = {
+      type: type, typeLabel: TYPE_LABELS[type], coverage: _selectedCoverage,
+      premium: premium, adjustedAvg: adjustedAvg, adjustedLow: adjustedLow, adjustedHigh: adjustedHigh,
+      diff: diff, verdict: verdict, annualDiff: annualDiff, age: age, zip: zip
+    };
+
+    document.getElementById('step1').style.display = 'none';
+    document.getElementById('step2').style.display = 'block';
+    document.getElementById('loadingState').style.display = 'block';
+    document.getElementById('resultsSection').style.display = 'none';
+
+    setTimeout(function() {
+      document.getElementById('loadingState').style.display = 'none';
+      document.getElementById('resultsSection').style.display = 'block';
+      renderResults(_rmqData);
+      document.getElementById('stepDot1').classList.remove('active');
+      document.getElementById('stepDot1').classList.add('done');
+      document.getElementById('stepDot2').classList.add('active');
+      document.getElementById('progressFill').style.width = '100%';
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }, 2000);
+  }
+
+  function showRmqError(msg) {
+    var el = document.getElementById('rmqError');
+    el.textContent = msg; el.style.display = 'block';
+    el.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+  }
+
+  function renderResults(d) {
+    var vb = document.getElementById('verdictBox');
+    if (d.verdict === 'overpaying') {
+      vb.className = 'verdict-box overpaying fade-in';
+      vb.innerHTML = '<div class="verdict-icon">⚠️</div>' +
+        '<div class="verdict-title">You May Be Overpaying</div>' +
+        '<div class="verdict-amount" style="color:var(--red);">$' + Math.abs(d.diff) + '/mo above market average</div>' +
+        '<div class="verdict-detail">Based on your profile, the market average is $' + d.adjustedAvg + '/mo. You could save up to <strong>$' + d.annualDiff + '/year</strong>.</div>';
+    } else if (d.verdict === 'fair') {
+      vb.className = 'verdict-box fair fade-in';
+      vb.innerHTML = '<div class="verdict-icon">✅</div>' +
+        '<div class="verdict-title">You\'re Paying a Fair Rate</div>' +
+        '<div class="verdict-amount" style="color:var(--amber);">Your rate is within the $' + d.adjustedLow + '–$' + d.adjustedHigh + '/mo range for your profile</div>' +
+        '<div class="verdict-detail">But fair doesn\'t mean best — a specialist might still find you savings.</div>';
+    } else {
+      vb.className = 'verdict-box great fade-in';
+      vb.innerHTML = '<div class="verdict-icon">🏆</div>' +
+        '<div class="verdict-title">You Have a Great Rate!</div>' +
+        '<div class="verdict-amount" style="color:var(--green);">$' + Math.abs(d.diff) + '/mo below market average</div>' +
+        '<div class="verdict-detail">You\'re already beating the market — but make sure your coverage is complete.</div>';
+    }
+
+    var diffStr = d.verdict === 'overpaying' ? '+$' + Math.abs(d.diff) + '/mo' : d.verdict === 'great' ? '-$' + Math.abs(d.diff) + '/mo' : '~$0/mo';
+    var diffClass = d.verdict === 'overpaying' ? 'red' : d.verdict === 'great' ? 'green' : '';
+    var savingsStr = d.verdict === 'overpaying' ? '$' + d.annualDiff + '/year' : d.verdict === 'great' ? '$' + d.annualDiff + '/year (ahead of market)' : 'Your rate is competitive';
+    var savingsClass = d.verdict === 'overpaying' ? 'red' : d.verdict === 'great' ? 'green' : '';
+    document.getElementById('compareTable').innerHTML =
+      '<div class="compare-title">Your Rate Breakdown</div>' +
+      '<div class="compare-row"><span class="compare-label">Your monthly premium</span><span class="compare-val">$' + d.premium + '/mo</span></div>' +
+      '<div class="compare-row"><span class="compare-label">Market average for your profile</span><span class="compare-val">$' + d.adjustedAvg + '/mo</span></div>' +
+      '<div class="compare-row"><span class="compare-label">Monthly difference</span><span class="compare-val ' + diffClass + '">' + diffStr + '</span></div>' +
+      '<div class="compare-row"><span class="compare-label">Potential annual savings</span><span class="compare-val ' + savingsClass + '">' + savingsStr + '</span></div>';
+
+    var ctaH, ctaS;
+    if (d.verdict === 'overpaying') {
+      ctaH = 'Want to see if you can beat the market average?';
+      ctaS = 'OneCallShield will match you with one licensed ' + d.typeLabel + ' specialist who shops multiple carriers for you. One call. No spam. Free.';
+    } else if (d.verdict === 'fair') {
+      ctaH = 'Want to make sure you\'re getting the best possible rate?';
+      ctaS = 'A licensed specialist can check 10+ carriers in one call. You might be surprised what they find. Free — no obligation.';
+    } else {
+      ctaH = 'Great rate — but is your coverage complete?';
+      ctaS = 'A licensed specialist can review your policy and make sure you\'re fully protected. One call. Free. No obligation.';
+    }
+    document.getElementById('ctaBox').innerHTML =
+      '<div class="cta-headline">' + ctaH + '</div><div class="cta-sub">' + ctaS + '</div>';
+
+    document.getElementById('leadZip').value = d.zip;
+    document.getElementById('leadAge').value = d.age;
+    document.getElementById('insurancePrefilledText').textContent = d.typeLabel;
+  }
+
+  function getStateFromZip(zip) {
+    if (!zip) return '';
+    var n = parseInt(String(zip).replace(/\D/g,'').padStart(5,'0'), 10);
+    if (isNaN(n) || n < 501) return '';
+    var r = [
+      [501,544,'NY'],[600,988,'PR'],[1001,2791,'MA'],[2801,2940,'RI'],
+      [3001,3897,'NH'],[3900,4992,'ME'],[5001,5907,'VT'],[6001,6928,'CT'],
+      [7001,8989,'NJ'],[10001,14975,'NY'],[15001,19640,'PA'],[19701,19980,'DE'],
+      [20001,20597,'DC'],[20601,21930,'MD'],[22001,24658,'VA'],[24701,26886,'WV'],
+      [27006,28909,'NC'],[29001,29948,'SC'],[30001,31999,'GA'],[32004,34997,'FL'],
+      [35004,36925,'AL'],[37010,38589,'TN'],[38601,39776,'MS'],[40003,42788,'KY'],
+      [43001,45999,'OH'],[46001,47997,'IN'],[48001,49971,'MI'],[50001,52809,'IA'],
+      [53001,54990,'WI'],[55001,56763,'MN'],[57001,57799,'SD'],[58001,58856,'ND'],
+      [59001,59937,'MT'],[60001,62999,'IL'],[63001,65899,'MO'],[66002,67954,'KS'],
+      [68001,69367,'NE'],[70001,71497,'LA'],[71601,72959,'AR'],[73001,74966,'OK'],
+      [75001,79999,'TX'],[80001,81658,'CO'],[82001,83128,'WY'],[83200,83876,'ID'],
+      [84001,84784,'UT'],[85001,86556,'AZ'],[87001,88441,'NM'],[88510,88589,'TX'],
+      [89001,89883,'NV'],[90001,96162,'CA'],[96701,96898,'HI'],[97001,97920,'OR'],
+      [98001,99403,'WA'],[99501,99950,'AK']
+    ];
+    for (var i = 0; i < r.length; i++) { if (n >= r[i][0] && n <= r[i][1]) return r[i][2]; }
+    return '';
+  }
+
+  function submitLeadForm() {
+    var errEl = document.getElementById('leadFormError');
+    errEl.style.display = 'none';
+    var firstName = document.getElementById('firstName').value.trim();
+    var lastName = document.getElementById('lastName').value.trim();
+    var phone = document.getElementById('phone').value.trim();
+    var email = document.getElementById('email').value.trim();
+    var zip = document.getElementById('leadZip').value.trim();
+    var age = document.getElementById('leadAge').value.trim();
+    var contactTime = document.getElementById('contactTime').value;
+
+    if (!firstName) { showLeadError('Please enter your first name.'); return; }
+    if (!phone || phone.replace(/\D/g,'').length < 10) { showLeadError('Please enter a valid 10-digit phone number.'); return; }
+    if (!email || !email.includes('@')) { showLeadError('Please enter a valid email address.'); return; }
+    if (!contactTime) { showLeadError('Please select a preferred contact time.'); return; }
+    if (!document.getElementById('consent').checked) { showLeadError('Please check the consent box to continue.'); return; }
+
+    var btn = document.getElementById('submitBtn');
+    btn.textContent = 'Submitting...'; btn.disabled = true;
+
+    var d = _rmqData;
+    var lead = {
+      id: 'L-' + Date.now(),
+      submittedAt: new Date().toISOString(),
+      firstName: firstName, lastName: lastName, phone: phone, email: email,
+      zip: zip, age: age || 'Not provided',
+      insuranceType: d.typeLabel,
+      contactTime: contactTime,
+      currentPremium: d.premium,
+      marketAverage: d.adjustedAvg,
+      rateVerdict: d.verdict,
+      potentialSavings: d.verdict === 'overpaying' ? d.annualDiff : 0,
+      coverageLevel: d.coverage,
+      state: getStateFromZip(zip),
+      status: 'unmatched',
+      matchedAgentId: null,
+      matchedAt: null,
+      source: 'rate-my-quote-landing'
+    };
+
+    fetch('https://onecallshield-default-rtdb.firebaseio.com/leads/' + lead.id + '.json', {
+      method: 'PUT', headers: {'Content-Type': 'application/json'}, body: JSON.stringify(lead)
+    }).catch(function(err) { console.error('Firebase error:', err); });
+
+    fetch('https://onecallshield-emails.chris-santoro55.workers.dev', {
+      method: 'POST', headers: {'Content-Type': 'application/json'},
+      body: JSON.stringify({ type: 'new_lead', firstName: firstName, lastName: lastName, phone: phone, email: email, age: age || 'N/A', zip: zip, insuranceType: d.typeLabel, contactTime: contactTime, lifeType: 'N/A', faceAmount: 'N/A', healthStatus: 'N/A', leadId: lead.id, currentPremium: d.premium, marketAverage: d.adjustedAvg, rateVerdict: d.verdict })
+    }).catch(function(err) { console.error('Worker error:', err); });
+
+    try { gtag('event', 'conversion', {'send_to': 'AW-18074640566/sLzxCIr3wJgcELbB1KpD', 'value': 1.0, 'currency': 'USD'}); } catch(e) {}
+
+    document.getElementById('step2').style.display = 'none';
+    document.getElementById('successState').style.display = 'block';
+    document.getElementById('successTitle').textContent = 'You\'re all set, ' + firstName + '! 🎉';
+    document.getElementById('successBody').textContent = 'We\'re matching you with one licensed ' + d.typeLabel + ' specialist now.';
+    var verdictLabel = d.verdict === 'overpaying' ? 'Overpaying' : d.verdict === 'fair' ? 'Fair Rate' : 'Great Rate';
+    document.getElementById('successRateSummary').textContent = 'Your rate analysis: ' + verdictLabel + ' — $' + d.premium + '/mo vs $' + d.adjustedAvg + '/mo market average';
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+    setTimeout(function() { buildEnhancedWidget(lead); }, 1800);
+  }
+
+  function showLeadError(msg) {
+    var el = document.getElementById('leadFormError');
+    el.textContent = msg; el.style.display = 'block';
+    el.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+    var btn = document.getElementById('submitBtn');
+    btn.textContent = '🛡️ Get My Free Agent Match Now →'; btn.disabled = false;
+  }
+
+  const ENHANCED_FIELDS = {
+    'Auto Insurance': { icon: '🚗', label: 'Auto Insurance Details', sub: 'Help your agent prepare an accurate quote', fields: [ {id:'ev_year', label:'Vehicle Year', type:'select', options:['Select year...','2025','2024','2023','2022','2021','2020','2019','2018','2017','2016','2015','2014','2013','2012','2011','2010','2009 or older']}, {id:'ev_make', label:'Vehicle Make', type:'text', placeholder:'e.g. Toyota, Ford, Honda'}, {id:'ev_model', label:'Vehicle Model', type:'text', placeholder:'e.g. Camry, F-150, Civic'}, {id:'ev_mileage', label:'Approximate Mileage', type:'select', options:['Select mileage...','Under 10,000','10,000 - 25,000','25,000 - 50,000','50,000 - 75,000','75,000 - 100,000','Over 100,000']}, {id:'ev_violations', label:'Violations in Last 3 Years', type:'select', options:['Select...','None','1 minor violation','2+ minor violations','1 major violation','DUI/DWI']}, {id:'ev_current_insurer', label:'Current Insurance Company', type:'text', placeholder:'e.g. Geico, State Farm, or None'}, {id:'ev_current_rate', label:'Current Monthly Rate', type:'text', placeholder:'e.g. $120/month or Not sure'}, {id:'ev_coverage', label:'Coverage Level Desired', type:'select', options:['Select...','Liability only (minimum)','Full coverage','Not sure — agent will advise']} ] },
+    'Homeowners Insurance': { icon: '🏠', label: 'Home Details', sub: 'Help your agent find the best homeowners rate', fields: [ {id:'eh_year_built', label:'Year Home Was Built', type:'text', placeholder:'e.g. 1995'}, {id:'eh_sqft', label:'Approximate Square Footage', type:'select', options:['Select...','Under 1,000 sq ft','1,000 - 1,500 sq ft','1,500 - 2,000 sq ft','2,000 - 2,500 sq ft','2,500 - 3,000 sq ft','Over 3,000 sq ft']}, {id:'eh_value', label:'Estimated Home Value', type:'select', options:['Select...','Under $150,000','$150,000 - $250,000','$250,000 - $350,000','$350,000 - $500,000','$500,000 - $750,000','Over $750,000']}, {id:'eh_roof', label:'Roof Age (Years)', type:'select', options:['Select...','0-5 years','6-10 years','11-15 years','16-20 years','Over 20 years','Not sure']}, {id:'eh_construction', label:'Home Construction Type', type:'select', options:['Select...','Wood frame','Brick','Stone','Stucco','Mixed/Not sure']}, {id:'eh_claims', label:'Claims in Last 5 Years', type:'select', options:['Select...','None','1 claim','2 claims','3+ claims']}, {id:'eh_current_insurer', label:'Current Insurance Company', type:'text', placeholder:'e.g. State Farm, Allstate, or None'}, {id:'eh_current_rate', label:'Current Annual Premium', type:'text', placeholder:'e.g. $1,200/year or Not sure'} ] },
+    'Renters Insurance': { icon: '🏢', label: 'Renters Details', sub: 'A few details to help find your best rate', fields: [ {id:'er_property_value', label:'Estimated Value of Belongings', type:'select', options:['Select...','Under $10,000','$10,000 - $25,000','$25,000 - $50,000','$50,000 - $75,000','Over $75,000','Not sure']}, {id:'er_unit_type', label:'Type of Rental', type:'select', options:['Select...','Apartment','House','Condo','Townhouse','Studio','Other']}, {id:'er_current_insurer', label:'Current Renters Insurance', type:'text', placeholder:'Current company or None'}, {id:'er_special_items', label:'High Value Items to Cover?', type:'text', placeholder:'e.g. Jewelry, Electronics, Musical instruments'} ] },
+    'Life Insurance': { icon: '❤️', label: 'Life Insurance Details', sub: 'A few more details to help your agent prepare', fields: [ {id:'el_term_length', label:'Preferred Term Length', type:'select', options:['Select...','10 years','15 years','20 years','25 years','30 years','Not sure — agent will advise']}, {id:'el_tobacco', label:'Tobacco Use in Last 12 Months', type:'select', options:['Select...','No — never','No — quit more than 12 months ago','Yes — current user']}, {id:'el_occupation', label:'Occupation', type:'text', placeholder:'e.g. Teacher, Contractor, Nurse'}, {id:'el_beneficiary', label:'Primary Beneficiary Relationship', type:'select', options:['Select...','Spouse/Partner','Child','Parent','Sibling','Business partner','Other']}, {id:'el_existing', label:'Existing Life Insurance Coverage', type:'text', placeholder:'e.g. $200,000 through employer or None'}, {id:'el_riders', label:'Any Riders or Add-ons Interested In?', type:'select', options:['Select...','Disability waiver','Critical illness','Accidental death','Child rider','Not sure']} ] },
+    'Health Insurance': { icon: '🏥', label: 'Health Insurance Details', sub: 'Help your agent find the right plan for you', fields: [ {id:'eh2_household', label:'Household Size', type:'select', options:['Select...','Just me','Me + spouse/partner','Me + 1 child','Me + 2+ children','Family of 4+']}, {id:'eh2_income', label:'Annual Household Income', type:'select', options:['Select...','Under $25,000','$25,000 - $50,000','$50,000 - $75,000','$75,000 - $100,000','$100,000 - $150,000','Over $150,000','Prefer not to say']}, {id:'eh2_current', label:'Current Coverage Status', type:'select', options:['Select...','No coverage currently','COBRA','Marketplace plan','Employer plan ending soon','Self-employed']}, {id:'eh2_deductible', label:'Preferred Deductible Range', type:'select', options:['Select...','Low deductible (higher premium)','Medium deductible (balanced)','High deductible (lower premium)','Not sure']}, {id:'eh2_doctors', label:'Preferred Doctors or Specialists', type:'text', placeholder:'e.g. Dr. Smith at NYC Health or None'}, {id:'eh2_medications', label:'Ongoing Prescription Medications', type:'text', placeholder:'List any regular medications or None'} ] },
+    'Medicare': { icon: '💊', label: 'Medicare Details', sub: 'Help your specialist find your best plan', fields: [ {id:'em_current', label:'Current Medicare Status', type:'select', options:['Select...','Not yet enrolled — turning 65 soon','Part A only','Part A and B','Part A, B and D','Medicare Advantage plan','Medicare Supplement plan']}, {id:'em_plan_type', label:'Plan Type Interest', type:'select', options:['Select...','Medicare Supplement (Medigap)','Medicare Advantage','Not sure — need guidance']}, {id:'em_doctors', label:'Current Doctors You Want to Keep', type:'text', placeholder:'e.g. Dr. Johnson at Memorial Hospital'}, {id:'em_medications', label:'Current Prescription Medications', type:'text', placeholder:'List medications your agent should know about'}, {id:'em_budget', label:'Monthly Budget for Premium', type:'select', options:['Select...','$0 (prefer Advantage)','Under $50','$50 - $100','$100 - $150','$150 - $200','Over $200']}, {id:'em_concerns', label:'Biggest Coverage Concern', type:'select', options:['Select...','Hospital stays','Specialist visits','Prescription costs','Dental & vision','Travel coverage','Overall cost']} ] },
+    'Other': { icon: '📋', label: 'Tell Us More', sub: 'Help your agent understand exactly what you need', fields: [ {id:'eo_description', label:'Describe What You Need', type:'textarea', placeholder:'Tell us more about the insurance you are looking for...'}, {id:'eo_current', label:'Do You Currently Have Any Coverage?', type:'select', options:['Select...','No coverage','Some coverage — looking to switch','Adding to existing coverage']}, {id:'eo_budget', label:'Monthly Budget', type:'text', placeholder:'e.g. $50/month or Not sure'}, {id:'eo_urgency', label:'How Soon Do You Need Coverage?', type:'select', options:['Select...','Immediately','Within 30 days','Within 3 months','Just exploring options']} ] }
+  };
+
+  function buildEnhancedWidget(lead) {
+    var data = ENHANCED_FIELDS[lead.insuranceType]; if (!data) return;
+    var el = document.getElementById('enhancedWidget'); if (!el) return;
+    var fieldsHtml = '', i = 0, fields = data.fields;
+    while (i < fields.length) {
+      var f = fields[i];
+      if (f.type !== 'textarea' && i + 1 < fields.length && fields[i+1].type !== 'textarea') {
+        fieldsHtml += '<div class="enhanced-row">' + buildField(f) + buildField(fields[i+1]) + '</div>'; i += 2;
+      } else { fieldsHtml += buildField(f); i++; }
+    }
+    var _id = lead.id, _type = lead.insuranceType;
+    el.innerHTML = '<div class="enhanced-widget enhanced-attention"><div class="enhanced-header"><div style="font-size:1.8rem;flex-shrink:0;">' + data.icon + '</div><div style="flex:1;text-align:left;"><div class="enhanced-header-title">⚡ Help your agent help you — optional</div><div class="enhanced-header-sub">The more you share now, the more prepared your agent will be for your call</div></div><div style="background:var(--gold);color:var(--navy);font-size:0.65rem;font-weight:700;padding:0.2rem 0.55rem;border-radius:100px;white-space:nowrap;align-self:flex-start;flex-shrink:0;">OPTIONAL</div></div><div class="enhanced-body"><div class="enhanced-voluntary">The more details you provide, the better your quote will be. Skip anything you prefer not to share.</div>' + fieldsHtml + '<button class="enhanced-submit" id="enhancedSubmitBtn">Send This to My Agent →</button><button class="enhanced-skip" onclick="skipEnhanced()">No thanks, skip this step</button></div></div>';
+    var btn = document.getElementById('enhancedSubmitBtn');
+    if (btn) btn.addEventListener('click', function() { submitEnhanced(_id, _type); });
+  }
+
+  function buildField(f) {
+    var input = '';
+    if (f.type === 'select') { input = '<select id="' + f.id + '">' + f.options.map(function(o){ return '<option value="' + (o.includes('Select') || o.includes('select') ? '' : o) + '">' + o + '</option>'; }).join('') + '</select>'; }
+    else if (f.type === 'textarea') { input = '<textarea id="' + f.id + '" placeholder="' + f.placeholder + '"></textarea>'; }
+    else { input = '<input type="text" id="' + f.id + '" placeholder="' + (f.placeholder||'') + '">'; }
+    return '<div class="enhanced-field"><label>' + f.label + '</label>' + input + '</div>';
+  }
+
+  function skipEnhanced() { var el = document.getElementById('enhancedWidget'); if (el) el.innerHTML = ''; }
+
+  async function submitEnhanced(leadId, insuranceType) {
+    var data = ENHANCED_FIELDS[insuranceType]; if (!data) return;
+    var extraData = { hasEnhancedData: true, enhancedSubmittedAt: new Date().toISOString() }, hasData = false;
+    data.fields.forEach(function(f) { var el = document.getElementById(f.id); if (el && el.value && el.value.trim()) { extraData[f.label] = el.value.trim(); hasData = true; } });
+    if (!hasData) { alert('Please fill in at least one field before submitting.'); return; }
+    var btn = document.getElementById('enhancedSubmitBtn');
+    if (btn) { btn.disabled = true; btn.textContent = 'Sending...'; }
+    var saved = false;
+    try {
+      var res = await fetch('https://onecallshield-default-rtdb.firebaseio.com/leads/' + leadId + '.json', { method: 'PATCH', headers: {'Content-Type': 'application/json'}, body: JSON.stringify(extraData) });
+      if (res.ok) saved = true; else console.error('Firebase PATCH failed:', res.status);
+    } catch(e) { console.error('Enhanced save error:', e); }
+    var widget = document.getElementById('enhancedWidget');
+    if (widget) {
+      if (saved) { widget.innerHTML = '<div class="enhanced-done"><div class="enhanced-done-icon">🎯</div><div class="enhanced-done-text">Perfect — your agent has everything they need!</div><div class="enhanced-done-sub">Your detailed profile has been sent. Expect a well-prepared call.</div></div>'; }
+      else { if (btn) { btn.disabled = false; btn.textContent = 'Send This to My Agent →'; } alert('Could not save. Please try again.'); }
+    }
+  }
+</script>
+</body>
+</html>
