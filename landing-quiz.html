@@ -1,0 +1,517 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Find Out If You're Overpaying For Insurance — OneCallShield</title>
+  <meta name="description" content="Answer 4 quick questions and find out if you're overpaying for insurance. Free. Takes 30 seconds. One agent will call you with options — no spam.">
+  <meta name="robots" content="noindex, nofollow">
+
+  <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,600;0,9..144,700&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+
+  <!-- Google Ads -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id=AW-18074640566"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+    gtag('config', 'AW-18074640566');
+  </script>
+
+  <!-- TikTok Pixel Code Start -->
+  <script>
+  !function (w, d, t) {
+    w.TiktokAnalyticsObject=t;var ttq=w[t]=w[t]||[];ttq.methods=["page","track","identify","instances","debug","on","off","once","ready","alias","group","enableCookie","disableCookie","holdConsent","revokeConsent","grantConsent"],ttq.setAndDefer=function(t,e){t[e]=function(){t.push([e].concat(Array.prototype.slice.call(arguments,0)))}};for(var i=0;i<ttq.methods.length;i++)ttq.setAndDefer(ttq,ttq.methods[i]);ttq.instance=function(t){for( var e=ttq._i[t]||[],n=0;n<ttq.methods.length;n++)ttq.setAndDefer(e,ttq.methods[n]);return e},ttq.load=function(e,n){var r="https://analytics.tiktok.com/i18n/pixel/events.js",o=n&&n.partner;ttq._i=ttq._i||{},ttq._i[e]=[],ttq._i[e]._u=r,ttq._t=ttq._t||{},ttq._t[e]=+new Date,ttq._o=ttq._o||{},ttq._o[e]=n||{};n=document.createElement("script") ;n.type="text/javascript",n.async=!0,n.src=r+"?sdkid="+e+"&lib="+t;e=document.getElementsByTagName("script")[0];e.parentNode.insertBefore(n,e)};
+    ttq.load('D7LOPK3C77U6PFPAGSN0');
+    ttq.page();
+  }(window, document, 'ttq');
+  </script>
+  <!-- TikTok Pixel Code End -->
+
+  <!-- Firebase -->
+  <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-database-compat.js"></script>
+
+  <style>
+    :root {
+      --navy: #0d1f3c;
+      --navy-mid: #1a3260;
+      --gold: #c9973a;
+      --gold-light: rgba(201,151,58,0.12);
+      --cream: #f8f4ee;
+      --cream-dark: #ede8e0;
+      --green: #2d7a4f;
+      --green-light: rgba(45,122,79,0.08);
+      --red: #c0392b;
+      --amber: #b7791f;
+      --text: #1a1a2e;
+      --text-muted: #6b7280;
+    }
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: 'DM Sans', sans-serif; background: var(--cream); color: var(--text); min-height: 100vh; }
+    .page { max-width: 580px; margin: 0 auto; padding: 1.4rem 1rem 3rem; }
+
+    .brand { display: flex; align-items: center; justify-content: center; gap: 0.55rem; margin-bottom: 1.1rem; }
+    .brand-shield { width: 34px; height: 34px; background: var(--navy); border-radius: 50% 50% 50% 50% / 60% 60% 40% 40%; display: flex; align-items: center; justify-content: center; font-size: 0.95rem; flex-shrink: 0; }
+    .brand-name { font-family: 'Fraunces', serif; font-size: 1.1rem; font-weight: 700; color: var(--navy); letter-spacing: -0.01em; }
+
+    .quiz-meta { display: flex; align-items: center; justify-content: space-between; margin-bottom: 0.5rem; }
+    .quiz-step-label { font-size: 0.75rem; font-weight: 700; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.05em; }
+    .progress-bar { height: 5px; background: var(--cream-dark); border-radius: 3px; margin-bottom: 1.6rem; overflow: hidden; }
+    .progress-fill { height: 100%; background: var(--gold); border-radius: 3px; transition: width 0.5s ease; }
+
+    .quiz-question { font-family: 'Fraunces', serif; font-size: 1.5rem; font-weight: 700; color: var(--navy); text-align: center; line-height: 1.25; margin-bottom: 1.4rem; }
+
+    .quiz-grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 0.75rem; }
+    .quiz-grid-1 { display: grid; grid-template-columns: 1fr; gap: 0.65rem; }
+    .quiz-card { background: #fff; border: 2px solid rgba(13,31,60,0.1); border-radius: 14px; padding: 0.9rem 1rem; display: flex; align-items: center; gap: 0.7rem; cursor: pointer; transition: border-color 0.15s, background 0.15s, transform 0.1s; min-height: 64px; width: 100%; text-align: left; font-family: 'DM Sans', sans-serif; }
+    .quiz-card:hover { border-color: var(--gold); background: var(--gold-light); transform: translateY(-1px); }
+    .quiz-card:active { transform: scale(0.98); }
+    .quiz-card.selected { border-color: var(--navy); background: rgba(13,31,60,0.05); }
+    .qc-emoji { font-size: 1.45rem; flex-shrink: 0; line-height: 1; }
+    .qc-label { font-size: 0.95rem; font-weight: 600; color: var(--navy); line-height: 1.3; }
+
+    .zip-screen { text-align: center; }
+    .zip-input-wrap { max-width: 220px; margin: 0 auto 1rem; }
+    .zip-input { width: 100%; background: #fff; border: 2px solid rgba(13,31,60,0.15); border-radius: 14px; padding: 1rem; font-size: 1.6rem; font-weight: 700; font-family: 'Fraunces', serif; color: var(--navy); text-align: center; outline: none; letter-spacing: 0.15em; transition: border-color 0.2s; -webkit-appearance: none; appearance: none; }
+    .zip-input:focus { border-color: var(--gold); }
+    .zip-hint { font-size: 0.82rem; color: var(--text-muted); margin-bottom: 1.2rem; }
+    .zip-error { font-size: 0.82rem; color: var(--red); margin-bottom: 0.8rem; display: none; }
+    .see-results-btn { width: 100%; background: var(--gold); color: var(--navy); border: none; padding: 1rem 1.5rem; min-height: 60px; border-radius: 12px; font-size: 1.05rem; font-weight: 700; font-family: 'Fraunces', serif; cursor: pointer; transition: transform 0.15s, box-shadow 0.15s; box-shadow: 0 4px 16px rgba(201,151,58,0.35); letter-spacing: -0.01em; }
+    .see-results-btn:hover { transform: translateY(-1px); box-shadow: 0 6px 20px rgba(201,151,58,0.4); }
+    .see-results-btn:active { transform: translateY(0); }
+
+    .loading-state { text-align: center; padding: 3rem 1rem; }
+    .loading-spinner { width: 48px; height: 48px; border: 4px solid var(--cream-dark); border-top-color: var(--gold); border-radius: 50%; animation: spin 0.8s linear infinite; margin: 0 auto 1rem; }
+    @keyframes spin { to { transform: rotate(360deg); } }
+    .loading-text { font-family: 'Fraunces', serif; font-size: 1.15rem; font-weight: 700; color: var(--navy); }
+    .loading-sub { font-size: 0.85rem; color: var(--text-muted); margin-top: 0.35rem; }
+
+    @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+    .fade-in { animation: fadeIn 0.4s ease both; }
+
+    .verdict-box { border-radius: 16px; padding: 1.4rem; margin-bottom: 1.2rem; }
+    .verdict-box.overpaying { background: rgba(192,57,43,0.07); border: 1.5px solid rgba(192,57,43,0.25); }
+    .verdict-box.changed { background: rgba(183,121,31,0.07); border: 1.5px solid rgba(183,121,31,0.25); }
+    .verdict-box.shopping { background: var(--gold-light); border: 1.5px solid rgba(201,151,58,0.35); }
+    .verdict-icon { font-size: 2.2rem; text-align: center; margin-bottom: 0.5rem; }
+    .verdict-title { font-family: 'Fraunces', serif; font-size: 1.35rem; font-weight: 700; text-align: center; margin-bottom: 0.4rem; }
+    .verdict-box.overpaying .verdict-title { color: var(--red); }
+    .verdict-box.changed .verdict-title { color: var(--amber); }
+    .verdict-box.shopping .verdict-title { color: var(--gold); }
+    .verdict-detail { text-align: center; font-size: 0.87rem; color: var(--text-muted); line-height: 1.55; }
+
+    .answers-summary { background: #fff; border-radius: 14px; padding: 1.1rem 1.3rem; margin-bottom: 1.2rem; border: 1px solid rgba(13,31,60,0.06); box-shadow: 0 2px 12px rgba(13,31,60,0.05); }
+    .answers-title { font-size: 0.72rem; font-weight: 700; color: var(--navy); text-transform: uppercase; letter-spacing: 0.06em; margin-bottom: 0.75rem; }
+    .answer-row { display: flex; align-items: center; gap: 0.5rem; padding: 0.35rem 0; font-size: 0.87rem; color: var(--text-muted); border-bottom: 1px solid rgba(13,31,60,0.04); }
+    .answer-row:last-child { border-bottom: none; }
+    .answer-check { color: var(--green); font-size: 0.9rem; flex-shrink: 0; }
+    .answer-val { color: var(--navy); font-weight: 600; }
+
+    .cta-box { background: var(--navy); border-radius: 16px; padding: 1.4rem; margin-bottom: 1.4rem; }
+    .cta-headline { font-family: 'Fraunces', serif; font-size: 1.1rem; font-weight: 700; color: #fff; margin-bottom: 0.5rem; line-height: 1.3; }
+    .cta-sub { font-size: 0.87rem; color: rgba(255,255,255,0.65); line-height: 1.55; }
+
+    .founder-video-wrap { background: var(--navy); border-radius: 14px; padding: 1.8rem 1.5rem; text-align: center; margin-bottom: 1.4rem; cursor: pointer; transition: opacity 0.2s; }
+    .founder-video-wrap:hover { opacity: 0.92; }
+    .founder-play-circle { width: 56px; height: 56px; background: var(--gold); border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 0.85rem; font-size: 1.3rem; color: var(--navy); }
+    .founder-video-title { color: #fff; font-family: 'Fraunces', serif; font-size: 1rem; font-weight: 700; margin-bottom: 0.3rem; }
+    .founder-video-sub { color: rgba(255,255,255,0.45); font-size: 0.8rem; }
+
+    .guarantee-box { background: rgba(13,31,60,0.04); border: 1.5px solid rgba(13,31,60,0.1); border-radius: 12px; padding: 1rem 1.1rem; font-size: 0.82rem; color: var(--text-muted); line-height: 1.6; margin-bottom: 1.2rem; }
+    .guarantee-box strong { color: var(--navy); }
+    .guarantee-box a { color: var(--gold); text-decoration: none; }
+    .guarantee-box a:hover { text-decoration: underline; }
+
+    .contact-card { background: #fff; border-radius: 18px; padding: 1.6rem 1.4rem; box-shadow: 0 2px 20px rgba(13,31,60,0.08); border: 1px solid rgba(13,31,60,0.06); }
+    .contact-title { font-family: 'Fraunces', serif; font-size: 1.05rem; font-weight: 700; color: var(--navy); margin-bottom: 0.3rem; text-align: center; }
+    .contact-sub { text-align: center; font-size: 0.82rem; color: var(--text-muted); margin-bottom: 1.2rem; }
+
+    .field-group { display: flex; flex-direction: column; gap: 0.3rem; margin-bottom: 0.9rem; }
+    .field-group label { font-size: 0.75rem; font-weight: 700; color: var(--navy); text-transform: uppercase; letter-spacing: 0.05em; }
+    .field-group input { width: 100%; background: var(--cream); border: 1.5px solid rgba(13,31,60,0.1); border-radius: 10px; padding: 0.8rem 0.9rem; font-size: 1rem; font-family: 'DM Sans', sans-serif; color: var(--text); outline: none; transition: border-color 0.2s, background 0.2s; -webkit-appearance: none; appearance: none; min-height: 56px; }
+    .field-group input:focus { border-color: var(--gold); background: #fff; }
+
+    .form-error { background: rgba(192,57,43,0.08); border: 1px solid rgba(192,57,43,0.2); border-radius: 8px; padding: 0.6rem 0.9rem; font-size: 0.82rem; color: var(--red); margin-bottom: 0.8rem; display: none; }
+
+    .consent-row { display: flex; gap: 0.75rem; align-items: flex-start; margin: 0.8rem 0 1rem; padding: 0.9rem; background: var(--cream); border-radius: 10px; border: 1.5px solid rgba(13,31,60,0.08); }
+    .consent-row input[type="checkbox"] { width: 18px; height: 18px; flex-shrink: 0; margin-top: 2px; accent-color: var(--navy); cursor: pointer; }
+    .consent-row label { font-size: 0.8rem; color: var(--text-muted); line-height: 1.5; cursor: pointer; }
+
+    .submit-btn { width: 100%; background: var(--gold); color: var(--navy); border: none; padding: 1rem 1.5rem; min-height: 62px; border-radius: 12px; font-size: 1.05rem; font-weight: 700; font-family: 'Fraunces', serif; cursor: pointer; transition: transform 0.15s, box-shadow 0.15s; box-shadow: 0 4px 16px rgba(201,151,58,0.35); letter-spacing: -0.01em; }
+    .submit-btn:hover { transform: translateY(-1px); box-shadow: 0 6px 20px rgba(201,151,58,0.4); }
+    .submit-btn:active { transform: translateY(0); }
+    .submit-btn:disabled { opacity: 0.7; cursor: not-allowed; transform: none; }
+    .submit-trust { display: flex; justify-content: center; gap: 0.9rem; margin-top: 0.65rem; font-size: 0.75rem; color: var(--text-muted); flex-wrap: wrap; }
+
+    #screenSuccess { display: none; }
+    .success-card { background: #fff; border-radius: 18px; padding: 2rem 1.4rem; text-align: center; box-shadow: 0 2px 20px rgba(13,31,60,0.08); border: 1px solid rgba(13,31,60,0.06); margin-bottom: 1.2rem; }
+    .success-check { width: 72px; height: 72px; background: var(--green-light); border: 3px solid var(--green); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 2rem; margin: 0 auto 1.2rem; animation: popIn 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275) both; }
+    @keyframes popIn { from { transform: scale(0); opacity: 0; } to { transform: scale(1); opacity: 1; } }
+    .success-title { font-family: 'Fraunces', serif; font-size: 1.5rem; font-weight: 700; color: var(--navy); margin-bottom: 0.6rem; }
+    .success-body { font-size: 0.92rem; color: var(--text-muted); line-height: 1.6; margin-bottom: 0.6rem; }
+    .success-nospam { font-size: 0.82rem; color: var(--green); font-weight: 600; margin-bottom: 1rem; }
+    .success-status-link { display: inline-block; background: var(--navy); color: #fff; border-radius: 10px; padding: 0.7rem 1.4rem; font-size: 0.88rem; font-weight: 700; text-decoration: none; margin-top: 0.6rem; }
+
+    @media (max-width: 480px) {
+      .page { padding: 1rem 0.85rem 2.5rem; }
+      .quiz-question { font-size: 1.25rem; margin-bottom: 1.1rem; }
+      .quiz-grid-2 { grid-template-columns: 1fr 1fr; gap: 0.55rem; }
+      .qc-label { font-size: 0.85rem; }
+      .qc-emoji { font-size: 1.25rem; }
+    }
+  </style>
+</head>
+<body>
+<div class="page">
+
+  <div class="brand">
+    <div class="brand-shield">🛡️</div>
+    <span class="brand-name">OneCallShield</span>
+  </div>
+
+  <div class="quiz-meta">
+    <div class="quiz-step-label" id="stepLabel">Step 1 of 4</div>
+  </div>
+  <div class="progress-bar">
+    <div class="progress-fill" id="progressFill" style="width:25%;"></div>
+  </div>
+
+  <!-- Q1: Insurance Type -->
+  <div id="screen1" class="fade-in">
+    <h1 class="quiz-question">What type of insurance are you looking for?</h1>
+    <div class="quiz-grid-2">
+      <button class="quiz-card" onclick="selectQ1(this,'Auto Insurance')"><span class="qc-emoji">🚗</span><span class="qc-label">Auto Insurance</span></button>
+      <button class="quiz-card" onclick="selectQ1(this,'Home Insurance')"><span class="qc-emoji">🏠</span><span class="qc-label">Home Insurance</span></button>
+      <button class="quiz-card" onclick="selectQ1(this,'Life Insurance')"><span class="qc-emoji">❤️</span><span class="qc-label">Life Insurance</span></button>
+      <button class="quiz-card" onclick="selectQ1(this,'Medicare')"><span class="qc-emoji">💊</span><span class="qc-label">Medicare</span></button>
+      <button class="quiz-card" onclick="selectQ1(this,'Renters Insurance')"><span class="qc-emoji">🏢</span><span class="qc-label">Renters Insurance</span></button>
+      <button class="quiz-card" onclick="selectQ1(this,'Health Insurance')"><span class="qc-emoji">🏥</span><span class="qc-label">Health Insurance</span></button>
+    </div>
+  </div>
+
+  <!-- Q2: Last Compared -->
+  <div id="screen2" style="display:none;">
+    <h1 class="quiz-question" id="q2Heading">When did you last compare rates?</h1>
+    <div class="quiz-grid-1">
+      <button class="quiz-card" onclick="selectQ2(this,'Never compared')"><span class="qc-emoji">📅</span><span class="qc-label">Never compared</span></button>
+      <button class="quiz-card" onclick="selectQ2(this,'Over 2 years ago')"><span class="qc-emoji">🕐</span><span class="qc-label">Over 2 years ago</span></button>
+      <button class="quiz-card" onclick="selectQ2(this,'1-2 years ago')"><span class="qc-emoji">📆</span><span class="qc-label">1-2 years ago</span></button>
+      <button class="quiz-card" onclick="selectQ2(this,'Currently shopping')"><span class="qc-emoji">🔄</span><span class="qc-label">Currently shopping</span></button>
+    </div>
+  </div>
+
+  <!-- Q3: Priority -->
+  <div id="screen3" style="display:none;">
+    <h1 class="quiz-question">What matters most to you?</h1>
+    <div class="quiz-grid-1">
+      <button class="quiz-card" onclick="selectQ3(this,'Lowest monthly price')"><span class="qc-emoji">💰</span><span class="qc-label">Lowest monthly price</span></button>
+      <button class="quiz-card" onclick="selectQ3(this,'Best coverage')"><span class="qc-emoji">🛡️</span><span class="qc-label">Best coverage</span></button>
+      <button class="quiz-card" onclick="selectQ3(this,'Fastest service')"><span class="qc-emoji">⚡</span><span class="qc-label">Fastest service</span></button>
+      <button class="quiz-card" onclick="selectQ3(this,'Someone I can trust')"><span class="qc-emoji">🤝</span><span class="qc-label">Someone I can trust</span></button>
+    </div>
+  </div>
+
+  <!-- Q4: ZIP -->
+  <div id="screen4" style="display:none;" class="zip-screen">
+    <h1 class="quiz-question">What's your ZIP code?</h1>
+    <div class="zip-input-wrap">
+      <input type="tel" id="zipInput" class="zip-input" placeholder="10001" maxlength="5" inputmode="numeric" autocomplete="postal-code" oninput="this.value=this.value.replace(/\D/g,'')">
+    </div>
+    <p class="zip-hint">We use this to find licensed agents in your area</p>
+    <div id="zipError" class="zip-error">Please enter a valid 5-digit ZIP code.</div>
+    <button class="see-results-btn" onclick="submitZip()">See My Results →</button>
+  </div>
+
+  <!-- Results screen -->
+  <div id="screenResults" style="display:none;">
+    <div id="loadingState">
+      <div class="loading-state">
+        <div class="loading-spinner"></div>
+        <div class="loading-text">Analyzing your profile...</div>
+        <div class="loading-sub">Matching against local agent availability</div>
+      </div>
+    </div>
+
+    <div id="resultsContent" style="display:none;" class="fade-in">
+      <div id="verdictBox" class="verdict-box"></div>
+
+      <div class="answers-summary">
+        <div class="answers-title">Based on your answers</div>
+        <div class="answer-row"><span class="answer-check">✅</span><span>Insurance type: <span class="answer-val" id="sumType"></span></span></div>
+        <div class="answer-row"><span class="answer-check">✅</span><span>Last compared: <span class="answer-val" id="sumLast"></span></span></div>
+        <div class="answer-row"><span class="answer-check">✅</span><span>Priority: <span class="answer-val" id="sumPriority"></span></span></div>
+        <div class="answer-row"><span class="answer-check">✅</span><span>Your area: <span class="answer-val" id="sumZip"></span></span></div>
+      </div>
+
+      <div id="ctaBox" class="cta-box"></div>
+
+      <div class="founder-video-wrap" id="founderVideo">
+        <div class="founder-play-circle">▶</div>
+        <div class="founder-video-title">A message from Chris, Founder of OneCallShield</div>
+        <div class="founder-video-sub">30 seconds — why we built this</div>
+      </div>
+
+      <div class="guarantee-box">
+        🛡️ <strong>The One Call Guarantee</strong> — You will hear from exactly one agent. If more than one contacts you, email <a href="mailto:chris@onecallshield.com">chris@onecallshield.com</a> and we make it right. — Chris Santoro, Founder
+      </div>
+
+      <div class="contact-card">
+        <div class="contact-title">Get Your Free Agent Match</div>
+        <div class="contact-sub">Takes 30 seconds — completely free</div>
+
+        <div id="contactError" class="form-error"></div>
+
+        <div class="field-group">
+          <label for="phone">Phone Number</label>
+          <input type="tel" id="phone" placeholder="Your phone number" autocomplete="tel">
+        </div>
+        <div class="field-group">
+          <label for="firstName">First Name</label>
+          <input type="text" id="firstName" placeholder="Jane" autocomplete="given-name">
+        </div>
+        <div class="field-group">
+          <label for="email">Email</label>
+          <input type="email" id="email" placeholder="jane@email.com" autocomplete="email">
+        </div>
+
+        <div class="consent-row">
+          <input type="checkbox" id="consent">
+          <label for="consent">I consent to be contacted by one licensed insurance agent matched by OneCallShield. My info will NOT be shared with multiple agents or third parties.</label>
+        </div>
+
+        <button class="submit-btn" id="submitBtn" onclick="submitContact()">🛡️ Get My Free Agent Match →</button>
+        <div class="submit-trust">
+          <span>⚡ Matched within 4 hours</span>
+          <span>📵 Zero spam calls</span>
+          <span>🔒 Your info stays private</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Success -->
+  <div id="screenSuccess">
+    <div class="success-card">
+      <div class="success-check">✅</div>
+      <div class="success-title" id="successTitle">You're all set! 🎉</div>
+      <p class="success-body" id="successBody"></p>
+      <p class="success-nospam">One agent. One call. Zero spam.</p>
+      <div id="successVerdictBox" class="verdict-box" style="margin-top:1rem;"></div>
+      <a href="#" id="statusLink" class="success-status-link" style="display:none;">Check your match status →</a>
+    </div>
+  </div>
+
+</div>
+<script>
+  var _quiz = { q1: null, q2: null, q3: null, q4: null, verdict: null };
+
+  const TYPE_MAP = {
+    'Auto Insurance': 'Auto Insurance',
+    'Home Insurance': 'Homeowners Insurance',
+    'Life Insurance': 'Life Insurance',
+    'Medicare': 'Medicare',
+    'Renters Insurance': 'Renters Insurance',
+    'Health Insurance': 'Health Insurance'
+  };
+
+  function goToScreen(id) {
+    ['screen1','screen2','screen3','screen4','screenResults','screenSuccess'].forEach(function(s) {
+      document.getElementById(s).style.display = 'none';
+    });
+    var el = document.getElementById(id);
+    el.style.display = 'block';
+    el.classList.remove('fade-in');
+    void el.offsetWidth;
+    el.classList.add('fade-in');
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }
+
+  function updateProgress(step) {
+    var pcts = { screen1: 25, screen2: 50, screen3: 75, screen4: 100, screenResults: 100, screenSuccess: 100 };
+    var labels = { screen1: 'Step 1 of 4', screen2: 'Step 2 of 4', screen3: 'Step 3 of 4', screen4: 'Step 4 of 4', screenResults: 'Your Results', screenSuccess: 'Matched!' };
+    document.getElementById('progressFill').style.width = (pcts[step] || 25) + '%';
+    document.getElementById('stepLabel').textContent = labels[step] || '';
+  }
+
+  function flashAndAdvance(btn, nextFn) {
+    btn.classList.add('selected');
+    setTimeout(nextFn, 180);
+  }
+
+  function selectQ1(btn, val) {
+    _quiz.q1 = val;
+    flashAndAdvance(btn, function() {
+      var label = val === 'Medicare' ? 'Medicare' : val.toLowerCase();
+      document.getElementById('q2Heading').textContent = 'When did you last compare ' + label + ' rates?';
+      updateProgress('screen2');
+      goToScreen('screen2');
+    });
+  }
+
+  function selectQ2(btn, val) {
+    _quiz.q2 = val;
+    flashAndAdvance(btn, function() {
+      updateProgress('screen3');
+      goToScreen('screen3');
+    });
+  }
+
+  function selectQ3(btn, val) {
+    _quiz.q3 = val;
+    flashAndAdvance(btn, function() {
+      updateProgress('screen4');
+      goToScreen('screen4');
+      setTimeout(function() { var z = document.getElementById('zipInput'); if (z) z.focus(); }, 300);
+    });
+  }
+
+  function submitZip() {
+    var zip = document.getElementById('zipInput').value.trim();
+    var errEl = document.getElementById('zipError');
+    errEl.style.display = 'none';
+    if (!zip || zip.replace(/\D/g,'').length < 5) { errEl.style.display = 'block'; return; }
+    _quiz.q4 = zip;
+
+    if (_quiz.q2 === 'Never compared' || _quiz.q2 === 'Over 2 years ago') _quiz.verdict = 'overpaying';
+    else if (_quiz.q2 === '1-2 years ago') _quiz.verdict = 'changed';
+    else _quiz.verdict = 'shopping';
+
+    updateProgress('screenResults');
+    goToScreen('screenResults');
+    document.getElementById('loadingState').style.display = 'block';
+    document.getElementById('resultsContent').style.display = 'none';
+
+    setTimeout(function() {
+      document.getElementById('loadingState').style.display = 'none';
+      document.getElementById('resultsContent').style.display = 'block';
+      renderResults();
+    }, 2000);
+  }
+
+  function renderResults() {
+    var v = _quiz.verdict;
+    var vb = document.getElementById('verdictBox');
+    if (v === 'overpaying') {
+      vb.className = 'verdict-box overpaying fade-in';
+      vb.innerHTML = '<div class="verdict-icon">⚠️</div><div class="verdict-title">You\'re Likely Overpaying</div><div class="verdict-detail">Most people who haven\'t compared rates in 2+ years are paying 20–40% more than they should.</div>';
+    } else if (v === 'changed') {
+      vb.className = 'verdict-box changed fade-in';
+      vb.innerHTML = '<div class="verdict-icon">📊</div><div class="verdict-title">Your Rate May Have Changed</div><div class="verdict-detail">Insurance rates shift every year. A quick comparison could save you hundreds.</div>';
+    } else {
+      vb.className = 'verdict-box shopping fade-in';
+      vb.innerHTML = '<div class="verdict-icon">🎯</div><div class="verdict-title">Perfect Timing</div><div class="verdict-detail">You\'re already in the right mindset. Let us do the shopping for you.</div>';
+    }
+
+    document.getElementById('sumType').textContent = _quiz.q1;
+    document.getElementById('sumLast').textContent = _quiz.q2;
+    document.getElementById('sumPriority').textContent = _quiz.q3;
+    document.getElementById('sumZip').textContent = _quiz.q4;
+
+    var ctaH, ctaS;
+    if (v === 'overpaying') {
+      ctaH = 'Let\'s fix this — one specialist will call you with better options';
+      ctaS = 'No spam. No sharing your info. Just one licensed agent. One call. Free.';
+    } else if (v === 'changed') {
+      ctaH = 'Let one specialist check your current rate — takes one call';
+      ctaS = 'No spam. No sharing your info. Just one licensed agent. One call. Free.';
+    } else {
+      ctaH = 'Perfect — one specialist will call you with the best options available';
+      ctaS = 'No spam. No sharing your info. Just one licensed agent. One call. Free.';
+    }
+    document.getElementById('ctaBox').innerHTML = '<div class="cta-headline">' + ctaH + '</div><div class="cta-sub">' + ctaS + '</div>';
+  }
+
+  function getStateFromZip(zip) {
+    if (!zip) return '';
+    var n = parseInt(String(zip).replace(/\D/g,'').padStart(5,'0'), 10);
+    if (isNaN(n) || n < 501) return '';
+    var r = [
+      [501,544,'NY'],[600,988,'PR'],[1001,2791,'MA'],[2801,2940,'RI'],
+      [3001,3897,'NH'],[3900,4992,'ME'],[5001,5907,'VT'],[6001,6928,'CT'],
+      [7001,8989,'NJ'],[10001,14975,'NY'],[15001,19640,'PA'],[19701,19980,'DE'],
+      [20001,20597,'DC'],[20601,21930,'MD'],[22001,24658,'VA'],[24701,26886,'WV'],
+      [27006,28909,'NC'],[29001,29948,'SC'],[30001,31999,'GA'],[32004,34997,'FL'],
+      [35004,36925,'AL'],[37010,38589,'TN'],[38601,39776,'MS'],[40003,42788,'KY'],
+      [43001,45999,'OH'],[46001,47997,'IN'],[48001,49971,'MI'],[50001,52809,'IA'],
+      [53001,54990,'WI'],[55001,56763,'MN'],[57001,57799,'SD'],[58001,58856,'ND'],
+      [59001,59937,'MT'],[60001,62999,'IL'],[63001,65899,'MO'],[66002,67954,'KS'],
+      [68001,69367,'NE'],[70001,71497,'LA'],[71601,72959,'AR'],[73001,74966,'OK'],
+      [75001,79999,'TX'],[80001,81658,'CO'],[82001,83128,'WY'],[83200,83876,'ID'],
+      [84001,84784,'UT'],[85001,86556,'AZ'],[87001,88441,'NM'],[88510,88589,'TX'],
+      [89001,89883,'NV'],[90001,96162,'CA'],[96701,96898,'HI'],[97001,97920,'OR'],
+      [98001,99403,'WA'],[99501,99950,'AK']
+    ];
+    for (var i = 0; i < r.length; i++) { if (n >= r[i][0] && n <= r[i][1]) return r[i][2]; }
+    return '';
+  }
+
+  function submitContact() {
+    var errEl = document.getElementById('contactError');
+    errEl.style.display = 'none';
+    var phone = document.getElementById('phone').value.trim();
+    var firstName = document.getElementById('firstName').value.trim();
+    var email = document.getElementById('email').value.trim();
+
+    if (!phone || phone.replace(/\D/g,'').length < 10) { showContactError('Please enter a valid 10-digit phone number.'); return; }
+    if (!firstName) { showContactError('Please enter your first name.'); return; }
+    if (!email || !email.includes('@')) { showContactError('Please enter a valid email address.'); return; }
+    if (!document.getElementById('consent').checked) { showContactError('Please check the consent box to continue.'); return; }
+
+    var btn = document.getElementById('submitBtn');
+    btn.textContent = 'Finding your perfect agent match...'; btn.disabled = true;
+
+    var zip = _quiz.q4;
+    var state = getStateFromZip(zip);
+    var lead = {
+      id: 'L-' + Date.now(),
+      submittedAt: new Date().toISOString(),
+      firstName: firstName, lastName: '', phone: phone, email: email,
+      zip: zip, age: '', state: state,
+      insuranceType: TYPE_MAP[_quiz.q1] || _quiz.q1,
+      contactTime: 'Anytime',
+      quizAnswers: { insuranceType: _quiz.q1, lastCompared: _quiz.q2, priority: _quiz.q3, zip: zip, verdict: _quiz.verdict },
+      status: 'unmatched', matchedAgentId: null, matchedAt: null,
+      source: 'quiz-funnel'
+    };
+
+    fetch('https://onecallshield-default-rtdb.firebaseio.com/leads/' + lead.id + '.json', {
+      method: 'PUT', headers: {'Content-Type': 'application/json'}, body: JSON.stringify(lead)
+    }).catch(function(err) { console.error('Firebase error:', err); });
+
+    fetch('https://onecallshield-emails.chris-santoro55.workers.dev', {
+      method: 'POST', headers: {'Content-Type': 'application/json'},
+      body: JSON.stringify({ type: 'new_lead', firstName: firstName, lastName: '', phone: phone, email: email, age: 'N/A', zip: zip, insuranceType: lead.insuranceType, contactTime: 'Anytime', lifeType: 'N/A', faceAmount: 'N/A', healthStatus: 'N/A', leadId: lead.id })
+    }).catch(function(err) { console.error('Worker error:', err); });
+
+    try { gtag('event', 'conversion', {'send_to': 'AW-18074640566/sLzxCIr3wJgcELbB1KpD', 'value': 1.0, 'currency': 'USD'}); } catch(e) {}
+    try { ttq.track('SubmitForm', {value: 1.0, currency: 'USD'}); } catch(e) {}
+
+    updateProgress('screenSuccess');
+    goToScreen('screenSuccess');
+    document.getElementById('successTitle').textContent = 'You\'re all set, ' + firstName + '! 🎉';
+    var stateText = state ? ' in ' + state : '';
+    document.getElementById('successBody').textContent = 'We\'re finding your perfect ' + lead.insuranceType + ' specialist' + stateText + ' now. Expect a call at your preferred time. One agent. One call. Zero spam.';
+
+    var svb = document.getElementById('successVerdictBox');
+    var vClass = { overpaying: 'overpaying', changed: 'changed', shopping: 'shopping' }[_quiz.verdict] || 'changed';
+    var vIcon = { overpaying: '⚠️', changed: '📊', shopping: '🎯' }[_quiz.verdict] || '📊';
+    var vLabel = { overpaying: "You're Likely Overpaying", changed: 'Your Rate May Have Changed', shopping: 'Perfect Timing — Great Choice' }[_quiz.verdict] || '';
+    svb.className = 'verdict-box ' + vClass;
+    svb.innerHTML = '<div class="verdict-icon">' + vIcon + '</div><div class="verdict-title">' + vLabel + '</div>';
+
+    var statusUrl = 'https://onecallshield.com/status.html?id=' + lead.id;
+    var sl = document.getElementById('statusLink');
+    sl.href = statusUrl; sl.style.display = 'inline-block';
+  }
+
+  function showContactError(msg) {
+    var el = document.getElementById('contactError');
+    el.textContent = msg; el.style.display = 'block';
+    el.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+    var btn = document.getElementById('submitBtn');
+    btn.textContent = '🛡️ Get My Free Agent Match →'; btn.disabled = false;
+  }
+</script>
+</body>
+</html>

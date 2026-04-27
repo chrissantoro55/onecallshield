@@ -184,6 +184,15 @@
     .enhanced-done-text { font-size: 0.9rem; color: var(--green); font-weight: 700; }
     .enhanced-done-sub { font-size: 0.8rem; color: var(--text-muted); margin-top: 0.2rem; }
 
+    .founder-video-wrap { background: var(--navy); border-radius: 16px; padding: 2.5rem 1.5rem; text-align: center; margin-bottom: 1.2rem; cursor: pointer; }
+    .founder-play-circle { width: 64px; height: 64px; border-radius: 50%; background: var(--gold); display: flex; align-items: center; justify-content: center; margin: 0 auto 1rem; font-size: 1.4rem; color: var(--navy); }
+    .founder-video-title { font-family: 'Fraunces', serif; font-size: 1.05rem; font-weight: 700; color: #fff; margin-bottom: 0.3rem; }
+    .founder-video-sub { font-size: 0.82rem; color: rgba(255,255,255,0.6); }
+    .guarantee-box { background: rgba(13,31,60,0.04); border: 1.5px solid rgba(13,31,60,0.1); border-radius: 12px; padding: 1rem 1.1rem; margin-bottom: 1rem; }
+    .guarantee-title { font-size: 0.82rem; font-weight: 700; color: var(--navy); margin-bottom: 0.3rem; }
+    .guarantee-body { font-size: 0.78rem; color: var(--text-muted); line-height: 1.55; }
+    .guarantee-body a { color: var(--navy); }
+
     @media (max-width: 480px) {
       .page { padding: 0.9rem 0.85rem 2rem; }
       .headline { font-size: 1.3rem; }
@@ -291,6 +300,12 @@
       <div id="compareTable" class="compare-table fade-in"></div>
       <div id="ctaBox" class="cta-box fade-in"></div>
 
+      <div class="founder-video-wrap" id="founderVideo">
+        <div class="founder-play-circle">▶</div>
+        <div class="founder-video-title">A Message From Our Founder</div>
+        <div class="founder-video-sub">Why OneCallShield exists — and why we only connect you with one agent</div>
+      </div>
+
       <div class="lead-form-card fade-in">
         <div class="lead-form-title">Get Your Free Agent Match</div>
         <div class="lead-form-sub">Takes 30 seconds — completely free</div>
@@ -319,17 +334,6 @@
           </div>
         </div>
 
-        <div class="field-row">
-          <div class="field-group">
-            <label for="leadZip">ZIP Code</label>
-            <input type="tel" id="leadZip" placeholder="10001" maxlength="5" autocomplete="postal-code" inputmode="numeric" readonly>
-          </div>
-          <div class="field-group">
-            <label for="leadAge">Your Age</label>
-            <input type="tel" id="leadAge" placeholder="35" inputmode="numeric" readonly>
-          </div>
-        </div>
-
         <div class="field-group">
           <label>Insurance Type</label>
           <div class="insurance-prefilled">
@@ -347,6 +351,11 @@
             <option value="Evening (5pm–8pm)">Evening (5pm–8pm)</option>
             <option value="Anytime">Anytime</option>
           </select>
+        </div>
+
+        <div class="guarantee-box">
+          <div class="guarantee-title">🛡️ The One Call Guarantee</div>
+          <div class="guarantee-body">You will hear from <strong>exactly one licensed agent</strong> — never a call center, never multiple agents. If you receive more than one contact, email <a href="mailto:chris@onecallshield.com">chris@onecallshield.com</a> and we'll make it right.</div>
         </div>
 
         <div class="consent-row">
@@ -545,8 +554,6 @@
     document.getElementById('ctaBox').innerHTML =
       '<div class="cta-headline">' + ctaH + '</div><div class="cta-sub">' + ctaS + '</div>';
 
-    document.getElementById('leadZip').value = d.zip;
-    document.getElementById('leadAge').value = d.age;
     document.getElementById('insurancePrefilledText').textContent = d.typeLabel;
   }
 
@@ -581,8 +588,8 @@
     var lastName = document.getElementById('lastName').value.trim();
     var phone = document.getElementById('phone').value.trim();
     var email = document.getElementById('email').value.trim();
-    var zip = document.getElementById('leadZip').value.trim();
-    var age = document.getElementById('leadAge').value.trim();
+    var zip = _rmqData ? _rmqData.zip : '';
+    var age = _rmqData ? (_rmqData.age || 'Not provided') : 'Not provided';
     var contactTime = document.getElementById('contactTime').value;
 
     if (!firstName) { showLeadError('Please enter your first name.'); return; }

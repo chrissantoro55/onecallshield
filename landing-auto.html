@@ -115,6 +115,18 @@
     .enhanced-done-icon { font-size: 1.8rem; margin-bottom: 0.4rem; }
     .enhanced-done-text { font-size: 0.9rem; color: var(--green); font-weight: 700; }
     .enhanced-done-sub { font-size: 0.8rem; color: var(--text-muted); margin-top: 0.2rem; }
+    .header-phone { text-align: center; font-size: 0.82rem; color: var(--text-muted); margin-bottom: 1rem; }
+    .header-phone a { color: var(--navy); font-weight: 600; text-decoration: none; }
+    .founder-video-wrap { background: var(--navy); border-radius: 16px; padding: 2.5rem 1.5rem; text-align: center; margin-bottom: 1.2rem; cursor: pointer; }
+    .founder-play-circle { width: 64px; height: 64px; border-radius: 50%; background: var(--gold); display: flex; align-items: center; justify-content: center; margin: 0 auto 1rem; font-size: 1.4rem; color: var(--navy); }
+    .founder-video-title { font-family: 'Fraunces', serif; font-size: 1.05rem; font-weight: 700; color: #fff; margin-bottom: 0.3rem; }
+    .founder-video-sub { font-size: 0.82rem; color: rgba(255,255,255,0.6); }
+    .insurance-prefilled { background: var(--cream); border: 1.5px solid rgba(13,31,60,0.1); border-radius: 10px; padding: 0.7rem 0.85rem; font-size: 0.95rem; color: var(--text); display: flex; align-items: center; justify-content: space-between; min-height: 52px; }
+    .prefilled-badge { background: var(--gold-light); color: var(--gold); font-size: 0.68rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em; padding: 0.2rem 0.5rem; border-radius: 4px; flex-shrink: 0; }
+    .guarantee-box { background: rgba(13,31,60,0.04); border: 1.5px solid rgba(13,31,60,0.1); border-radius: 12px; padding: 1rem 1.1rem; margin-bottom: 1rem; }
+    .guarantee-title { font-size: 0.82rem; font-weight: 700; color: var(--navy); margin-bottom: 0.3rem; }
+    .guarantee-body { font-size: 0.78rem; color: var(--text-muted); line-height: 1.55; }
+    .guarantee-body a { color: var(--navy); }
     @media (max-width: 480px) {
       .page { padding: 0.9rem 0.85rem 2rem; }
       .brand { margin-bottom: 0.9rem; }
@@ -140,6 +152,7 @@
     <div class="brand-shield">🚗</div>
     <span class="brand-name">OneCallShield</span>
   </div>
+  <p class="header-phone">Questions? Call <a href="tel:8452424389">(845) 242-4389</a></p>
 
   <h1 class="headline">Get a Free Auto Insurance Quote in 60 Seconds</h1>
   <p class="subline">One licensed NY auto insurance agent will call you — no spam, no sharing, 100% free</p>
@@ -170,10 +183,20 @@
   </div>
 
   <div id="formState">
+    <div class="founder-video-wrap" id="founderVideo">
+      <div class="founder-play-circle">▶</div>
+      <div class="founder-video-title">A Message From Our Founder</div>
+      <div class="founder-video-sub">Why OneCallShield exists — and why we only connect you with one agent</div>
+    </div>
     <div class="form-card">
       <div class="form-card-title">Your Free Auto Insurance Quote</div>
 
       <div id="formError" class="form-error"></div>
+
+      <div class="form-group" style="margin-bottom:0.8rem;">
+        <label for="phone">Phone Number</label>
+        <input type="tel" id="phone" placeholder="(555) 000-0000" autocomplete="tel">
+      </div>
 
       <div class="form-row">
         <div class="form-group">
@@ -181,113 +204,22 @@
           <input type="text" id="firstName" placeholder="Jane" autocomplete="given-name">
         </div>
         <div class="form-group">
-          <label for="lastName">Last Name</label>
-          <input type="text" id="lastName" placeholder="Smith" autocomplete="family-name">
-        </div>
-      </div>
-
-      <div class="form-row">
-        <div class="form-group">
-          <label for="phone">Phone Number</label>
-          <input type="tel" id="phone" placeholder="(555) 000-0000" autocomplete="tel">
-        </div>
-        <div class="form-group">
           <label for="email">Email Address</label>
           <input type="email" id="email" placeholder="jane@email.com" autocomplete="email">
         </div>
       </div>
 
-      <div class="form-row">
-        <div class="form-group">
-          <label for="zip">ZIP Code</label>
-          <input type="tel" id="zip" placeholder="10001" maxlength="5" autocomplete="postal-code" inputmode="numeric">
-        </div>
-        <div class="form-group">
-          <label for="age">Your Age</label>
-          <input type="tel" id="age" placeholder="35" inputmode="numeric">
+      <div class="form-group" style="margin-bottom:0.8rem;">
+        <label>Insurance Type</label>
+        <div class="insurance-prefilled">
+          <span>Auto Insurance</span>
+          <span class="prefilled-badge">Pre-selected</span>
         </div>
       </div>
 
-      <div class="form-row">
-        <div class="form-group full">
-          <label for="insuranceType">Insurance Type</label>
-          <select id="insuranceType" onchange="handleInsuranceType()">
-            <option value="">Select insurance type...</option>
-            <option value="Auto Insurance" selected>Auto Insurance</option>
-            <option value="Homeowners Insurance">Homeowners Insurance</option>
-            <option value="Renters Insurance">Renters Insurance</option>
-            <option value="Life Insurance">Life Insurance</option>
-            <option value="Health Insurance">Health Insurance</option>
-            <option value="Medicare">Medicare</option>
-            <option value="Other">Other</option>
-          </select>
-        </div>
-      </div>
-
-      <div id="lifeTypeRow" style="display:none;">
-        <div class="life-section">
-          <div class="life-section-label">Life Insurance Details</div>
-          <div class="form-row">
-            <div class="form-group full">
-              <label for="lifeType">Type of Life Insurance</label>
-              <select id="lifeType" onchange="handleLifeType()">
-                <option value="">Select type...</option>
-                <option value="Term Life Insurance">Term Life Insurance</option>
-                <option value="Whole Life Insurance">Whole Life Insurance</option>
-                <option value="Unsure">Unsure — I need guidance</option>
-              </select>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <div id="lifeDetailsRow" style="display:none;">
-        <div class="form-row">
-          <div class="form-group">
-            <label for="faceAmount">Desired Face Amount</label>
-            <select id="faceAmount">
-              <option value="">Select amount...</option>
-              <option value="$50,000">$50,000</option>
-              <option value="$100,000">$100,000</option>
-              <option value="$150,000">$150,000</option>
-              <option value="$250,000">$250,000</option>
-              <option value="$500,000">$500,000</option>
-              <option value="$750,000">$750,000</option>
-              <option value="$1,000,000">$1,000,000</option>
-              <option value="$1,000,000+">$1,000,000+</option>
-            </select>
-          </div>
-          <div class="form-group">
-            <label for="healthStatus">Health Status</label>
-            <select id="healthStatus">
-              <option value="">Select status...</option>
-              <option value="Good">Good</option>
-              <option value="Fair">Fair</option>
-              <option value="Some Health Issues">Some Health Issues</option>
-            </select>
-          </div>
-        </div>
-      </div>
-
-      <div class="form-row">
-        <div class="form-group full">
-          <label for="contactTime">Preferred Contact Time</label>
-          <select id="contactTime" onchange="handleContactTime()">
-            <option value="">Select a time...</option>
-            <option value="Morning (8am–12pm)">Morning (8am–12pm)</option>
-            <option value="Afternoon (12pm–5pm)">Afternoon (12pm–5pm)</option>
-            <option value="Evening (5pm–8pm)">Evening (5pm–8pm)</option>
-            <option value="Anytime">Anytime</option>
-            <option value="Specific Time">Specific Time</option>
-          </select>
-        </div>
-      </div>
-
-      <div id="specificTimeGroup" class="form-row">
-        <div class="form-group full">
-          <label for="specificTime">Enter Specific Time</label>
-          <input type="text" id="specificTime" placeholder="e.g. Tuesday 3pm EST">
-        </div>
+      <div class="guarantee-box">
+        <div class="guarantee-title">🛡️ The One Call Guarantee</div>
+        <div class="guarantee-body">You will hear from <strong>exactly one licensed agent</strong> — never a call center, never multiple agents. If you receive more than one contact, email <a href="mailto:chris@onecallshield.com">chris@onecallshield.com</a> and we'll make it right.</div>
       </div>
 
       <div class="consent-row">
@@ -341,57 +273,17 @@
     return 'N/A';
   }
 
-  function handleInsuranceType() {
-    const type = document.getElementById('insuranceType').value;
-    const lifeTypeRow = document.getElementById('lifeTypeRow');
-    const lifeDetailsRow = document.getElementById('lifeDetailsRow');
-    if (type === 'Life Insurance') {
-      lifeTypeRow.style.display = 'block';
-    } else {
-      lifeTypeRow.style.display = 'none';
-      lifeDetailsRow.style.display = 'none';
-      document.getElementById('lifeType').value = '';
-      document.getElementById('faceAmount').value = '';
-      document.getElementById('healthStatus').value = '';
-    }
-  }
-
-  function handleLifeType() {
-    const val = document.getElementById('lifeType').value;
-    document.getElementById('lifeDetailsRow').style.display = val ? 'block' : 'none';
-    if (!val) { document.getElementById('faceAmount').value = ''; document.getElementById('healthStatus').value = ''; }
-  }
-
-  function handleContactTime() {
-    const val = document.getElementById('contactTime').value;
-    document.getElementById('specificTimeGroup').style.display = val === 'Specific Time' ? 'grid' : 'none';
-    if (val !== 'Specific Time') document.getElementById('specificTime').value = '';
-  }
-
   function submitForm() {
     const errEl = document.getElementById('formError');
     errEl.style.display = 'none';
     const firstName = document.getElementById('firstName').value.trim();
-    const lastName = document.getElementById('lastName').value.trim();
     const phone = document.getElementById('phone').value.trim();
     const email = document.getElementById('email').value.trim();
-    const zip = document.getElementById('zip').value.trim();
-    const age = document.getElementById('age').value.trim();
-    const insuranceType = document.getElementById('insuranceType').value;
-    const contactTimeVal = document.getElementById('contactTime').value;
-    const specificTime = document.getElementById('specificTime').value.trim();
-    const contactTime = contactTimeVal === 'Specific Time' && specificTime ? specificTime : contactTimeVal;
-    const lifeType = document.getElementById('lifeType').value;
-    const faceAmount = document.getElementById('faceAmount').value;
-    const healthStatus = document.getElementById('healthStatus').value;
     const consent = document.getElementById('consent');
 
     if (!firstName) { showError('Please enter your first name.'); return; }
     if (!phone || phone.replace(/\D/g,'').length < 10) { showError('Please enter a valid 10-digit phone number.'); return; }
     if (!email || !email.includes('@')) { showError('Please enter a valid email address.'); return; }
-    if (!zip || zip.replace(/\D/g,'').length < 5) { showError('Please enter a valid 5-digit ZIP code.'); return; }
-    if (!insuranceType) { showError('Please select an insurance type.'); return; }
-    if (!contactTime) { showError('Please select a preferred contact time.'); return; }
     if (!consent.checked) { showError('Please check the consent box to continue.'); return; }
 
     const btn = document.getElementById('submitBtn');
@@ -401,16 +293,10 @@
     const lead = {
       id: 'L-' + Date.now(),
       submittedAt: new Date().toISOString(),
-      firstName, lastName, phone, email, zip,
-      state: getStateFromZip(zip),
-      age: age || 'Not provided',
-      insuranceType, contactTime,
-      lifeType: lifeType || '',
-      faceAmount: faceAmount || '',
-      healthStatus: healthStatus || '',
-      status: 'unmatched',
-      matchedAgentId: null,
-      matchedAt: null,
+      firstName, lastName: '', phone, email, zip: '', state: '',
+      age: 'Not provided', insuranceType: 'Auto Insurance', contactTime: 'Anytime',
+      lifeType: '', faceAmount: '', healthStatus: '',
+      status: 'unmatched', matchedAgentId: null, matchedAt: null,
       source: 'landing-auto'
     };
 
@@ -420,7 +306,7 @@
 
     fetch('https://onecallshield-emails.chris-santoro55.workers.dev', {
       method: 'POST', headers: {'Content-Type': 'application/json'},
-      body: JSON.stringify({ type: 'new_lead', firstName, lastName, phone, email, age: age || 'N/A', zip, insuranceType, contactTime, lifeType: lifeType || 'N/A', faceAmount: faceAmount || 'N/A', healthStatus: healthStatus || 'N/A', leadId: lead.id })
+      body: JSON.stringify({ type: 'new_lead', firstName, lastName: '', phone, email, age: 'N/A', zip: '', insuranceType: 'Auto Insurance', contactTime: 'Anytime', lifeType: 'N/A', faceAmount: 'N/A', healthStatus: 'N/A', leadId: lead.id })
     }).catch(function(err) { console.error('Worker error:', err); });
 
     try { gtag('event', 'conversion', { 'send_to': 'AW-18074640566/sLzxCIr3wJgcELbB1KpD', 'value': 1.0, 'currency': 'USD' }); } catch(e) {}
