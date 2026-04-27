@@ -129,8 +129,8 @@
 
     .field-group { display: flex; flex-direction: column; gap: 0.3rem; margin-bottom: 0.9rem; }
     .field-group label { font-size: 0.75rem; font-weight: 700; color: var(--navy); text-transform: uppercase; letter-spacing: 0.05em; }
-    .field-group input { width: 100%; background: var(--cream); border: 1.5px solid rgba(13,31,60,0.1); border-radius: 10px; padding: 0.8rem 0.9rem; font-size: 1rem; font-family: 'DM Sans', sans-serif; color: var(--text); outline: none; transition: border-color 0.2s, background 0.2s; -webkit-appearance: none; appearance: none; min-height: 56px; }
-    .field-group input:focus { border-color: var(--gold); background: #fff; }
+    .field-group input, .field-group select { width: 100%; background: var(--cream); border: 1.5px solid rgba(13,31,60,0.1); border-radius: 10px; padding: 0.8rem 0.9rem; font-size: 1rem; font-family: 'DM Sans', sans-serif; color: var(--text); outline: none; transition: border-color 0.2s, background 0.2s; -webkit-appearance: none; appearance: none; min-height: 56px; }
+    .field-group input:focus, .field-group select:focus { border-color: var(--gold); background: #fff; }
 
     .form-error { background: rgba(192,57,43,0.08); border: 1px solid rgba(192,57,43,0.2); border-radius: 8px; padding: 0.6rem 0.9rem; font-size: 0.82rem; color: var(--red); margin-bottom: 0.8rem; display: none; }
 
@@ -273,6 +273,16 @@
         <div class="field-group">
           <label for="email">Email</label>
           <input type="email" id="email" placeholder="jane@email.com" autocomplete="email">
+        </div>
+        <div class="field-group">
+          <label for="contactTime">Preferred Call Time</label>
+          <select id="contactTime" autocomplete="off" required>
+            <option value="">When should we call you?</option>
+            <option value="Morning (8am-12pm)">Morning (8am-12pm)</option>
+            <option value="Afternoon (12pm-5pm)">Afternoon (12pm-5pm)</option>
+            <option value="Evening (5pm-8pm)">Evening (5pm-8pm)</option>
+            <option value="Anytime">Anytime works</option>
+          </select>
         </div>
 
         <div class="consent-row">
@@ -452,10 +462,12 @@
     var phone = document.getElementById('phone').value.trim();
     var firstName = document.getElementById('firstName').value.trim();
     var email = document.getElementById('email').value.trim();
+    var contactTime = document.getElementById('contactTime').value;
 
     if (!phone || phone.replace(/\D/g,'').length < 10) { showContactError('Please enter a valid 10-digit phone number.'); return; }
     if (!firstName) { showContactError('Please enter your first name.'); return; }
     if (!email || !email.includes('@')) { showContactError('Please enter a valid email address.'); return; }
+    if (!contactTime) { showContactError('Please select a preferred call time.'); return; }
     if (!document.getElementById('consent').checked) { showContactError('Please check the consent box to continue.'); return; }
 
     var btn = document.getElementById('submitBtn');
@@ -469,7 +481,7 @@
       firstName: firstName, lastName: '', phone: phone, email: email,
       zip: zip, age: '', state: state,
       insuranceType: TYPE_MAP[_quiz.q1] || _quiz.q1,
-      contactTime: 'Anytime',
+      contactTime: contactTime,
       quizAnswers: { insuranceType: _quiz.q1, lastCompared: _quiz.q2, priority: _quiz.q3, zip: zip, verdict: _quiz.verdict },
       status: 'unmatched', matchedAgentId: null, matchedAt: null,
       source: 'quiz-funnel'
@@ -481,7 +493,7 @@
 
     fetch('https://onecallshield-emails.chris-santoro55.workers.dev', {
       method: 'POST', headers: {'Content-Type': 'application/json'},
-      body: JSON.stringify({ type: 'new_lead', firstName: firstName, lastName: '', phone: phone, email: email, age: 'N/A', zip: zip, insuranceType: lead.insuranceType, contactTime: 'Anytime', lifeType: 'N/A', faceAmount: 'N/A', healthStatus: 'N/A', leadId: lead.id })
+      body: JSON.stringify({ type: 'new_lead', firstName: firstName, lastName: '', phone: phone, email: email, age: 'N/A', zip: zip, insuranceType: lead.insuranceType, contactTime: contactTime, lifeType: 'N/A', faceAmount: 'N/A', healthStatus: 'N/A', leadId: lead.id })
     }).catch(function(err) { console.error('Worker error:', err); });
 
     try { gtag('event', 'conversion', {'send_to': 'AW-18074640566/sLzxCIr3wJgcELbB1KpD', 'value': 1.0, 'currency': 'USD'}); } catch(e) {}
