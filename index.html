@@ -1482,10 +1482,15 @@
   .est-back-link{display:block;text-align:center;font-size:0.75rem;color:var(--text-muted);cursor:pointer;text-decoration:underline;margin-top:12px;}
   .hero-stats-section{border-top:1px solid rgba(255,255,255,0.06);padding:18px 5% 24px;margin-top:0;}
   .hero-stats-inner{display:flex;justify-content:center;gap:2.5rem;flex-wrap:wrap;max-width:1100px;margin:0 auto;}
+  .est-contact-input option{background:var(--navy);color:#fff;}
   @media(max-width:900px){
     .estimator-wrap{grid-template-columns:1fr;gap:1.5rem;padding:1.5rem 5% 0;}
     .estimator-headline{text-align:center;}
     .estimator-trust{justify-content:center;}
+  }
+  @media(max-width:768px){
+    .estimator-headline{order:2;}
+    .estimator-card{order:1;}
   }
   @media(max-width:600px){
     .estimator-wrap{padding:1.2rem 4% 0;}
@@ -1566,7 +1571,7 @@
     <!-- Left: headline -->
     <div class="estimator-headline">
       <div class="hero-badge">Free Insurance Quotes — Auto · Home · Life · Medicare</div>
-      <h1>See Your Rate.<br>Then Connect.</h1>
+      <h1>What Should Your Insurance <em>Actually</em> Cost You?</h1>
       <p class="hero-sub">Get your estimated insurance rate in 30 seconds — no sign-up required. Then connect with one vetted, licensed agent for a real quote. One call. Zero spam.</p>
       <div class="estimator-trust">
         <span>🔒 No signup required</span>
@@ -1633,6 +1638,13 @@
             <input type="tel" id="estPhone" placeholder="📞 Phone number" class="est-contact-input">
             <input type="text" id="estFirstName" placeholder="👤 First name" class="est-contact-input">
             <input type="email" id="estEmail" placeholder="✉️ Email address" class="est-contact-input">
+            <select id="estContactTime" class="est-contact-input">
+              <option value="">⏰ When should we call you?</option>
+              <option value="Morning (8am-12pm)">Morning (8am-12pm)</option>
+              <option value="Afternoon (12pm-5pm)">Afternoon (12pm-5pm)</option>
+              <option value="Evening (5pm-8pm)">Evening (5pm-8pm)</option>
+              <option value="Anytime">Anytime works</option>
+            </select>
             <div class="est-guarantee">
               <div class="est-guarantee-title">🛡️ The One Call Guarantee</div>
               <div class="est-guarantee-body">You will hear from <strong style="color:var(--gold);">exactly one</strong> licensed agent — hand-picked for you. Not 10. Not 50. One.</div>
@@ -1646,6 +1658,13 @@
               <div class="est-success-icon">🎉</div>
               <div class="est-success-title">You're matched! We're on it.</div>
               <div class="est-success-sub">Expect contact from one vetted agent. Confirmation email sent to you.</div>
+            </div>
+            <div id="estEnhancedWrap" style="display:none;margin-top:16px;">
+              <div style="background:rgba(201,151,58,0.08);border:1px solid rgba(201,151,58,0.25);border-radius:14px;padding:18px;text-align:center;">
+                <div style="font-family:'Fraunces',serif;font-size:1rem;color:#fff;margin-bottom:6px;">⚡ Want a more accurate quote?</div>
+                <div style="font-size:0.8rem;color:rgba(255,255,255,0.5);margin-bottom:14px;line-height:1.6;">Help your agent prepare before your call — takes 60 seconds and is completely optional.</div>
+                <div id="enhancedWidget"></div>
+              </div>
             </div>
           </div>
           <span class="est-back-link" onclick="estGoBack()">← Try a different insurance type</span>
@@ -3322,13 +3341,15 @@
   }
 
   async function submitEstimatorLead() {
-    var phone     = document.getElementById('estPhone').value.trim();
-    var firstName = document.getElementById('estFirstName').value.trim();
-    var email     = document.getElementById('estEmail').value.trim();
-    var consent   = document.getElementById('estConsent');
-    if (!phone)    { alert('Please enter your phone number.'); return; }
-    if (!firstName){ alert('Please enter your first name.'); return; }
+    var phone       = document.getElementById('estPhone').value.trim();
+    var firstName   = document.getElementById('estFirstName').value.trim();
+    var email       = document.getElementById('estEmail').value.trim();
+    var contactTime = document.getElementById('estContactTime').value;
+    var consent     = document.getElementById('estConsent');
+    if (!phone)       { alert('Please enter your phone number.'); return; }
+    if (!firstName)   { alert('Please enter your first name.'); return; }
     if (!email || !email.includes('@')) { alert('Please enter a valid email address.'); return; }
+    if (!contactTime) { alert('Please select a preferred call time.'); return; }
     if (!consent.checked) { alert('Please check the consent box to continue.'); return; }
 
     var zip = document.getElementById('estZip').value.trim();
@@ -3340,11 +3361,12 @@
       zip: zip, state: getStateFromZip(zip), age: age || 'Not provided',
       insuranceType: _estType || 'Not specified',
       estimatorCoverage: _estCoverage || '',
-      contactTime: 'Anytime', lifeType: '', faceAmount: '', healthStatus: '',
+      contactTime: contactTime, lifeType: '', faceAmount: '', healthStatus: '',
       status: 'unmatched', matchedAgentId: null, matchedAt: null,
       source: 'homepage-estimator'
     };
 
+    var _lastSubmittedLead = lead;
     var btn = document.getElementById('estSubmitBtn');
     if (btn) { btn.disabled = true; btn.textContent = 'Submitting...'; }
 
@@ -3357,21 +3379,26 @@
       body: JSON.stringify({
         type: 'new_lead', firstName: firstName, lastName: '', phone: phone, email: email,
         age: age || 'N/A', zip: zip, insuranceType: lead.insuranceType,
-        contactTime: 'Anytime', leadId: lead.id, source: 'homepage-estimator'
+        contactTime: contactTime, leadId: lead.id, source: 'homepage-estimator'
       })
     }).catch(function(e){ console.error('Email error:', e); });
 
-    ['estPhone','estFirstName','estEmail'].forEach(function(id){
+    ['estPhone','estFirstName','estEmail','estContactTime'].forEach(function(id){
       var el = document.getElementById(id); if(el) el.style.display = 'none';
     });
-    var gBox = document.querySelector('.est-guarantee');  if(gBox) gBox.style.display = 'none';
+    var gBox = document.querySelector('.est-guarantee');   if(gBox) gBox.style.display = 'none';
     var cRow = document.querySelector('.est-consent-row'); if(cRow) cRow.style.display = 'none';
     if(btn) btn.style.display = 'none';
     document.getElementById('estFormSuccess').style.display = 'block';
 
     try { gtag('event','conversion',{'send_to':'AW-18074640566/sLzxCIr3wJgcELbB1KpD','value':1.0,'currency':'USD'}); } catch(e){}
     try { ttq.track('SubmitForm',{value:1.0,currency:'USD'}); } catch(e){}
-    buildEnhancedWidget(lead);
+
+    setTimeout(function() {
+      var enhancedWrap = document.getElementById('estEnhancedWrap');
+      if(enhancedWrap) enhancedWrap.style.display = 'block';
+      buildEnhancedWidget(_lastSubmittedLead);
+    }, 1800);
   }
 
   // Smooth scroll offset for fixed nav
