@@ -1422,6 +1422,80 @@
   .enhanced-done-text{font-size:0.9rem;color:var(--green);font-weight:700;}
   .enhanced-done-sub{font-size:0.8rem;color:var(--text-muted);margin-top:0.2rem;}
   @media(max-width:500px){.enhanced-row{grid-template-columns:1fr;}}
+
+  /* ── INSTANT ESTIMATOR (homepage rebuild) ──────────────────────────── */
+  @keyframes fadeIn{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:none}}
+  .hero-estimator{flex-direction:column;align-items:stretch;padding-top:80px;padding-bottom:0;}
+  .estimator-wrap{display:grid;grid-template-columns:1fr 1fr;gap:3rem;max-width:1100px;margin:0 auto;width:100%;padding:2.5rem 5% 0;align-items:center;}
+  .estimator-headline{animation:fadeIn 0.5s ease both;}
+  .estimator-headline h1{font-size:clamp(2rem,4vw,3rem);}
+  .estimator-trust{display:flex;gap:1.2rem;flex-wrap:wrap;margin-top:1.2rem;}
+  .estimator-trust span{font-size:0.78rem;color:rgba(255,255,255,0.55);}
+  .estimator-card{background:#fff;border-radius:24px;overflow:hidden;box-shadow:0 8px 48px rgba(13,31,60,0.22);animation:fadeIn 0.6s ease 0.15s both;}
+  .est-card-head{background:var(--navy);padding:17px 22px;display:flex;align-items:center;gap:12px;}
+  .est-card-icon{width:38px;height:38px;background:var(--gold);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:1rem;flex-shrink:0;}
+  .est-card-title{font-family:'Fraunces',serif;font-size:1.05rem;font-weight:700;color:#fff;}
+  .est-card-sub{font-size:0.75rem;color:rgba(255,255,255,0.45);margin-top:2px;}
+  .est-gold-bar{height:3px;background:linear-gradient(90deg,#c9973a,#f5d285,#c9973a);}
+  .est-body{padding:20px 22px;}
+  .est-section-label{font-size:0.75rem;font-weight:600;text-transform:uppercase;letter-spacing:0.07em;color:var(--text-muted);margin-bottom:9px;}
+  .est-type-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:7px;margin-bottom:16px;}
+  .est-type-btn{padding:9px 6px;border:1.5px solid var(--cream-dark);border-radius:10px;background:#fff;cursor:pointer;font-family:'DM Sans',sans-serif;font-size:0.75rem;font-weight:500;color:var(--text-muted);transition:all 0.15s;line-height:1.3;}
+  .est-type-btn:hover,.est-type-btn.active{background:var(--navy);border-color:var(--navy);color:var(--gold);}
+  .est-coverage-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:6px;margin-bottom:14px;}
+  .est-coverage-btn{padding:8px 5px;border:1.5px solid var(--cream-dark);border-radius:9px;background:#fff;cursor:pointer;font-family:'DM Sans',sans-serif;font-size:0.72rem;font-weight:500;color:var(--text-muted);transition:all 0.15s;}
+  .est-coverage-btn.active{background:var(--navy);border-color:var(--navy);color:var(--gold);}
+  .est-row{display:grid;grid-template-columns:1fr 1fr;gap:11px;margin-bottom:12px;}
+  .est-field label{display:block;font-size:0.75rem;font-weight:600;text-transform:uppercase;letter-spacing:0.07em;color:var(--text-muted);margin-bottom:5px;}
+  .est-field input{width:100%;padding:11px 13px;border:1.5px solid var(--cream-dark);border-radius:10px;font-family:'DM Sans',sans-serif;font-size:0.88rem;box-sizing:border-box;outline:none;transition:border-color 0.15s;}
+  .est-field input:focus{border-color:var(--navy);}
+  .est-run-btn{width:100%;padding:14px;background:var(--gold);color:var(--navy);border:none;border-radius:12px;font-family:'Fraunces',serif;font-size:1rem;font-weight:700;cursor:pointer;margin-top:6px;transition:filter 0.15s;}
+  .est-run-btn:hover{filter:brightness(1.08);}
+  .est-disclaimer-txt{font-size:0.68rem;color:var(--text-muted);text-align:center;margin-top:8px;line-height:1.4;}
+  .est-results{animation:fadeIn 0.4s ease both;}
+  .est-result-range{background:var(--navy);border-radius:14px;padding:18px;text-align:center;margin-bottom:14px;}
+  .est-rate-label{font-size:0.68rem;color:rgba(255,255,255,0.45);text-transform:uppercase;letter-spacing:0.08em;margin-bottom:7px;}
+  .est-rate-numbers{font-family:'Fraunces',serif;font-size:2rem;font-weight:700;color:var(--gold);line-height:1;}
+  .est-rate-period{font-size:0.72rem;color:rgba(255,255,255,0.35);margin-top:5px;}
+  .est-verdict-box{border-radius:11px;padding:13px 14px;margin-bottom:12px;text-align:center;}
+  .est-comparison{background:var(--cream);border-radius:11px;padding:12px 14px;margin-bottom:14px;}
+  .est-comp-row{display:flex;justify-content:space-between;padding:5px 0;border-bottom:1px solid rgba(13,31,60,0.07);font-size:0.82rem;}
+  .est-comp-row:last-child{border-bottom:none;}
+  .est-contact-wrap{background:var(--navy);border-radius:14px;padding:18px;margin-top:14px;animation:fadeIn 0.4s ease 0.2s both;}
+  .est-contact-title{font-family:'Fraunces',serif;font-size:0.95rem;font-weight:700;color:#fff;margin-bottom:3px;}
+  .est-contact-sub{font-size:0.78rem;color:rgba(255,255,255,0.5);margin-bottom:12px;}
+  .est-contact-input{width:100%;padding:12px 13px;border:1.5px solid rgba(255,255,255,0.15);border-radius:10px;background:rgba(255,255,255,0.07);color:#fff;font-family:'DM Sans',sans-serif;font-size:0.88rem;box-sizing:border-box;outline:none;margin-bottom:9px;}
+  .est-contact-input::placeholder{color:rgba(255,255,255,0.35);}
+  .est-contact-input:focus{border-color:rgba(201,151,58,0.6);}
+  .est-guarantee{background:rgba(201,151,58,0.12);border:1px solid rgba(201,151,58,0.3);border-radius:9px;padding:9px 12px;margin-bottom:10px;}
+  .est-guarantee-title{font-size:0.78rem;font-weight:700;color:var(--gold);margin-bottom:2px;}
+  .est-guarantee-body{font-size:0.72rem;color:rgba(255,255,255,0.6);line-height:1.5;}
+  .est-consent-row{display:flex;gap:7px;align-items:flex-start;margin-bottom:11px;}
+  .est-consent-row input[type=checkbox]{margin-top:2px;flex-shrink:0;}
+  .est-consent-row p{font-size:0.7rem;color:rgba(255,255,255,0.45);line-height:1.5;margin:0;}
+  .est-submit-btn{width:100%;padding:14px;background:var(--gold);color:var(--navy);border:none;border-radius:12px;font-family:'Fraunces',serif;font-size:0.95rem;font-weight:700;cursor:pointer;transition:filter 0.15s;}
+  .est-submit-btn:hover{filter:brightness(1.06);}
+  .est-success{background:rgba(45,122,79,0.15);border:1.5px solid rgba(45,122,79,0.4);border-radius:13px;padding:18px;text-align:center;animation:fadeIn 0.4s ease both;}
+  .est-success-icon{font-size:1.8rem;margin-bottom:7px;}
+  .est-success-title{font-family:'Fraunces',serif;color:#fff;font-size:1rem;font-weight:700;margin-bottom:3px;}
+  .est-success-sub{font-size:0.78rem;color:rgba(255,255,255,0.55);line-height:1.5;}
+  .est-back-link{display:block;text-align:center;font-size:0.75rem;color:var(--text-muted);cursor:pointer;text-decoration:underline;margin-top:12px;}
+  .hero-stats-section{border-top:1px solid rgba(255,255,255,0.06);padding:18px 5% 24px;margin-top:0;}
+  .hero-stats-inner{display:flex;justify-content:center;gap:2.5rem;flex-wrap:wrap;max-width:1100px;margin:0 auto;}
+  @media(max-width:900px){
+    .estimator-wrap{grid-template-columns:1fr;gap:1.5rem;padding:1.5rem 5% 0;}
+    .estimator-headline{text-align:center;}
+    .estimator-trust{justify-content:center;}
+  }
+  @media(max-width:600px){
+    .estimator-wrap{padding:1.2rem 4% 0;}
+    .est-type-grid{grid-template-columns:repeat(2,1fr);}
+    .est-coverage-grid{grid-template-columns:repeat(2,1fr);}
+    .est-row{grid-template-columns:1fr;}
+    .est-field input,.est-contact-input{min-height:52px;}
+    .est-run-btn,.est-submit-btn{min-height:60px;font-size:1rem;}
+    .est-body{padding:16px 16px;}
+  }
 </style>
 <!-- Schema Markup for Google -->
 <script type="application/ld+json">
@@ -1484,65 +1558,108 @@
   </div>
 </nav>
 
-<!-- HERO -->
-<section class="hero">
+<!-- HERO — Instant Estimator -->
+<section class="hero hero-estimator">
   <div class="hero-bg"></div>
   <div class="hero-grid"></div>
-  <div class="hero-content">
-    <div class="hero-badge">Free Insurance Quotes — Auto · Home · Life · Medicare</div>
-    <h1>Free Insurance Quotes.<br>One Agent. <em>Zero</em> Spam.</h1>
-    <p class="hero-sub">Get free quotes for auto, home, life, and Medicare insurance. Fill out one form and we hand-pick one licensed, vetted agent just for you. One call. Real quotes. No spam calls. No data selling. 100% free.</p>
-    <div class="hero-actions">
-      <a href="#get-quote" class="btn-primary">🛡️ Get My Free Quote</a>
-      <a href="#how-it-works" class="btn-ghost">See how it works →</a>
+  <div class="estimator-wrap">
+    <!-- Left: headline -->
+    <div class="estimator-headline">
+      <div class="hero-badge">Free Insurance Quotes — Auto · Home · Life · Medicare</div>
+      <h1>See Your Rate.<br>Then Connect.</h1>
+      <p class="hero-sub">Get your estimated insurance rate in 30 seconds — no sign-up required. Then connect with one vetted, licensed agent for a real quote. One call. Zero spam.</p>
+      <div class="estimator-trust">
+        <span>🔒 No signup required</span>
+        <span>🛡️ One agent — guaranteed</span>
+        <span>✅ 100% free</span>
+        <span>📞 (845) 242-4389</span>
+      </div>
     </div>
-    <div class="hero-stats">
-      <div class="stat-item">
-        <span class="stat-num">1</span>
-        <span class="stat-label">Agent only</span>
+    <!-- Right: estimator card -->
+    <div class="estimator-card" id="estimatorCard">
+      <!-- Step 1: inputs -->
+      <div id="estStep1">
+        <div class="est-card-head">
+          <div class="est-card-icon">🔍</div>
+          <div>
+            <div class="est-card-title">Instant Rate Estimator</div>
+            <div class="est-card-sub">See what real people pay in your area</div>
+          </div>
+        </div>
+        <div class="est-gold-bar"></div>
+        <div class="est-body">
+          <div class="est-section-label">Insurance Type</div>
+          <div class="est-type-grid">
+            <button class="est-type-btn" onclick="estSelectType(this,'Auto Insurance','auto')">🚗 Auto</button>
+            <button class="est-type-btn" onclick="estSelectType(this,'Homeowners Insurance','home')">🏠 Home</button>
+            <button class="est-type-btn" onclick="estSelectType(this,'Life Insurance','life')">❤️ Life</button>
+            <button class="est-type-btn" onclick="estSelectType(this,'Medicare','medicare')">💊 Medicare</button>
+            <button class="est-type-btn" onclick="estSelectType(this,'Health Insurance','health')">🏥 Health</button>
+            <button class="est-type-btn" onclick="estSelectType(this,'Renters Insurance','renters')">🏢 Renters</button>
+          </div>
+          <div id="estCoverageSection" style="display:none;margin-bottom:14px;">
+            <div class="est-section-label">Coverage Level</div>
+            <div class="est-coverage-grid" id="estCoverageGrid"></div>
+          </div>
+          <div class="est-row">
+            <div class="est-field">
+              <label>Your Age</label>
+              <input type="number" id="estAge" placeholder="e.g. 42" min="16" max="99">
+            </div>
+            <div class="est-field">
+              <label>ZIP Code</label>
+              <input type="text" id="estZip" placeholder="10001" maxlength="5">
+            </div>
+          </div>
+          <div class="est-field" style="margin-bottom:14px;">
+            <label>Current Premium <span style="font-weight:400;text-transform:none;font-size:0.68rem;">(optional — to compare)</span></label>
+            <div style="position:relative;"><span style="position:absolute;left:13px;top:50%;transform:translateY(-50%);color:var(--text-muted);font-size:0.88rem;pointer-events:none;">$</span><input type="number" id="estCurrentPremium" placeholder="0" style="padding-left:25px;width:100%;padding:11px 13px 11px 25px;border:1.5px solid var(--cream-dark);border-radius:10px;font-family:'DM Sans',sans-serif;font-size:0.88rem;box-sizing:border-box;outline:none;"></div>
+          </div>
+          <button class="est-run-btn" onclick="runEstimator()">See My Rate →</button>
+          <p class="est-disclaimer-txt">No signup required. Based on NAIC market data. Educational purposes only.</p>
+        </div>
       </div>
-      <div class="stat-item">
-        <span class="stat-num">0</span>
-        <span class="stat-label">Spam calls</span>
-      </div>
-      <div class="stat-item">
-        <span class="stat-num">100%</span>
-        <span class="stat-label">Free for you</span>
-      </div>
-      <div class="stat-item">
-        <span class="stat-num">TCPA</span>
-        <span class="stat-label">Compliant</span>
+      <!-- Step 2: results + contact form -->
+      <div id="estStep2" style="display:none;">
+        <div class="est-body">
+          <div id="estResults" class="est-results"></div>
+          <div class="est-contact-wrap" id="estContactWrap">
+            <div class="est-contact-title">Want a real quote from one vetted agent?</div>
+            <div class="est-contact-sub">One call. One agent. Zero spam. Takes 30 seconds.</div>
+            <div style="background:rgba(255,255,255,0.05);border-radius:10px;padding:10px;margin-bottom:12px;display:flex;align-items:center;gap:10px;cursor:pointer;">
+              <div style="width:32px;height:32px;background:var(--gold);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:0.85rem;flex-shrink:0;">▶</div>
+              <div><div style="font-size:0.78rem;font-weight:600;color:#fff;">Why OneCallShield Exists</div><div style="font-size:0.68rem;color:rgba(255,255,255,0.4);">30 seconds — our promise to you</div></div>
+            </div>
+            <input type="tel" id="estPhone" placeholder="📞 Phone number" class="est-contact-input">
+            <input type="text" id="estFirstName" placeholder="👤 First name" class="est-contact-input">
+            <input type="email" id="estEmail" placeholder="✉️ Email address" class="est-contact-input">
+            <div class="est-guarantee">
+              <div class="est-guarantee-title">🛡️ The One Call Guarantee</div>
+              <div class="est-guarantee-body">You will hear from <strong style="color:var(--gold);">exactly one</strong> licensed agent — hand-picked for you. Not 10. Not 50. One.</div>
+            </div>
+            <div class="est-consent-row">
+              <input type="checkbox" id="estConsent">
+              <p>I consent to be contacted by one licensed insurance agent matched by OneCallShield. My information will NOT be shared with multiple agents or third parties.</p>
+            </div>
+            <button class="est-submit-btn" id="estSubmitBtn" onclick="submitEstimatorLead()">Get My Matched Agent — It's Free →</button>
+            <div id="estFormSuccess" style="display:none;" class="est-success">
+              <div class="est-success-icon">🎉</div>
+              <div class="est-success-title">You're matched! We're on it.</div>
+              <div class="est-success-sub">Expect contact from one vetted agent. Confirmation email sent to you.</div>
+            </div>
+          </div>
+          <span class="est-back-link" onclick="estGoBack()">← Try a different insurance type</span>
+        </div>
       </div>
     </div>
   </div>
-  <div class="hero-visual">
-    <div class="shield-card">
-      <svg width="90" height="110" viewBox="204 42 272 402" xmlns="http://www.w3.org/2000/svg" style="display:block;margin:0 auto 1rem;">
-        <defs>
-          <linearGradient id="hsg" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#243f6e"/><stop offset="100%" stop-color="#0a1828"/></linearGradient>
-          <linearGradient id="hgg" x1="0" y1="0" x2="1" y2="1"><stop offset="0%" stop-color="#f5d285"/><stop offset="50%" stop-color="#c9973a"/><stop offset="100%" stop-color="#e8b96a"/></linearGradient>
-        </defs>
-        <path d="M340 42 L476 90 L476 276 Q476 378 340 442 Q204 378 204 276 L204 90 Z" fill="url(#hgg)"/>
-        <path d="M340 58 L462 102 L462 274 Q462 364 340 422 Q218 364 218 274 L218 102 Z" fill="url(#hsg)"/>
-        <path d="M340 76 L446 116 L446 272 Q446 350 340 402 Q234 350 234 272 L234 116 Z" fill="none" stroke="rgba(245,210,133,0.15)" stroke-width="1.5"/>
-        <g transform="translate(340,240)">
-          <rect x="-26" y="-54" width="52" height="90" rx="10" fill="white"/>
-          <rect x="-19" y="-46" width="38" height="68" rx="6" fill="#0d1f3c"/>
-          <rect x="-7" y="-42" width="14" height="5" rx="2.5" fill="#060f1a"/>
-          <rect x="-10" y="28" width="20" height="3.5" rx="1.75" fill="rgba(201,151,58,0.9)"/>
-          <rect x="26" y="-14" width="3.5" height="16" rx="1.75" fill="rgba(255,255,255,0.55)"/>
-          <rect x="-29.5" y="-20" width="3.5" height="10" rx="1.75" fill="rgba(255,255,255,0.55)"/>
-          <rect x="-29.5" y="-4" width="3.5" height="10" rx="1.75" fill="rgba(255,255,255,0.55)"/>
-        </g>
-        <path d="M316,244 L328,258 L364,216" fill="none" stroke="url(#hgg)" stroke-width="11" stroke-linecap="round" stroke-linejoin="round"/>
-      </svg>
-      <h3>Your Protection Guarantee</h3>
-      <ul class="shield-steps">
-        <li><div class="step-dot">1</div> Fill out one quick form</li>
-        <li><div class="step-dot">2</div> We vet & select one agent</li>
-        <li><div class="step-dot">3</div> One call. Real quotes.</li>
-      </ul>
-      <div class="shield-guarantee">✓ Your info shared with ONE agent only</div>
+  <!-- Stats bar below estimator -->
+  <div class="hero-stats-section">
+    <div class="hero-stats-inner">
+      <div class="stat-item"><span class="stat-num">1</span><span class="stat-label">Agent only</span></div>
+      <div class="stat-item"><span class="stat-num">0</span><span class="stat-label">Spam calls</span></div>
+      <div class="stat-item"><span class="stat-num">100%</span><span class="stat-label">Free for you</span></div>
+      <div class="stat-item"><span class="stat-num">TCPA</span><span class="stat-label">Compliant</span></div>
     </div>
   </div>
 </section>
@@ -1844,8 +1961,8 @@
   </div>
 </div>
 
-<!-- FORM -->
-<section class="form-section" id="get-quote">
+<!-- ORIGINAL FORM — preserved for rollback, hidden by estimator rebuild -->
+<section class="form-section" id="get-quote" style="display:none;">
   <div class="form-inner">
     <span class="section-label" style="color: var(--gold-light);">Free Insurance Quote</span>
     <h2>Get a Free Auto, Home, Life or Medicare Quote</h2>
@@ -3107,6 +3224,154 @@
       'currency': 'USD'
     });
     try { ttq.track('SubmitForm', {value: 1.0, currency: 'USD'}); } catch(e) {}
+  }
+
+  // ── INSTANT ESTIMATOR ─────────────────────────────────────────────────────
+  var _estType = '', _estTypeKey = '', _estCoverage = '';
+
+  function estSelectType(btn, typeName, typeKey) {
+    document.querySelectorAll('.est-type-btn').forEach(function(b){ b.classList.remove('active'); });
+    btn.classList.add('active');
+    _estType = typeName;
+    _estTypeKey = typeKey;
+    _estCoverage = '';
+    var section = document.getElementById('estCoverageSection');
+    var grid = document.getElementById('estCoverageGrid');
+    if (RMQ_OPTIONS[typeKey]) {
+      grid.innerHTML = RMQ_OPTIONS[typeKey].map(function(o){
+        return '<button class="est-coverage-btn" onclick="estSelectCoverage(this,\'' + o.replace(/'/g, "\\'") + '\')">' + o + '</button>';
+      }).join('');
+      section.style.display = 'block';
+    } else {
+      section.style.display = 'none';
+    }
+  }
+
+  function estSelectCoverage(btn, val) {
+    document.querySelectorAll('.est-coverage-btn').forEach(function(b){ b.classList.remove('active'); });
+    btn.classList.add('active');
+    _estCoverage = val;
+  }
+
+  function runEstimator() {
+    if (!_estType)     { alert('Please select an insurance type.'); return; }
+    if (!_estCoverage) { alert('Please select a coverage level.'); return; }
+    var age = parseInt(document.getElementById('estAge').value);
+    var zip = document.getElementById('estZip').value.trim();
+    if (!age || age < 16 || age > 99) { alert('Please enter a valid age.'); return; }
+    if (!zip || zip.length < 5)       { alert('Please enter a valid 5-digit ZIP code.'); return; }
+
+    var rates  = RMQ_DATA[_estTypeKey][_estCoverage];
+    var prefix = parseInt(zip.substring(0, 3));
+    var reg = 1.0;
+    if ((prefix >= 900 && prefix <= 961) || (prefix >= 100 && prefix <= 149) || (prefix >= 70 && prefix <= 71) || (prefix >= 330 && prefix <= 349)) reg = 1.28;
+    if ((prefix >= 460 && prefix <= 479) || (prefix >= 490 && prefix <= 499)) reg = 0.82;
+    var age_m = 1.0;
+    if (_estTypeKey === 'auto') { if (age < 25) age_m = 1.35; else if (age < 30) age_m = 1.12; else if (age > 70) age_m = 1.18; }
+    else if (_estTypeKey === 'life' || _estTypeKey === 'health' || _estTypeKey === 'medicare') { if (age > 60) age_m = 1.4; else if (age > 50) age_m = 1.2; else if (age < 35) age_m = 0.82; }
+
+    var avg = Math.round(rates.avg * reg * age_m);
+    var lo  = Math.round(rates.low  * reg * age_m);
+    var hi  = Math.round(rates.high * reg * age_m);
+    var state = getStateFromZip(zip) || 'your state';
+
+    var resultsHtml = '<div class="est-result-range">'
+      + '<div class="est-rate-label">Estimated Monthly Rate &middot; ' + _estType + '</div>'
+      + '<div class="est-rate-numbers">$' + lo + ' &mdash; $' + hi + '<span style="font-size:0.85rem;opacity:0.5">/mo</span></div>'
+      + '<div class="est-rate-period">' + _estCoverage + ' &middot; ' + state + ' average</div>'
+      + '</div>';
+
+    var currentPremium = parseFloat(document.getElementById('estCurrentPremium').value);
+    if (currentPremium && !isNaN(currentPremium)) {
+      var diff = currentPremium - avg;
+      var pct  = Math.round((diff / avg) * 100);
+      var verdict  = pct > 15 ? 'overpaying' : pct > -10 ? 'fair' : 'great';
+      var vColors  = { overpaying:'#fdf0ef', fair:'#fff8ec', great:'#e8f5ee' };
+      var vBorders = { overpaying:'#c0392b', fair:'#d4860a', great:'#2d7a4f' };
+      var vIcons   = { overpaying:'⚠️',     fair:'✅',      great:'🏆' };
+      var vLabels  = { overpaying:'You may be overpaying', fair:'Fair market rate', great:'Great rate!' };
+      var annual   = Math.abs(Math.round(diff * 12));
+      var vDesc    = {
+        overpaying: 'You could save up to $' + annual + '/year. A real quote could confirm this.',
+        fair:       'Your rate is within the $' + lo + '–$' + hi + '/mo range for your profile.',
+        great:      'You\'re paying below market average. Make sure your coverage is complete.'
+      };
+      resultsHtml += '<div class="est-verdict-box" style="background:' + vColors[verdict] + ';border:1.5px solid ' + vBorders[verdict] + ';">'
+        + '<div style="font-size:1.4rem;margin-bottom:5px;">' + vIcons[verdict] + '</div>'
+        + '<div style="font-size:0.68rem;font-weight:700;text-transform:uppercase;letter-spacing:2px;color:' + vBorders[verdict] + ';margin-bottom:3px;">' + vLabels[verdict] + '</div>'
+        + '<div style="font-size:0.82rem;color:#5a6480;">' + vDesc[verdict] + '</div>'
+        + '</div>';
+      var diffColor = diff > 50 ? '#c0392b' : diff < -20 ? '#2d7a4f' : 'inherit';
+      resultsHtml += '<div class="est-comparison">'
+        + '<div class="est-comp-row"><span style="color:#5a6480;">Your premium</span><span style="font-weight:600;">$' + currentPremium + '/mo</span></div>'
+        + '<div class="est-comp-row"><span style="color:#5a6480;">Market average</span><span style="font-weight:600;">$' + avg + '/mo</span></div>'
+        + '<div class="est-comp-row"><span style="color:#5a6480;">Difference</span><span style="font-weight:600;color:' + diffColor + ';">$' + Math.abs(Math.round(diff)) + '/mo ' + (diff > 0 ? 'above' : 'below') + ' avg</span></div>'
+        + '</div>';
+    }
+
+    document.getElementById('estResults').innerHTML = resultsHtml;
+    document.getElementById('estStep1').style.display = 'none';
+    document.getElementById('estStep2').style.display = 'block';
+    var card = document.getElementById('estimatorCard');
+    if (card) window.scrollTo({ top: card.getBoundingClientRect().top + window.pageYOffset - 90, behavior: 'smooth' });
+  }
+
+  function estGoBack() {
+    document.getElementById('estStep2').style.display = 'none';
+    document.getElementById('estStep1').style.display = 'block';
+  }
+
+  async function submitEstimatorLead() {
+    var phone     = document.getElementById('estPhone').value.trim();
+    var firstName = document.getElementById('estFirstName').value.trim();
+    var email     = document.getElementById('estEmail').value.trim();
+    var consent   = document.getElementById('estConsent');
+    if (!phone)    { alert('Please enter your phone number.'); return; }
+    if (!firstName){ alert('Please enter your first name.'); return; }
+    if (!email || !email.includes('@')) { alert('Please enter a valid email address.'); return; }
+    if (!consent.checked) { alert('Please check the consent box to continue.'); return; }
+
+    var zip = document.getElementById('estZip').value.trim();
+    var age = document.getElementById('estAge').value.trim();
+    var lead = {
+      id: 'L-' + Date.now(),
+      submittedAt: new Date().toISOString(),
+      firstName: firstName, lastName: '', phone: phone, email: email,
+      zip: zip, state: getStateFromZip(zip), age: age || 'Not provided',
+      insuranceType: _estType || 'Not specified',
+      estimatorCoverage: _estCoverage || '',
+      contactTime: 'Anytime', lifeType: '', faceAmount: '', healthStatus: '',
+      status: 'unmatched', matchedAgentId: null, matchedAt: null,
+      source: 'homepage-estimator'
+    };
+
+    var btn = document.getElementById('estSubmitBtn');
+    if (btn) { btn.disabled = true; btn.textContent = 'Submitting...'; }
+
+    fetch('https://onecallshield-default-rtdb.firebaseio.com/leads/' + lead.id + '.json', {
+      method: 'PUT', headers: {'Content-Type':'application/json'}, body: JSON.stringify(lead)
+    }).catch(function(e){ console.error('Firebase error:', e); });
+
+    fetch('https://onecallshield-emails.chris-santoro55.workers.dev', {
+      method: 'POST', headers: {'Content-Type':'application/json'},
+      body: JSON.stringify({
+        type: 'new_lead', firstName: firstName, lastName: '', phone: phone, email: email,
+        age: age || 'N/A', zip: zip, insuranceType: lead.insuranceType,
+        contactTime: 'Anytime', leadId: lead.id, source: 'homepage-estimator'
+      })
+    }).catch(function(e){ console.error('Email error:', e); });
+
+    ['estPhone','estFirstName','estEmail'].forEach(function(id){
+      var el = document.getElementById(id); if(el) el.style.display = 'none';
+    });
+    var gBox = document.querySelector('.est-guarantee');  if(gBox) gBox.style.display = 'none';
+    var cRow = document.querySelector('.est-consent-row'); if(cRow) cRow.style.display = 'none';
+    if(btn) btn.style.display = 'none';
+    document.getElementById('estFormSuccess').style.display = 'block';
+
+    try { gtag('event','conversion',{'send_to':'AW-18074640566/sLzxCIr3wJgcELbB1KpD','value':1.0,'currency':'USD'}); } catch(e){}
+    try { ttq.track('SubmitForm',{value:1.0,currency:'USD'}); } catch(e){}
+    buildEnhancedWidget(lead);
   }
 
   // Smooth scroll offset for fixed nav
