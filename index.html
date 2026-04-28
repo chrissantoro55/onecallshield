@@ -1644,7 +1644,9 @@
               <option value="Afternoon (12pm-5pm)">Afternoon (12pm-5pm)</option>
               <option value="Evening (5pm-8pm)">Evening (5pm-8pm)</option>
               <option value="Anytime">Anytime works</option>
+              <option value="Specific Time">I have a specific time</option>
             </select>
+            <input type="text" id="estSpecificTime" class="est-contact-input" placeholder="e.g. Tuesday at 2pm" style="display:none;margin-top:-8px;">
             <div class="est-guarantee">
               <div class="est-guarantee-title">🛡️ The One Call Guarantee</div>
               <div class="est-guarantee-body">You will hear from <strong style="color:var(--gold);">exactly one</strong> licensed agent — hand-picked for you. Not 10. Not 50. One.</div>
@@ -1665,6 +1667,11 @@
                 <div style="font-size:0.8rem;color:rgba(255,255,255,0.5);margin-bottom:14px;line-height:1.6;">Help your agent prepare before your call — takes 60 seconds and is completely optional.</div>
                 <div id="enhancedWidget"></div>
               </div>
+            </div>
+            <div id="estEnhancedSuccess" style="display:none;margin-top:16px;background:rgba(45,122,79,0.15);border:1px solid rgba(45,122,79,0.3);border-radius:14px;padding:18px;text-align:center;">
+              <div style="font-size:2rem;margin-bottom:8px;">🎯</div>
+              <div style="font-family:'Fraunces',serif;font-size:1rem;color:#fff;margin-bottom:6px;">Your agent is fully prepared!</div>
+              <div style="font-size:0.8rem;color:rgba(255,255,255,0.5);line-height:1.6;">We've sent your details to your matched agent. Expect a well-prepared call at your preferred time. One agent. One call. Zero spam.</div>
             </div>
           </div>
           <span class="est-back-link" onclick="estGoBack()">← Try a different insurance type</span>
@@ -2667,8 +2674,8 @@
   }
 
   function skipEnhanced() {
-    const el = document.getElementById('enhancedWidget');
-    if(el) el.innerHTML = '';
+    var wrap = document.getElementById('estEnhancedWrap');
+    if(wrap) wrap.innerHTML = '<div style="text-align:center;padding:12px;font-size:0.8rem;color:rgba(255,255,255,0.4);">No problem — your agent will cover everything on the call. 🛡️</div>';
   }
 
   async function submitEnhanced(leadId, insuranceType) {
@@ -2714,19 +2721,19 @@
       console.error('Enhanced save error:', e);
     }
 
-    const widget = document.getElementById('enhancedWidget');
-    if(widget) {
-      if(saved) {
-        widget.innerHTML = '<div class="enhanced-done">'
-          + '<div class="enhanced-done-icon">🎯</div>'
-          + '<div class="enhanced-done-text">Perfect — your agent has everything they need!</div>'
-          + '<div class="enhanced-done-sub">Your detailed profile has been sent. Expect a well-prepared call.</div>'
-          + '</div>';
-      } else {
-        if(btn) { btn.disabled = false; btn.textContent = 'Send This to My Agent →'; }
-        widget.innerHTML = widget.innerHTML.replace('id="enhancedSubmitBtn"', 'id="enhancedSubmitBtn"');
-        alert('Could not save. Please try again.');
+    if(saved) {
+      var wrap = document.getElementById('estEnhancedWrap');
+      if(wrap) wrap.style.display = 'none';
+      var successEl = document.getElementById('estEnhancedSuccess');
+      if(successEl) {
+        successEl.style.display = 'block';
+        successEl.scrollIntoView({behavior:'smooth', block:'center'});
       }
+    } else {
+      const widget = document.getElementById('enhancedWidget');
+      if(btn) { btn.disabled = false; btn.textContent = 'Send This to My Agent →'; }
+      if(widget) widget.innerHTML = widget.innerHTML.replace('id="enhancedSubmitBtn"', 'id="enhancedSubmitBtn"');
+      alert('Could not save. Please try again.');
     }
   }
 
@@ -3344,12 +3351,17 @@
     var phone       = document.getElementById('estPhone').value.trim();
     var firstName   = document.getElementById('estFirstName').value.trim();
     var email       = document.getElementById('estEmail').value.trim();
-    var contactTime = document.getElementById('estContactTime').value;
-    var consent     = document.getElementById('estConsent');
+    var contactTime   = document.getElementById('estContactTime').value;
+    var specificTime  = document.getElementById('estSpecificTime').value.trim();
+    var consent       = document.getElementById('estConsent');
     if (!phone)       { alert('Please enter your phone number.'); return; }
     if (!firstName)   { alert('Please enter your first name.'); return; }
     if (!email || !email.includes('@')) { alert('Please enter a valid email address.'); return; }
     if (!contactTime) { alert('Please select a preferred call time.'); return; }
+    if (contactTime === 'Specific Time') {
+      if (!specificTime) { alert('Please enter your preferred call time.'); return; }
+      contactTime = specificTime;
+    }
     if (!consent.checked) { alert('Please check the consent box to continue.'); return; }
 
     var zip = document.getElementById('estZip').value.trim();
@@ -3383,7 +3395,7 @@
       })
     }).catch(function(e){ console.error('Email error:', e); });
 
-    ['estPhone','estFirstName','estEmail','estContactTime'].forEach(function(id){
+    ['estPhone','estFirstName','estEmail','estContactTime','estSpecificTime'].forEach(function(id){
       var el = document.getElementById(id); if(el) el.style.display = 'none';
     });
     var gBox = document.querySelector('.est-guarantee');   if(gBox) gBox.style.display = 'none';
@@ -3400,6 +3412,16 @@
       buildEnhancedWidget(_lastSubmittedLead);
     }, 1800);
   }
+
+  document.getElementById('estContactTime').addEventListener('change', function() {
+    var specificField = document.getElementById('estSpecificTime');
+    if(this.value === 'Specific Time') {
+      specificField.style.display = 'block';
+    } else {
+      specificField.style.display = 'none';
+      specificField.value = '';
+    }
+  });
 
   // Smooth scroll offset for fixed nav
   document.querySelectorAll('a[href^="#"]').forEach(a => {
