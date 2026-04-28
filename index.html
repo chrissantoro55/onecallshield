@@ -1483,6 +1483,10 @@
   .hero-stats-section{border-top:1px solid rgba(255,255,255,0.06);padding:18px 5% 24px;margin-top:0;}
   .hero-stats-inner{display:flex;justify-content:center;gap:2.5rem;flex-wrap:wrap;max-width:1100px;margin:0 auto;}
   .est-contact-input option{background:var(--navy);color:#fff;}
+  #estSuccessFlow{background:var(--navy);border-radius:16px;margin:-20px -22px;padding:20px 22px;}
+  #estSuccessFlow .est-contact-input{background:rgba(255,255,255,0.08);color:#fff;border:1.5px solid rgba(255,255,255,0.15);}
+  #estSuccessFlow .est-contact-input option{background:#0d1f3c;color:#fff;}
+  #estSuccessFlow .est-contact-input::placeholder{color:rgba(255,255,255,0.35);}
   @media(max-width:900px){
     .estimator-wrap{grid-template-columns:1fr;gap:1.5rem;padding:1.5rem 5% 0;}
     .estimator-headline{text-align:center;}
@@ -1671,8 +1675,8 @@
         </div>
         <div class="est-gold-bar"></div>
         <div class="est-body">
-          <div style="background:rgba(45,122,79,0.12);border:1px solid rgba(45,122,79,0.25);border-radius:12px;padding:14px;margin-bottom:16px;">
-            <div style="font-size:0.82rem;color:rgba(255,255,255,0.7);line-height:1.8;" id="estConfirmSummary"></div>
+          <div style="background:rgba(255,255,255,0.06);border:1px solid rgba(201,151,58,0.2);border-radius:12px;padding:14px;margin-bottom:16px;">
+            <div style="font-size:0.82rem;color:rgba(255,255,255,0.85);line-height:1.8;" id="estConfirmSummary"></div>
           </div>
           <div id="estOptionalSection">
             <div style="border-top:1px solid rgba(255,255,255,0.08);padding-top:16px;margin-bottom:14px;">
@@ -3427,7 +3431,8 @@
       '\u2705 We\u2019ll call you: ' + contactTime + '<br>' +
       '\u2705 One agent &middot; Zero spam &middot; Completely free';
     buildEstOptionalFields(lead.insuranceType);
-    sf.scrollIntoView({behavior:'smooth', block:'start'});
+    document.getElementById('estimatorCard').scrollIntoView({behavior:'smooth', block:'start'});
+    window.scrollBy({top: -20, behavior: 'smooth'});
   }
 
   function buildEstOptionalFields(insuranceType) {
@@ -3476,11 +3481,17 @@
     var html = '';
     fields.forEach(function(f) {
       if(f.type === 'select') {
-        html += '<select class="est-contact-input" data-label="' + f.label + '" style="margin-bottom:9px;">'
-          + f.options.map(function(o, i){ return '<option value="' + (i === 0 ? '' : o) + '">' + o + '</option>'; }).join('')
-          + '</select>';
+        html += '<div style="margin-bottom:12px;">'
+          + '<div style="font-size:0.72rem;font-weight:600;text-transform:uppercase;letter-spacing:0.07em;color:rgba(255,255,255,0.4);margin-bottom:5px;">' + f.label + '</div>'
+          + '<select class="est-contact-input" data-label="' + f.label + '">'
+          + f.options.map(function(o,i){return '<option value="'+(i===0?'':o)+'">'+o+'</option>';}).join('')
+          + '</select>'
+          + '</div>';
       } else {
-        html += '<input type="text" class="est-contact-input" data-label="' + f.label + '" placeholder="' + (f.placeholder || f.label) + '" style="margin-bottom:9px;">';
+        html += '<div style="margin-bottom:12px;">'
+          + '<div style="font-size:0.72rem;font-weight:600;text-transform:uppercase;letter-spacing:0.07em;color:rgba(255,255,255,0.4);margin-bottom:5px;">' + f.label + '</div>'
+          + '<input type="text" class="est-contact-input" data-label="' + f.label + '" placeholder="' + (f.placeholder||f.label) + '">'
+          + '</div>';
       }
     });
     document.getElementById('estOptionalFields').innerHTML = html;
