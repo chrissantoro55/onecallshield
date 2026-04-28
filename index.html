@@ -1656,25 +1656,40 @@
               <p>I consent to be contacted by one licensed insurance agent matched by OneCallShield. My information will NOT be shared with multiple agents or third parties.</p>
             </div>
             <button class="est-submit-btn" id="estSubmitBtn" onclick="submitEstimatorLead()">Get My Matched Agent — It's Free →</button>
-            <div id="estFormSuccess" style="display:none;" class="est-success">
-              <div class="est-success-icon">🎉</div>
-              <div class="est-success-title">You're matched! We're on it.</div>
-              <div class="est-success-sub">Expect contact from one vetted agent. Confirmation email sent to you.</div>
-            </div>
-            <div id="estEnhancedWrap" style="display:none;margin-top:16px;">
-              <div style="background:rgba(201,151,58,0.08);border:1px solid rgba(201,151,58,0.25);border-radius:14px;padding:18px;text-align:center;">
-                <div style="font-family:'Fraunces',serif;font-size:1rem;color:#fff;margin-bottom:6px;">⚡ Want a more accurate quote?</div>
-                <div style="font-size:0.8rem;color:rgba(255,255,255,0.5);margin-bottom:14px;line-height:1.6;">Help your agent prepare before your call — takes 60 seconds and is completely optional.</div>
-                <div id="enhancedWidget"></div>
-              </div>
-            </div>
-            <div id="estEnhancedSuccess" style="display:none;margin-top:16px;background:rgba(45,122,79,0.15);border:1px solid rgba(45,122,79,0.3);border-radius:14px;padding:18px;text-align:center;">
-              <div style="font-size:2rem;margin-bottom:8px;">🎯</div>
-              <div style="font-family:'Fraunces',serif;font-size:1rem;color:#fff;margin-bottom:6px;">Your agent is fully prepared!</div>
-              <div style="font-size:0.8rem;color:rgba(255,255,255,0.5);line-height:1.6;">We've sent your details to your matched agent. Expect a well-prepared call at your preferred time. One agent. One call. Zero spam.</div>
-            </div>
           </div>
           <span class="est-back-link" onclick="estGoBack()">← Try a different insurance type</span>
+        </div>
+      </div>
+      <!-- Unified post-submission success flow -->
+      <div id="estSuccessFlow" style="display:none;">
+        <div class="est-card-head">
+          <div class="est-card-icon">🎉</div>
+          <div>
+            <div class="est-card-title" id="estSuccessName">You're all set!</div>
+            <div class="est-card-sub">Your agent match is in progress</div>
+          </div>
+        </div>
+        <div class="est-gold-bar"></div>
+        <div class="est-body">
+          <div style="background:rgba(45,122,79,0.12);border:1px solid rgba(45,122,79,0.25);border-radius:12px;padding:14px;margin-bottom:16px;">
+            <div style="font-size:0.82rem;color:rgba(255,255,255,0.7);line-height:1.8;" id="estConfirmSummary"></div>
+          </div>
+          <div id="estOptionalSection">
+            <div style="border-top:1px solid rgba(255,255,255,0.08);padding-top:16px;margin-bottom:14px;">
+              <div style="font-family:'Fraunces',serif;font-size:0.95rem;color:#fff;margin-bottom:4px;">⚡ Help your agent prepare</div>
+              <div style="font-size:0.78rem;color:rgba(255,255,255,0.45);line-height:1.6;">Optional — but agents say this cuts the call time in half and gets you a more accurate quote.</div>
+            </div>
+            <div id="estOptionalFields"></div>
+            <button class="est-submit-btn" id="estOptionalSubmitBtn" onclick="submitEstOptional()" style="margin-top:4px;">Send This to My Agent →</button>
+            <div style="text-align:center;margin-top:10px;">
+              <span onclick="skipEstOptional()" style="font-size:0.75rem;color:rgba(255,255,255,0.35);cursor:pointer;text-decoration:underline;">No thanks — I'll discuss on the call</span>
+            </div>
+          </div>
+          <div id="estOptionalDone" style="display:none;text-align:center;padding:16px 0;">
+            <div style="font-size:2rem;margin-bottom:8px;" id="estOptionalDoneIcon">🎯</div>
+            <div style="font-family:'Fraunces',serif;font-size:0.95rem;color:#fff;margin-bottom:6px;" id="estOptionalDoneTitle">Your agent is fully prepared!</div>
+            <div style="font-size:0.78rem;color:rgba(255,255,255,0.4);line-height:1.6;" id="estOptionalDoneMsg">We've sent everything to your matched agent. Expect a well-prepared call.</div>
+          </div>
         </div>
       </div>
     </div>
@@ -2674,8 +2689,8 @@
   }
 
   function skipEnhanced() {
-    var wrap = document.getElementById('estEnhancedWrap');
-    if(wrap) wrap.innerHTML = '<div style="text-align:center;padding:12px;font-size:0.8rem;color:rgba(255,255,255,0.4);">No problem — your agent will cover everything on the call. 🛡️</div>';
+    var el = document.getElementById('enhancedWidget');
+    if(el) el.innerHTML = '';
   }
 
   async function submitEnhanced(leadId, insuranceType) {
@@ -2721,19 +2736,19 @@
       console.error('Enhanced save error:', e);
     }
 
-    if(saved) {
-      var wrap = document.getElementById('estEnhancedWrap');
-      if(wrap) wrap.style.display = 'none';
-      var successEl = document.getElementById('estEnhancedSuccess');
-      if(successEl) {
-        successEl.style.display = 'block';
-        successEl.scrollIntoView({behavior:'smooth', block:'center'});
+    const widget = document.getElementById('enhancedWidget');
+    if(widget) {
+      if(saved) {
+        widget.innerHTML = '<div class="enhanced-done">'
+          + '<div class="enhanced-done-icon">🎯</div>'
+          + '<div class="enhanced-done-text">Perfect — your agent has everything they need!</div>'
+          + '<div class="enhanced-done-sub">Your detailed profile has been sent. Expect a well-prepared call.</div>'
+          + '</div>';
+      } else {
+        if(btn) { btn.disabled = false; btn.textContent = 'Send This to My Agent →'; }
+        widget.innerHTML = widget.innerHTML.replace('id="enhancedSubmitBtn"', 'id="enhancedSubmitBtn"');
+        alert('Could not save. Please try again.');
       }
-    } else {
-      const widget = document.getElementById('enhancedWidget');
-      if(btn) { btn.disabled = false; btn.textContent = 'Send This to My Agent →'; }
-      if(widget) widget.innerHTML = widget.innerHTML.replace('id="enhancedSubmitBtn"', 'id="enhancedSubmitBtn"');
-      alert('Could not save. Please try again.');
     }
   }
 
@@ -3253,7 +3268,8 @@
   }
 
   // ── INSTANT ESTIMATOR ─────────────────────────────────────────────────────
-  var _estType = '', _estTypeKey = '', _estCoverage = '';
+  var _estType = '', _estTypeKey = '', _estCoverage = '', _estLo = 0, _estHi = 0;
+  var _lastSubmittedLead = null;
 
   function estSelectType(btn, typeName, typeKey) {
     document.querySelectorAll('.est-type-btn').forEach(function(b){ b.classList.remove('active'); });
@@ -3299,6 +3315,7 @@
     var avg = Math.round(rates.avg * reg * age_m);
     var lo  = Math.round(rates.low  * reg * age_m);
     var hi  = Math.round(rates.high * reg * age_m);
+    _estLo = lo; _estHi = hi;
     var state = getStateFromZip(zip) || 'your state';
 
     var resultsHtml = '<div class="est-result-range">'
@@ -3378,7 +3395,7 @@
       source: 'homepage-estimator'
     };
 
-    var _lastSubmittedLead = lead;
+    _lastSubmittedLead = lead;
     var btn = document.getElementById('estSubmitBtn');
     if (btn) { btn.disabled = true; btn.textContent = 'Submitting...'; }
 
@@ -3395,22 +3412,114 @@
       })
     }).catch(function(e){ console.error('Email error:', e); });
 
-    ['estPhone','estFirstName','estEmail','estContactTime','estSpecificTime'].forEach(function(id){
-      var el = document.getElementById(id); if(el) el.style.display = 'none';
-    });
-    var gBox = document.querySelector('.est-guarantee');   if(gBox) gBox.style.display = 'none';
-    var cRow = document.querySelector('.est-consent-row'); if(cRow) cRow.style.display = 'none';
-    if(btn) btn.style.display = 'none';
-    document.getElementById('estFormSuccess').style.display = 'block';
-
     try { gtag('event','conversion',{'send_to':'AW-18074640566/sLzxCIr3wJgcELbB1KpD','value':1.0,'currency':'USD'}); } catch(e){}
     try { ttq.track('SubmitForm',{value:1.0,currency:'USD'}); } catch(e){}
 
-    setTimeout(function() {
-      var enhancedWrap = document.getElementById('estEnhancedWrap');
-      if(enhancedWrap) enhancedWrap.style.display = 'block';
-      buildEnhancedWidget(_lastSubmittedLead);
-    }, 1800);
+    document.getElementById('estStep2').style.display = 'none';
+    var sf = document.getElementById('estSuccessFlow');
+    sf.style.display = 'block';
+    var nameEl = document.getElementById('estSuccessName');
+    if(nameEl) nameEl.textContent = 'You\u2019re all set, ' + firstName + '!';
+    var summaryEl = document.getElementById('estConfirmSummary');
+    if(summaryEl) summaryEl.innerHTML =
+      '\u2705 Insurance type: ' + lead.insuranceType + '<br>' +
+      '\u2705 Estimated range: $' + _estLo + '\u2013$' + _estHi + '/mo<br>' +
+      '\u2705 We\u2019ll call you: ' + contactTime + '<br>' +
+      '\u2705 One agent &middot; Zero spam &middot; Completely free';
+    buildEstOptionalFields(lead.insuranceType);
+    sf.scrollIntoView({behavior:'smooth', block:'start'});
+  }
+
+  function buildEstOptionalFields(insuranceType) {
+    var fields = [];
+    if(insuranceType === 'Auto Insurance') {
+      fields = [
+        {type:'select', label:'Vehicle year', options:['Select vehicle year...','2020-2025','2015-2019','2010-2014','Before 2010']},
+        {type:'select', label:'Current insurer', options:['Select insurer...','GEICO','State Farm','Progressive','Allstate','Liberty Mutual','Other','No current insurance']},
+        {type:'select', label:'Any violations in last 3 years?', options:['Select...','No violations','1 violation','2+ violations']}
+      ];
+    } else if(insuranceType === 'Homeowners Insurance') {
+      fields = [
+        {type:'select', label:'Year home was built', options:['Select year...','2010 or newer','2000-2009','1990-1999','1980-1989','Before 1980']},
+        {type:'select', label:'Current insurer', options:['Select insurer...','State Farm','Allstate','Liberty Mutual','Travelers','USAA','Other','No current insurance']},
+        {type:'select', label:'Any claims in last 5 years?', options:['Select...','No claims','1 claim','2+ claims']}
+      ];
+    } else if(insuranceType === 'Life Insurance') {
+      fields = [
+        {type:'select', label:'Coverage type interested in', options:['Select...','Term Life','Whole Life','Not sure yet']},
+        {type:'select', label:'Coverage amount needed', options:['Select...','Under $100k','$100k-$250k','$250k-$500k','$500k-$1M','Over $1M']},
+        {type:'select', label:'Tobacco use?', options:['Select...','Non-smoker','Smoker','Former smoker']}
+      ];
+    } else if(insuranceType === 'Medicare') {
+      fields = [
+        {type:'select', label:'Currently on Medicare?', options:['Select...','Not yet \u2014 turning 65 soon','Yes \u2014 reviewing my plan','New to Medicare']},
+        {type:'select', label:'Plan type interested in?', options:['Select...','Medicare Supplement','Medicare Advantage','Not sure yet']},
+        {type:'text', label:'Any must-keep doctors?', placeholder:'Any must-keep doctors? (optional)'}
+      ];
+    } else if(insuranceType === 'Health Insurance') {
+      fields = [
+        {type:'select', label:'Coverage for?', options:['Select...','Just myself','Me and spouse','Family with children']},
+        {type:'select', label:'Current coverage?', options:['Select...','No coverage','Employer plan ending','COBRA','Marketplace plan','Other']},
+        {type:'select', label:'Preferred deductible?', options:['Select...','Low deductible (higher premium)','High deductible (lower premium)','No preference']}
+      ];
+    } else if(insuranceType === 'Renters Insurance') {
+      fields = [
+        {type:'select', label:'Property type?', options:['Select...','Apartment','House','Condo','Other']},
+        {type:'select', label:'Estimated value of belongings?', options:['Select...','Under $10k','$10k-$25k','$25k-$50k','Over $50k']},
+        {type:'select', label:'Any high value items?', options:['Select...','No','Yes \u2014 jewelry/electronics/art']}
+      ];
+    }
+    if(!fields.length) {
+      document.getElementById('estOptionalSection').style.display = 'none';
+      return;
+    }
+    var html = '';
+    fields.forEach(function(f) {
+      if(f.type === 'select') {
+        html += '<select class="est-contact-input" data-label="' + f.label + '" style="margin-bottom:9px;">'
+          + f.options.map(function(o, i){ return '<option value="' + (i === 0 ? '' : o) + '">' + o + '</option>'; }).join('')
+          + '</select>';
+      } else {
+        html += '<input type="text" class="est-contact-input" data-label="' + f.label + '" placeholder="' + (f.placeholder || f.label) + '" style="margin-bottom:9px;">';
+      }
+    });
+    document.getElementById('estOptionalFields').innerHTML = html;
+  }
+
+  async function submitEstOptional() {
+    if(!_lastSubmittedLead) return;
+    var extraData = { hasEnhancedData: true, enhancedSubmittedAt: new Date().toISOString() };
+    document.querySelectorAll('#estOptionalFields [data-label]').forEach(function(el) {
+      if(el.value && el.value.trim()) extraData[el.getAttribute('data-label')] = el.value.trim();
+    });
+    var btn = document.getElementById('estOptionalSubmitBtn');
+    if(btn) { btn.disabled = true; btn.textContent = 'Sending...'; }
+    try {
+      var res = await fetch('https://onecallshield-default-rtdb.firebaseio.com/leads/' + _lastSubmittedLead.id + '.json', {
+        method: 'PATCH', headers: {'Content-Type':'application/json'}, body: JSON.stringify(extraData)
+      });
+      if(res.ok) {
+        document.getElementById('estOptionalSection').style.display = 'none';
+        document.getElementById('estOptionalDoneIcon').textContent = '\uD83C\uDFAF';
+        document.getElementById('estOptionalDoneTitle').textContent = 'Your agent is fully prepared!';
+        document.getElementById('estOptionalDoneMsg').textContent = 'We\u2019ve sent your details to your matched agent. Expect a well-prepared call at your preferred time.';
+        document.getElementById('estOptionalDone').style.display = 'block';
+      } else {
+        if(btn) { btn.disabled = false; btn.textContent = 'Send This to My Agent \u2192'; }
+        alert('Could not save. Please try again.');
+      }
+    } catch(e) {
+      if(btn) { btn.disabled = false; btn.textContent = 'Send This to My Agent \u2192'; }
+      alert('Network error. Please try again.');
+    }
+  }
+
+  function skipEstOptional() {
+    document.getElementById('estOptionalSection').style.display = 'none';
+    document.getElementById('estOptionalDoneIcon').textContent = '\uD83D\uDEE1\uFE0F';
+    document.getElementById('estOptionalDoneTitle').textContent = 'All set!';
+    document.getElementById('estOptionalDoneMsg').textContent = 'Your agent will cover everything on the call. One agent. One call. Zero spam.';
+    document.getElementById('estOptionalDone').style.display = 'block';
   }
 
   document.getElementById('estContactTime').addEventListener('change', function() {
