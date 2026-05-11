@@ -90,6 +90,8 @@ tr:hover td{background:rgba(248,244,238,0.6);}
 .badge-rejected{background:var(--red-light);color:var(--red);}
 .badge-new{background:rgba(201,151,58,0.12);color:var(--gold);}
 .badge-matched{background:var(--green-light);color:var(--green);}
+.badge-quote-requested{background:rgba(217,119,6,0.12);color:var(--amber);}
+.badge-quotes-sent{background:rgba(37,99,235,0.1);color:#2563eb;}
 
 /* ─── ACTION BUTTONS ─────────────────────────────────────────────────────── */
 .action-btn{padding:0.32rem 0.75rem;border-radius:8px;font-size:0.76rem;font-weight:700;cursor:pointer;border:none;font-family:'DM Sans',sans-serif;transition:all 0.15s;white-space:nowrap;}
@@ -309,12 +311,24 @@ tr:hover td{background:rgba(248,244,238,0.6);}
 
       <!-- LEADS TAB -->
       <div class="tab-content" id="tab-leads">
+
+        <!-- Quote Requests Section -->
+        <div id="quoteRequestsSection" style="display:none;margin-bottom:1.5rem;">
+          <div class="section-header">
+            <h2>💬 Quote Requests <span id="qrCountBadge" style="background:rgba(217,119,6,0.15);color:var(--amber);font-size:0.75rem;font-weight:700;padding:0.15rem 0.55rem;border-radius:100px;margin-left:0.4rem;"></span></h2>
+            <span style="font-size:0.82rem;color:var(--text-muted);">Leads awaiting agent quotes or quote dispatch</span>
+          </div>
+          <div id="quoteRequestsList"></div>
+        </div>
+
         <div class="section-header">
           <h2>Consumer Leads</h2>
           <div class="filter-row">
             <button class="filter-btn active" onclick="filterLeads('all',this)">All</button>
             <button class="filter-btn" onclick="filterLeads('unmatched',this)">Unmatched</button>
             <button class="filter-btn" onclick="filterLeads('matched',this)">Matched</button>
+            <button class="filter-btn" onclick="filterLeads('quote_requested',this)">Quotes Pending</button>
+            <button class="filter-btn" onclick="filterLeads('quotes_sent',this)">Quotes Sent</button>
           </div>
         </div>
         <div class="table-wrap"><table><thead><tr><th>Name</th><th>Phone</th><th>Insurance</th><th>Age</th><th>ZIP</th><th>Contact Time</th><th>Submitted</th><th>Status</th><th>Action</th></tr></thead><tbody id="allLeadsTable"></tbody></table></div>
@@ -672,8 +686,16 @@ function timeAgo(iso){
   if(d>0)return d+'d ago';if(h>0)return h+'h ago';if(m>0)return m+'m ago';return 'Just now';
 }
 function statusBadge(s){
-  const cls={pending:'badge-pending',approved:'badge-approved',rejected:'badge-rejected',unmatched:'badge-new',matched:'badge-matched'};
-  const lbl={pending:'⏳ Pending',approved:'✅ Approved',rejected:'❌ Rejected',unmatched:'🆕 Unmatched',matched:'✅ Matched'};
+  const cls={
+    pending:'badge-pending',approved:'badge-approved',rejected:'badge-rejected',
+    unmatched:'badge-new',matched:'badge-matched',
+    quote_requested:'badge-quote-requested',quotes_sent:'badge-quotes-sent'
+  };
+  const lbl={
+    pending:'⏳ Pending',approved:'✅ Approved',rejected:'❌ Rejected',
+    unmatched:'🆕 Unmatched',matched:'✅ Matched',
+    quote_requested:'💬 Quotes Pending',quotes_sent:'📧 Quotes Sent'
+  };
   return `<span class="badge ${cls[s]||''}">${lbl[s]||s}</span>`;
 }
 function getStateFromZip(zip){
@@ -793,6 +815,7 @@ function renderAll(){
   renderAgentsCards('allAgentsCards',agents);
   renderMatched(matched,agents);
   renderRevenue(matched,agents);
+  renderQuoteRequests();
 }
 
 // ─── LEADS TABLE ─────────────────────────────────────────────────────────────
@@ -1437,6 +1460,98 @@ function confirmMatch(){
   }).catch(function(err){ console.error('Match error:',err); alert('Error. Please try again.'); });
 }
 
+// ─── QUOTE REQUESTS SECTION ───────────────────────────────────────────────────
+function renderQuoteRequests() {
+  const section = document.getElementById('quoteRequestsSection');
+  const list    = document.getElementById('quoteRequestsList');
+  const badge   = document.getElementById('qrCountBadge');
+  if(!section || !list) return;
+
+  const qrLeads = getLeads().filter(l => l.status === 'quote_requested' || l.status === 'quotes_sent');
+
+  if(!qrLeads.length) { section.style.display = 'none'; return; }
+  section.style.display = 'block';
+  if(badge) badge.textContent = qrLeads.length;
+
+  list.innerHTML = qrLeads.map(l => {
+    const quotes = l.quotes ? Object.values(l.quotes) : [];
+    const quoteCountBadge = `<span style="background:rgba(37,99,235,0.1);color:#2563eb;font-size:0.72rem;font-weight:700;padding:0.15rem 0.5rem;border-radius:100px;">${quotes.length} quote${quotes.length!==1?'s':''}</span>`;
+    const dispatchBtn = l.status === 'quote_requested' && quotes.length > 0
+      ? `<button onclick="event.stopPropagation();sendQuotesNow('${l.id}')" class="action-btn btn-approve" style="white-space:nowrap;">📧 Send Quotes Now</button>`
+      : '';
+    const viewQuotesBtn = quotes.length > 0
+      ? `<button onclick="event.stopPropagation();viewQuotes('${l.id}')" class="action-btn btn-view">👁 View Quotes (${quotes.length})</button>`
+      : '';
+
+    return `<div style="background:var(--white);border-radius:14px;padding:1rem 1.2rem;border:1px solid rgba(217,119,6,0.25);margin-bottom:0.7rem;display:flex;align-items:center;justify-content:space-between;gap:0.8rem;flex-wrap:wrap;cursor:pointer;" onclick="openLeadDetail('${l.id}')">
+      <div style="flex:1;min-width:0;">
+        <div style="display:flex;align-items:center;gap:0.5rem;flex-wrap:wrap;margin-bottom:0.2rem;">
+          <strong style="font-size:0.92rem;color:var(--navy);">${l.firstName} ${l.lastName}</strong>
+          ${statusBadge(l.status)}
+          ${quoteCountBadge}
+        </div>
+        <div style="font-size:0.8rem;color:var(--text-muted);">${l.insuranceType} · ${l.zip} · ${timeAgo(l.submittedAt)}</div>
+      </div>
+      <div style="display:flex;gap:0.4rem;flex-shrink:0;" onclick="event.stopPropagation()">
+        ${viewQuotesBtn}
+        ${dispatchBtn}
+      </div>
+    </div>`;
+  }).join('');
+}
+
+async function sendQuotesNow(leadId) {
+  if(!confirm('Send all submitted quotes to the consumer now?')) return;
+  const lead = getLeads().find(l => l.id === leadId);
+  if(!lead) return;
+  const quotes = lead.quotes ? Object.values(lead.quotes) : [];
+  if(!quotes.length) { alert('No quotes to send yet.'); return; }
+
+  await db.ref('leads/' + leadId).update({ quotesEmailSent: true, status: 'quotes_sent' });
+
+  workerPost({
+    type: 'quotes_ready_consumer',
+    lead: { id: leadId, firstName: lead.firstName, email: lead.email, insuranceType: lead.insuranceType },
+    quotes: quotes.map(q => ({
+      agentId: q.agentId, agentName: q.agentName, agentAgency: q.agentAgency || '',
+      rate: q.rate, carrier: q.carrier, sellingPoint: q.sellingPoint || ''
+    }))
+  }).catch(() => {});
+
+  alert('✅ Quotes sent to ' + lead.firstName + '!');
+}
+
+function viewQuotes(leadId) {
+  const lead = getLeads().find(l => l.id === leadId);
+  if(!lead) return;
+  const quotes = lead.quotes ? Object.values(lead.quotes) : [];
+  if(!quotes.length) { alert('No quotes submitted yet.'); return; }
+
+  const content = document.getElementById('leadDetailContent');
+  content.innerHTML = `
+    <div style="padding:0 0 1rem;">
+      <div style="font-family:'Fraunces',serif;font-size:1.1rem;color:var(--navy);font-weight:700;margin-bottom:1rem;">
+        Submitted Quotes — ${lead.firstName} ${lead.lastName}
+      </div>
+      ${quotes.map(q => `
+        <div style="background:var(--cream);border-radius:12px;padding:1rem;margin-bottom:0.7rem;">
+          <div style="font-weight:700;color:var(--navy);font-size:0.95rem;margin-bottom:0.3rem;">${q.agentName} · ${q.agentAgency||'Independent'}</div>
+          <div style="font-size:0.85rem;color:var(--text-muted);margin-bottom:0.5rem;">${q.agentEmail}</div>
+          <div style="display:flex;gap:0.6rem;flex-wrap:wrap;">
+            <span style="background:rgba(201,151,58,0.12);color:var(--gold);font-weight:700;padding:0.2rem 0.6rem;border-radius:100px;font-size:0.8rem;">${q.rate}</span>
+            <span style="background:var(--white);color:var(--navy);padding:0.2rem 0.6rem;border-radius:100px;font-size:0.8rem;border:1px solid var(--border);">${q.carrier}</span>
+          </div>
+          ${q.sellingPoint ? `<div style="font-size:0.83rem;color:var(--text);margin-top:0.5rem;font-style:italic;">"${q.sellingPoint}"</div>` : ''}
+          <div style="font-size:0.73rem;color:var(--text-muted);margin-top:0.4rem;">${timeAgo(q.submittedAt)}</div>
+          ${lead.selectedQuote === q.agentId ? `<div style="margin-top:0.5rem;background:var(--green-light);color:var(--green);font-size:0.78rem;font-weight:700;padding:0.2rem 0.6rem;border-radius:100px;display:inline-block;">🏆 Selected by Consumer</div>` : ''}
+        </div>
+      `).join('')}
+      <button onclick="document.getElementById('leadDetailModal').classList.remove('open')" style="width:100%;background:var(--cream-dark);color:var(--navy);border:none;padding:0.85rem;border-radius:10px;font-weight:700;cursor:pointer;font-family:'DM Sans',sans-serif;margin-top:0.5rem;">Close</button>
+    </div>
+  `;
+  document.getElementById('leadDetailModal').classList.add('open');
+}
+
 // ─── FILTERS ──────────────────────────────────────────────────────────────────
 function filterLeads(filter,btn){
   document.querySelectorAll('#tab-leads .filter-btn').forEach(b=>b.classList.remove('active'));
@@ -1469,6 +1584,7 @@ window.confirmMatch=confirmMatch;window.selectMatchAgent=selectMatchAgent;
 window.saveAgentPassword=saveAgentPassword;window.saveAgentTypes=saveAgentTypes;
 window.saveAgentStates=saveAgentStates;window.generatePassword=generatePassword;
 window.closeModal=closeModal;window.filterLeads=filterLeads;window.filterAgents=filterAgents;
+window.sendQuotesNow=sendQuotesNow;window.viewQuotes=viewQuotes;window.renderQuoteRequests=renderQuoteRequests;
 window.changeAdminPassword=changeAdminPassword;window.syncAllLeadsToKV=syncAllLeadsToKV;
 
 // ─── MIGRATE LOCAL DATA TO FIREBASE ──────────────────────────────────────────

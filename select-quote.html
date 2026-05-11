@@ -1,0 +1,398 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-database-compat.js"></script>
+<script async src="https://www.googletagmanager.com/gtag/js?id=AW-18074640566"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+  gtag('config', 'AW-18074640566');
+</script>
+<script>
+!function (w, d, t) {
+  w.TiktokAnalyticsObject=t;var ttq=w[t]=w[t]||[];ttq.methods=["page","track","identify","instances","debug","on","off","once","ready","alias","group","enableCookie","disableCookie","holdConsent","revokeConsent","grantConsent"],ttq.setAndDefer=function(t,e){t[e]=function(){t.push([e].concat(Array.prototype.slice.call(arguments,0)))}};for(var i=0;i<ttq.methods.length;i++)ttq.setAndDefer(ttq,ttq.methods[i]);ttq.instance=function(t){for(var e=ttq._i[t]||[],n=0;n<ttq.methods.length;n++)ttq.setAndDefer(e,ttq.methods[n]);return e},ttq.load=function(e,n){var r="https://analytics.tiktok.com/i18n/pixel/events.js",o=n&&n.partner;ttq._i=ttq._i||{},ttq._i[e]=[],ttq._i[e]._u=r,ttq._t=ttq._t||{},ttq._t[e]=+new Date,ttq._o=ttq._o||{},ttq._o[e]=n||{};n=document.createElement("script");n.type="text/javascript",n.async=!0,n.src=r+"?sdkid="+e+"&lib="+t;e=document.getElementsByTagName("script")[0];e.parentNode.insertBefore(n,e)};
+  ttq.load('D7LOPK3C77U6PFPAGSN0');
+  ttq.page();
+}(window, document, 'ttq');
+</script>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Select Your Quote — OneCallShield</title>
+<meta name="robots" content="noindex, nofollow">
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,600;0,9..144,700&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{--navy:#0d1f3c;--navy-mid:#1a3460;--gold:#c9973a;--gold-light:#e8b96a;--cream:#f8f4ee;--cream-dark:#ede7dc;--white:#fff;--text:#1a1a2e;--text-muted:#5a6480;--green:#2d7a4f;--green-light:#e8f5ee;--red:#c0392b;--border:rgba(13,31,60,0.08);}
+*{margin:0;padding:0;box-sizing:border-box;}
+body{font-family:'DM Sans',sans-serif;background:var(--cream);color:var(--text);min-height:100vh;}
+nav{background:var(--navy);height:64px;padding:0 5%;display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid rgba(201,151,58,0.2);position:sticky;top:0;z-index:50;}
+.nav-logo{font-family:'Fraunces',serif;font-size:1.15rem;font-weight:700;color:#fff;display:flex;align-items:center;gap:0.5rem;text-decoration:none;}
+.nav-logo span{color:var(--gold);}
+.page-wrap{max-width:620px;margin:0 auto;padding:2.5rem 5%;}
+.card{background:var(--white);border-radius:20px;border:1px solid var(--border);overflow:hidden;box-shadow:0 4px 24px rgba(13,31,60,0.07);}
+.card-header{background:linear-gradient(135deg,var(--navy),var(--navy-mid));padding:1.8rem 2rem;}
+.card-header h1{font-family:'Fraunces',serif;color:#fff;font-size:1.4rem;font-weight:700;margin-bottom:0.3rem;}
+.card-header p{color:rgba(255,255,255,0.55);font-size:0.88rem;}
+.card-body{padding:1.8rem 2rem;}
+.section-label{font-size:0.7rem;font-weight:700;color:var(--text-muted);text-transform:uppercase;letter-spacing:0.07em;margin-bottom:0.8rem;}
+.agent-card{background:var(--cream);border-radius:14px;padding:1.3rem;margin-bottom:1.2rem;}
+.agent-name{font-family:'Fraunces',serif;font-size:1.15rem;font-weight:700;color:var(--navy);margin-bottom:0.15rem;}
+.agent-agency{font-size:0.85rem;color:var(--text-muted);margin-bottom:0.8rem;}
+.agent-rate{font-family:'Fraunces',serif;font-size:1.8rem;font-weight:700;color:var(--gold);line-height:1;}
+.agent-rate-sub{font-size:0.8rem;color:var(--text-muted);margin-top:0.2rem;}
+.agent-carrier{display:inline-block;background:rgba(201,151,58,0.12);color:var(--navy);font-size:0.8rem;font-weight:700;padding:0.2rem 0.6rem;border-radius:100px;margin-top:0.5rem;}
+.agent-point{background:#fff;border-left:3px solid var(--gold);border-radius:0 8px 8px 0;padding:0.7rem 0.9rem;margin-top:0.8rem;font-size:0.88rem;color:var(--text);font-style:italic;}
+.summary-grid{display:grid;grid-template-columns:1fr 1fr;gap:0.6rem;margin-bottom:1.2rem;}
+.summary-item{background:var(--cream);border-radius:10px;padding:0.8rem 1rem;}
+.summary-label{font-size:0.68rem;text-transform:uppercase;letter-spacing:0.06em;color:var(--text-muted);font-weight:700;margin-bottom:0.25rem;}
+.summary-value{font-size:0.92rem;color:var(--navy);font-weight:700;}
+.guarantees{background:linear-gradient(135deg,var(--navy),var(--navy-mid));border-radius:14px;padding:1.3rem 1.5rem;margin-bottom:1.5rem;border:1px solid rgba(201,151,58,0.2);}
+.guarantees-title{font-family:'Fraunces',serif;color:var(--gold);font-size:0.95rem;font-weight:700;margin-bottom:0.9rem;}
+.guarantee-item{display:flex;align-items:flex-start;gap:0.6rem;margin-bottom:0.6rem;font-size:0.85rem;color:rgba(255,255,255,0.8);}
+.guarantee-item:last-child{margin-bottom:0;}
+.guarantee-icon{flex-shrink:0;font-size:1rem;margin-top:0.05rem;}
+.confirm-btn{width:100%;background:var(--gold);color:var(--navy);border:none;padding:1.1rem;border-radius:14px;font-size:1.05rem;font-weight:700;cursor:pointer;font-family:'DM Sans',sans-serif;transition:background 0.2s;letter-spacing:0.01em;}
+.confirm-btn:hover{background:var(--gold-light);}
+.confirm-btn:disabled{background:var(--cream-dark);color:var(--text-muted);cursor:not-allowed;}
+.divider{height:1px;background:var(--border);margin:1.2rem 0;}
+/* Loading state */
+.loading-state{text-align:center;padding:4rem 2rem;}
+.loading-spinner{width:42px;height:42px;border:3px solid var(--cream-dark);border-top-color:var(--gold);border-radius:50%;animation:spin 0.7s linear infinite;margin:0 auto 1rem;}
+@keyframes spin{to{transform:rotate(360deg);}}
+/* Error state */
+.error-state{text-align:center;padding:3rem 2rem;}
+.error-icon{font-size:3.5rem;margin-bottom:1rem;}
+/* Success state */
+.success-state{text-align:center;padding:2rem;}
+.success-icon{width:72px;height:72px;background:var(--green-light);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:2rem;margin:0 auto 1.2rem;}
+.success-title{font-family:'Fraunces',serif;font-size:1.5rem;color:var(--navy);font-weight:700;margin-bottom:0.5rem;}
+.success-sub{color:var(--text-muted);font-size:0.92rem;line-height:1.6;margin-bottom:1.5rem;}
+.success-agent-box{background:var(--cream);border-radius:14px;padding:1.2rem;margin-bottom:1.5rem;text-align:left;}
+.success-agent-box .label{font-size:0.7rem;font-weight:700;text-transform:uppercase;letter-spacing:0.06em;color:var(--text-muted);margin-bottom:0.3rem;}
+.success-agent-box .value{font-size:1rem;color:var(--navy);font-weight:700;}
+.protection-box{background:linear-gradient(135deg,var(--navy),var(--navy-mid));border:1px solid rgba(201,151,58,0.3);border-radius:14px;padding:1.2rem 1.5rem;margin-bottom:1.5rem;text-align:left;}
+.protection-box-title{color:var(--gold);font-family:'Fraunces',serif;font-size:0.95rem;font-weight:700;margin-bottom:0.5rem;}
+.protection-box p{color:rgba(255,255,255,0.7);font-size:0.85rem;line-height:1.6;margin:0;}
+.already-selected{text-align:center;padding:2rem;}
+.already-title{font-family:'Fraunces',serif;font-size:1.3rem;color:var(--navy);font-weight:700;margin-bottom:0.5rem;}
+.already-sub{color:var(--text-muted);font-size:0.9rem;line-height:1.6;}
+@media(max-width:480px){
+  .card-header{padding:1.4rem 1.3rem;}
+  .card-body{padding:1.4rem 1.3rem;}
+  .summary-grid{grid-template-columns:1fr;}
+  .agent-rate{font-size:1.5rem;}
+}
+</style>
+</head>
+<body>
+
+<nav>
+  <a href="/" class="nav-logo">
+    <svg width="20" height="24" viewBox="204 42 272 402"><defs><linearGradient id="lg" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#243f6e"/><stop offset="100%" stop-color="#0a1828"/></linearGradient><linearGradient id="gg" x1="0" y1="0" x2="1" y2="1"><stop offset="0%" stop-color="#f5d285"/><stop offset="50%" stop-color="#c9973a"/><stop offset="100%" stop-color="#e8b96a"/></linearGradient></defs><path d="M340 42 L476 90 L476 276 Q476 378 340 442 Q204 378 204 276 L204 90 Z" fill="url(#gg)"/><path d="M340 58 L462 102 L462 274 Q462 364 340 422 Q218 364 218 274 L218 102 Z" fill="url(#lg)"/></svg>
+    OneCall<span>Shield</span>
+  </a>
+  <span style="font-size:0.78rem;color:rgba(255,255,255,0.4);">Secure Quote Selection</span>
+</nav>
+
+<div class="page-wrap">
+  <div class="card" id="mainCard">
+    <div class="loading-state" id="loadingState">
+      <div class="loading-spinner"></div>
+      <p style="color:var(--text-muted);font-size:0.92rem;">Loading your quote…</p>
+    </div>
+  </div>
+</div>
+
+<script>
+// ─── FIREBASE ─────────────────────────────────────────────────────────────────
+firebase.initializeApp({
+  apiKey: "AIzaSyBoEo4t1s-yPmVYo2fCRzZWnD_ApS2mUMo",
+  authDomain: "onecallshield.firebaseapp.com",
+  databaseURL: "https://onecallshield-default-rtdb.firebaseio.com",
+  projectId: "onecallshield",
+  storageBucket: "onecallshield.firebasestorage.app",
+  messagingSenderId: "1020973095687",
+  appId: "1:1020973095687:web:713cf8942241b59e3ac3a2"
+});
+const db = firebase.database();
+const WORKER = 'https://onecallshield-emails.chris-santoro55.workers.dev';
+
+var _lead = null;
+var _agent = null;
+var _quote = null;
+var _leadId = null;
+var _agentId = null;
+
+// ─── INIT ──────────────────────────────────────────────────────────────────────
+window.addEventListener('DOMContentLoaded', function() {
+  const params = new URLSearchParams(window.location.search);
+  _leadId  = params.get('lead');
+  _agentId = params.get('quote');
+
+  if(!_leadId || !_agentId) {
+    showError('Invalid link. This URL appears to be incomplete or expired.');
+    return;
+  }
+
+  Promise.all([
+    db.ref('leads/' + _leadId).once('value'),
+    db.ref('agents/' + _agentId).once('value')
+  ]).then(function(snaps) {
+    const lead  = snaps[0].val();
+    const agent = snaps[1].val();
+
+    if(!lead) { showError('Lead not found. This link may have expired.'); return; }
+    if(!agent) { showError('Agent not found. Please contact support.'); return; }
+
+    _lead  = lead;
+    _agent = agent;
+    _quote = (lead.quotes || {})[_agentId] || null;
+
+    if(!_quote) { showError('This quote is no longer available.'); return; }
+
+    if(lead.selectedQuote) {
+      if(lead.selectedQuote === _agentId) {
+        showAlreadySelected(true, agent);
+      } else {
+        showAlreadySelected(false, agent);
+      }
+      return;
+    }
+
+    showConfirmation(lead, agent, _quote);
+  }).catch(function(err) {
+    showError('Unable to load quote data. Please try again or contact support.');
+    console.error(err);
+  });
+});
+
+// ─── SHOW CONFIRMATION ────────────────────────────────────────────────────────
+function showConfirmation(lead, agent, quote) {
+  var card = document.getElementById('mainCard');
+  var typeEmoji = {'Auto Insurance':'🚗','Homeowners Insurance':'🏠','Renters Insurance':'🏢','Life Insurance':'❤️','Health Insurance':'🏥','Medicare':'💊'}[lead.insuranceType] || '📋';
+
+  card.innerHTML = `
+    <div class="card-header">
+      <h1>Confirm Your Quote Selection</h1>
+      <p>Review the details below, then click confirm to lock in this agent.</p>
+    </div>
+    <div class="card-body">
+
+      <div class="section-label">Your Selected Agent</div>
+      <div class="agent-card">
+        <div class="agent-name">${agent.firstName} ${agent.lastName}</div>
+        <div class="agent-agency">${agent.agency || 'Independent Agent'} · Licensed Insurance Specialist</div>
+        <div class="agent-rate">${quote.rate}</div>
+        <div class="agent-rate-sub">per month estimate</div>
+        <div><span class="agent-carrier">${quote.carrier}</span></div>
+        ${quote.sellingPoint ? `<div class="agent-point">💬 "${quote.sellingPoint}"</div>` : ''}
+      </div>
+
+      <div class="divider"></div>
+
+      <div class="section-label">Your Request Summary</div>
+      <div class="summary-grid">
+        <div class="summary-item">
+          <div class="summary-label">Insurance Type</div>
+          <div class="summary-value">${typeEmoji} ${lead.insuranceType}</div>
+        </div>
+        <div class="summary-item">
+          <div class="summary-label">Your Age</div>
+          <div class="summary-value">${lead.age || '—'}</div>
+        </div>
+        <div class="summary-item">
+          <div class="summary-label">ZIP Code</div>
+          <div class="summary-value">${lead.zip}</div>
+        </div>
+        <div class="summary-item">
+          <div class="summary-label">Coverage Level</div>
+          <div class="summary-value">${lead.coverageLevel || 'Standard'}</div>
+        </div>
+      </div>
+
+      <div class="divider"></div>
+
+      <div class="guarantees">
+        <div class="guarantees-title">🛡️ Your Guarantees When You Confirm</div>
+        <div class="guarantee-item"><span class="guarantee-icon">✅</span><span>Only <strong>${agent.firstName} ${agent.lastName}</strong> receives your contact information — no other agents</span></div>
+        <div class="guarantee-item"><span class="guarantee-icon">🚫</span><span>Your information is <strong>never sold</strong> to call centers or data brokers</span></div>
+        <div class="guarantee-item"><span class="guarantee-icon">📞</span><span>Expect a call from ${agent.firstName} within a few hours of confirming</span></div>
+        <div class="guarantee-item"><span class="guarantee-icon">💰</span><span>This service is <strong>completely free</strong> for consumers — agents pay, you don't</span></div>
+      </div>
+
+      <button class="confirm-btn" id="confirmBtn" onclick="confirmSelection()">
+        ✅ Confirm — Connect Me with ${agent.firstName}
+      </button>
+
+      <p style="text-align:center;font-size:0.78rem;color:var(--text-muted);margin-top:0.8rem;">
+        By confirming, you authorize OneCallShield to share your contact information with ${agent.firstName} ${agent.lastName}.
+      </p>
+    </div>
+  `;
+}
+
+// ─── CONFIRM SELECTION ────────────────────────────────────────────────────────
+function confirmSelection() {
+  var btn = document.getElementById('confirmBtn');
+  btn.disabled = true;
+  btn.textContent = 'Confirming…';
+
+  var now = new Date().toISOString();
+
+  // Update lead in Firebase
+  var updates = {
+    status: 'matched',
+    selectedQuote: _agentId,
+    selectedAgentId: _agentId,
+    matchedAt: now,
+    matchedAgentName: _agent.firstName + ' ' + _agent.lastName,
+    matchedAgentEmail: _agent.email,
+    matchedAgentAgency: _agent.agency || '',
+    matchedRate: _quote.rate,
+    matchedCarrier: _quote.carrier,
+    agentEmail: _agent.email,
+    agentFirstName: _agent.firstName,
+    agentLastName: _agent.lastName
+  };
+
+  db.ref('leads/' + _leadId).update(updates).then(function() {
+    // Email winning agent with full consumer contact info
+    fetch(WORKER, {
+      method: 'POST',
+      headers: {'Content-Type':'application/json'},
+      body: JSON.stringify({
+        type: 'quote_selected_agent',
+        agent: {
+          firstName: _agent.firstName,
+          lastName: _agent.lastName,
+          email: _agent.email,
+          agency: _agent.agency || ''
+        },
+        lead: {
+          id: _leadId,
+          firstName: _lead.firstName,
+          lastName: _lead.lastName,
+          phone: _lead.phone,
+          email: _lead.email,
+          insuranceType: _lead.insuranceType,
+          age: _lead.age,
+          zip: _lead.zip
+        },
+        quote: _quote
+      })
+    }).catch(function(){});
+
+    // Email consumer confirmation
+    fetch(WORKER, {
+      method: 'POST',
+      headers: {'Content-Type':'application/json'},
+      body: JSON.stringify({
+        type: 'quote_selected_consumer',
+        agent: {
+          firstName: _agent.firstName,
+          lastName: _agent.lastName,
+          agency: _agent.agency || ''
+        },
+        lead: {
+          firstName: _lead.firstName,
+          email: _lead.email,
+          insuranceType: _lead.insuranceType
+        }
+      })
+    }).catch(function(){});
+
+    // Fire conversion events
+    if(typeof gtag === 'function') {
+      gtag('event', 'conversion', {'send_to': 'AW-18074640566/sLzxCIr3wJgcELbB1KpD', 'value': 1.0, 'currency': 'USD'});
+    }
+    if(typeof ttq !== 'undefined') {
+      ttq.track('CompleteRegistration', {value: 1.0, currency: 'USD'});
+    }
+
+    showSuccess();
+  }).catch(function(err) {
+    btn.disabled = false;
+    btn.textContent = '✅ Confirm — Connect Me with ' + _agent.firstName;
+    alert('Something went wrong. Please try again.\n' + err.message);
+  });
+}
+
+// ─── SUCCESS STATE ─────────────────────────────────────────────────────────────
+function showSuccess() {
+  var card = document.getElementById('mainCard');
+  card.innerHTML = `
+    <div class="card-body">
+      <div class="success-state">
+        <div class="success-icon">✅</div>
+        <div class="success-title">You're All Set, ${_lead.firstName}!</div>
+        <div class="success-sub">
+          You've selected <strong>${_agent.firstName} ${_agent.lastName}</strong> as your agent.<br>
+          They'll be calling you soon to finalize your <strong>${_lead.insuranceType}</strong> coverage.
+        </div>
+
+        <div class="success-agent-box">
+          <div class="label">Your Agent</div>
+          <div class="value">${_agent.firstName} ${_agent.lastName}</div>
+          <div style="font-size:0.82rem;color:var(--text-muted);margin-top:0.2rem;">${_agent.agency || 'Independent Agent'}</div>
+          <div style="margin-top:0.7rem;"><div class="label">Quoted Rate</div><div style="font-family:'Fraunces',serif;font-size:1.2rem;color:var(--gold);font-weight:700;">${_quote.rate}<span style="font-family:'DM Sans',sans-serif;font-size:0.78rem;color:var(--text-muted);font-weight:400;"> /month</span></div></div>
+          <div style="margin-top:0.5rem;"><div class="label">Carrier</div><div class="value" style="font-size:0.9rem;">${_quote.carrier}</div></div>
+        </div>
+
+        <div class="protection-box">
+          <div class="protection-box-title">🛡️ Your Number Is Protected</div>
+          <p>Only ${_agent.firstName} has your contact information. Your number will never be sold to call centers or other agents. OneCallShield takes your privacy seriously.</p>
+        </div>
+
+        <div style="background:var(--cream);border-radius:12px;padding:1rem;margin-bottom:1.2rem;text-align:left;">
+          <div style="font-size:0.78rem;font-weight:700;color:var(--navy);margin-bottom:0.6rem;">What to Have Ready When They Call:</div>
+          <div style="font-size:0.85rem;color:var(--text-muted);line-height:1.8;">
+            ✓ Your current policy info (if any)<br>
+            ✓ Questions about coverage or pricing<br>
+            ✓ Payment method if you want same-day coverage
+          </div>
+        </div>
+
+        <a href="/" style="display:block;width:100%;background:var(--navy);color:#fff;padding:0.85rem;border-radius:12px;font-weight:700;font-size:0.92rem;text-align:center;text-decoration:none;">Return to OneCallShield →</a>
+      </div>
+    </div>
+  `;
+}
+
+// ─── ALREADY SELECTED STATE ───────────────────────────────────────────────────
+function showAlreadySelected(isThisAgent, agent) {
+  var card = document.getElementById('mainCard');
+  card.innerHTML = `
+    <div class="card-body">
+      <div class="already-selected">
+        ${isThisAgent
+          ? `<div style="font-size:3rem;margin-bottom:1rem;">✅</div>
+             <div class="already-title">Already Confirmed!</div>
+             <div class="already-sub">You've already selected ${agent.firstName} ${agent.lastName} as your agent. They'll be calling you soon. Check your email for confirmation details.</div>`
+          : `<div style="font-size:3rem;margin-bottom:1rem;">⛔</div>
+             <div class="already-title">Quote No Longer Available</div>
+             <div class="already-sub">You've already selected an agent from your quote options. Only one agent can be confirmed per request.<br><br>Check your email for your confirmation and agent contact details.</div>`
+        }
+        <a href="/" style="display:inline-block;background:var(--navy);color:#fff;padding:0.8rem 1.8rem;border-radius:12px;font-weight:700;font-size:0.9rem;text-decoration:none;margin-top:1.5rem;">Go to OneCallShield →</a>
+      </div>
+    </div>
+  `;
+}
+
+// ─── ERROR STATE ──────────────────────────────────────────────────────────────
+function showError(msg) {
+  var card = document.getElementById('mainCard');
+  card.innerHTML = `
+    <div class="card-body">
+      <div class="error-state">
+        <div class="error-icon">⚠️</div>
+        <div style="font-family:'Fraunces',serif;font-size:1.2rem;color:var(--navy);font-weight:700;margin-bottom:0.5rem;">Something Went Wrong</div>
+        <p style="color:var(--text-muted);font-size:0.9rem;line-height:1.6;margin-bottom:1.5rem;">${msg}</p>
+        <a href="mailto:info@onecallshield.com" style="display:inline-block;background:var(--gold);color:var(--navy);padding:0.8rem 1.8rem;border-radius:12px;font-weight:700;font-size:0.9rem;text-decoration:none;">Contact Support</a>
+      </div>
+    </div>
+  `;
+}
+</script>
+</body>
+</html>

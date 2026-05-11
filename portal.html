@@ -260,6 +260,35 @@ tr.lead-row:hover td{background:rgba(201,151,58,0.04);}
 .empty-shield{font-size:4rem;animation:pulse 2s ease-in-out infinite;display:block;margin-bottom:1rem;}
 @keyframes pulse{0%,100%{transform:scale(1);opacity:1;}50%{transform:scale(1.08);opacity:0.8;}}
 .sync-indicator{font-size:0.72rem;color:var(--text-muted);text-align:right;margin-top:0.3rem;}
+/* ── QUOTE REQUESTS TAB ── */
+.qr-card{background:var(--white);border-radius:16px;padding:1.5rem;border:1px solid var(--border);margin-bottom:1.2rem;box-shadow:0 2px 8px rgba(13,31,60,0.04);}
+.qr-card-header{display:flex;align-items:flex-start;justify-content:space-between;gap:0.8rem;margin-bottom:1rem;flex-wrap:wrap;}
+.qr-card-title{font-family:'Fraunces',serif;font-size:1rem;color:var(--navy);font-weight:700;}
+.qr-card-meta{font-size:0.78rem;color:var(--text-muted);margin-top:0.2rem;}
+.qr-timer{background:rgba(217,119,6,0.12);color:var(--amber);font-size:0.78rem;font-weight:700;padding:0.25rem 0.7rem;border-radius:100px;white-space:nowrap;}
+.qr-timer.expired{background:rgba(192,57,43,0.1);color:var(--red);}
+.qr-details{display:flex;flex-wrap:wrap;gap:0.5rem;margin-bottom:1rem;}
+.qr-detail-pill{background:var(--cream);border-radius:8px;padding:0.35rem 0.7rem;font-size:0.78rem;color:var(--navy);font-weight:600;}
+.qr-detail-pill span{color:var(--text-muted);font-weight:400;margin-right:0.25rem;}
+.qsf-label{display:block;font-size:0.72rem;font-weight:700;color:var(--text-muted);text-transform:uppercase;letter-spacing:0.06em;margin-bottom:0.3rem;}
+.qsf-input{width:100%;background:var(--cream);border:1.5px solid rgba(13,31,60,0.1);border-radius:8px;padding:0.7rem 0.9rem;font-size:0.92rem;font-family:'DM Sans',sans-serif;color:var(--navy);outline:none;transition:border-color 0.2s;box-sizing:border-box;}
+.qsf-input:focus{border-color:var(--gold);}
+.qsf-row{display:grid;grid-template-columns:1fr 1fr;gap:0.7rem;margin-bottom:0.7rem;}
+.qsf-full{margin-bottom:0.7rem;}
+.qsf-submit-btn{width:100%;background:var(--gold);color:var(--navy);border:none;padding:0.85rem;border-radius:10px;font-size:0.95rem;font-weight:700;cursor:pointer;font-family:'DM Sans',sans-serif;margin-top:0.5rem;transition:background 0.2s;}
+.qsf-submit-btn:hover{background:var(--gold-light);}
+.qsf-submit-btn:disabled{background:var(--cream-dark);color:var(--text-muted);cursor:not-allowed;}
+.qr-submitted-badge{background:var(--green-light);color:var(--green);font-size:0.8rem;font-weight:700;padding:0.3rem 0.8rem;border-radius:100px;display:inline-flex;align-items:center;gap:0.3rem;}
+.qr-submitted-detail{font-size:0.85rem;color:var(--text-muted);margin-top:0.5rem;}
+.qr-section-title{font-family:'Fraunces',serif;font-size:1.1rem;color:var(--navy);font-weight:700;margin-bottom:1rem;}
+.qr-empty{text-align:center;padding:3rem 1rem;background:var(--white);border-radius:16px;border:1px solid var(--border);}
+.qr-empty-icon{font-size:3rem;margin-bottom:0.8rem;}
+.qr-empty-text{font-size:0.92rem;color:var(--text-muted);}
+.qr-my-quote{background:var(--cream);border-radius:12px;padding:1rem;margin-top:0.8rem;border-left:3px solid var(--gold);}
+.qr-my-quote-label{font-size:0.7rem;font-weight:700;color:var(--text-muted);text-transform:uppercase;letter-spacing:0.06em;margin-bottom:0.5rem;}
+.qr-my-quote-row{display:flex;justify-content:space-between;font-size:0.87rem;padding:0.2rem 0;color:var(--navy);}
+.qr-my-quote-row span:first-child{color:var(--text-muted);}
+.qr-selected-badge{background:rgba(201,151,58,0.12);color:var(--gold);font-size:0.78rem;font-weight:700;padding:0.25rem 0.65rem;border-radius:100px;}
 .login-screen{background:linear-gradient(135deg,#0d1f3c 0%,#1a3460 50%,#0d1f3c 100%);background-size:400% 400%;animation:gradientShift 8s ease infinite;}
 @keyframes gradientShift{0%{background-position:0% 50%;}50%{background-position:100% 50%;}100%{background-position:0% 50%;}}
 .login-card{box-shadow:0 30px 70px rgba(0,0,0,0.45);}
@@ -368,6 +397,7 @@ tr.lead-row:hover td{background:rgba(201,151,58,0.04);}
     <!-- Tabs -->
     <div class="tabs">
       <button class="tab-btn active" onclick="switchTab('leads',this)">🎯 My Leads <span class="tab-badge" id="leadsTabBadge" style="display:none;"></span></button>
+      <button class="tab-btn" onclick="switchTab('requests',this)">🔔 Quote Requests <span class="tab-badge" id="requestsBadge" style="display:none;"></span></button>
       <button class="tab-btn" onclick="switchTab('pipeline',this)">📊 Pipeline</button>
       <button class="tab-btn" onclick="switchTab('stats',this)">📈 Performance</button>
       <button class="tab-btn" onclick="switchTab('profile',this)">👤 Profile</button>
@@ -412,6 +442,26 @@ tr.lead-row:hover td{background:rgba(201,151,58,0.04);}
       <div id="mobileLeadCards"></div>
       <div class="pipeline-wrap" id="pipelineWrap">
         <div class="pipeline-board" id="pipelineBoard"></div>
+      </div>
+    </div>
+
+    <!-- QUOTE REQUESTS TAB -->
+    <div class="tab-panel" id="portal-requests">
+      <div class="section-header" style="margin-bottom:1.5rem;">
+        <h2>🔔 Quote Requests</h2>
+        <span style="font-size:0.82rem;color:var(--text-muted);">Submit competitive quotes within 2 hours of each request</span>
+      </div>
+
+      <!-- Section A: Active requests -->
+      <div id="qrActiveSection">
+        <div class="qr-section-title">⏰ Active Requests</div>
+        <div id="qrActiveList"></div>
+      </div>
+
+      <!-- Section B: Your submitted quotes -->
+      <div style="margin-top:2rem;">
+        <div class="qr-section-title">📋 My Submitted Quotes</div>
+        <div id="qrSubmittedList"></div>
       </div>
     </div>
 
@@ -604,6 +654,11 @@ tr.lead-row:hover td{background:rgba(201,151,58,0.04);}
       <span class="mob-nav-label">Leads</span>
       <span class="mob-nav-badge" id="mobBadgeLeads"></span>
     </button>
+    <button class="mob-nav-btn" onclick="switchTab('requests',this);setMobNav(this)">
+      <span class="mob-nav-icon">🔔</span>
+      <span class="mob-nav-label">Quotes</span>
+      <span class="mob-nav-badge" id="mobBadgeRequests"></span>
+    </button>
     <button class="mob-nav-btn" onclick="switchTab('pipeline',this);setMobNav(this)">
       <span class="mob-nav-icon">📊</span>
       <span class="mob-nav-label">Pipeline</span>
@@ -703,6 +758,7 @@ const db = firebase.database();
 const ALL_STATES=['AL','AK','AZ','AR','CA','CO','CT','DE','FL','GA','HI','ID','IL','IN','IA','KS','KY','LA','ME','MD','MA','MI','MN','MS','MO','MT','NE','NV','NH','NJ','NM','NY','NC','ND','OH','OK','OR','PA','RI','SC','SD','TN','TX','UT','VT','VA','WA','WV','WI','WY'];
 const ALL_TYPES=['Auto Insurance','Homeowners Insurance','Renters Insurance','Life Insurance','Health Insurance','Medicare','Other'];
 const LEAD_PRICES={'Auto Insurance':25,'Homeowners Insurance':35,'Renters Insurance':20,'Life Insurance':50,'Health Insurance':45,'Medicare':50,'Other':30};
+const WORKER_URL = 'https://onecallshield-emails.chris-santoro55.workers.dev';
 const TYPE_EMOJIS={'Auto Insurance':'🚗','Homeowners Insurance':'🏠','Renters Insurance':'🏢','Life Insurance':'❤️','Health Insurance':'🏥','Medicare':'💊','Other':'📋'};
 const RATING_LABELS={1:'Poor',2:'Fair',3:'Good',4:'Very Good',5:'Excellent'};
 const SCRIPTS={
@@ -873,6 +929,7 @@ function loadMyLeads() {
     checkNewLeads();
     const si = document.getElementById('syncIndicator');
     if(si) si.textContent = '🔄 Live — last updated ' + new Date().toLocaleTimeString([],{hour:'2-digit',minute:'2-digit',second:'2-digit'});
+    loadQuoteRequests(snap.val());
   });
 }
 
@@ -1849,6 +1906,246 @@ function checkBadges() {
       <div class="badge-req">${b.earned?'✅ Earned':b.req}</div>
     </div>`
   ).join('');
+}
+
+// ════════════════════════════════════════════════════════════════
+// QUOTE REQUESTS TAB
+// ════════════════════════════════════════════════════════════════
+var _allLeadsData = null; // cached raw Firebase snapshot
+
+function loadQuoteRequests(rawData) {
+  if(rawData) _allLeadsData = rawData;
+  if(!_allLeadsData || !currentAgent) return;
+
+  const now = Date.now();
+  const cutoff24h = now - 24 * 60 * 60 * 1000;
+  const cutoff2h  = now - 2  * 60 * 60 * 1000;
+
+  const allLeads = Object.values(_allLeadsData);
+
+  // Active: status=quote_requested, submitted within 24h
+  const active = allLeads.filter(l =>
+    l.status === 'quote_requested' &&
+    new Date(l.submittedAt).getTime() > cutoff24h
+  );
+
+  // My submitted quotes (I have an entry in leads/{id}/quotes/{myId})
+  const mySubmitted = allLeads.filter(l =>
+    l.quotes && l.quotes[currentAgent.id]
+  );
+
+  // Badge count: active requests I haven't submitted a quote for yet
+  const pending = active.filter(l => !l.quotes || !l.quotes[currentAgent.id]);
+  const badge = document.getElementById('requestsBadge');
+  const mobBadge = document.getElementById('mobBadgeRequests');
+  if(badge) { badge.textContent = pending.length || ''; badge.style.display = pending.length ? 'inline-block' : 'none'; }
+  if(mobBadge) { mobBadge.textContent = pending.length || ''; mobBadge.style.display = pending.length ? 'block' : 'none'; }
+
+  renderActiveRequests(active, cutoff2h);
+  renderSubmittedQuotes(mySubmitted);
+}
+
+function renderActiveRequests(leads, cutoff2h) {
+  const container = document.getElementById('qrActiveList');
+  if(!container) return;
+  if(!leads.length) {
+    container.innerHTML = `<div class="qr-empty"><div class="qr-empty-icon">🔔</div><div class="qr-empty-text">No active quote requests right now.<br>New opportunities will appear here as they come in.</div></div>`;
+    return;
+  }
+
+  container.innerHTML = leads.map(l => {
+    const submittedAt = new Date(l.submittedAt).getTime();
+    const deadline = submittedAt + 2 * 60 * 60 * 1000;
+    const msLeft = deadline - Date.now();
+    const expired = msLeft <= 0;
+    const myQuote = l.quotes && l.quotes[currentAgent.id];
+    const details = l.insuranceDetails || {};
+    const detailPills = Object.entries(details).filter(([,v])=>v).map(([k,v]) =>
+      `<div class="qr-detail-pill"><span>${k}:</span>${v}</div>`
+    ).join('');
+
+    let timerHtml = '';
+    if(!expired && !myQuote) {
+      const hrs = Math.floor(msLeft / 3600000);
+      const mins = Math.floor((msLeft % 3600000) / 60000);
+      timerHtml = `<span class="qr-timer">⏰ ${hrs}h ${mins}m left</span>`;
+    } else if(expired && !myQuote) {
+      timerHtml = `<span class="qr-timer expired">⛔ Expired</span>`;
+    }
+
+    let formOrStatus = '';
+    if(myQuote) {
+      formOrStatus = `<div class="qr-my-quote">
+        <div class="qr-my-quote-label">✅ Your Quote Submitted</div>
+        <div class="qr-my-quote-row"><span>Rate:</span><strong>${myQuote.rate}</strong></div>
+        <div class="qr-my-quote-row"><span>Carrier:</span><strong>${myQuote.carrier}</strong></div>
+        ${myQuote.sellingPoint ? `<div class="qr-my-quote-row"><span>Selling Point:</span><span>${myQuote.sellingPoint}</span></div>` : ''}
+        ${l.selectedQuote === currentAgent.id ? `<div style="margin-top:0.7rem;"><span class="qr-selected-badge">🏆 Consumer Selected Your Quote!</span></div>` : ''}
+      </div>`;
+    } else if(!expired) {
+      formOrStatus = `<div style="margin-top:1rem;border-top:1px solid var(--border);padding-top:1rem;">
+        <div style="font-size:0.8rem;font-weight:700;color:var(--navy);margin-bottom:0.7rem;">Submit Your Quote</div>
+        <div class="qsf-row">
+          <div>
+            <label class="qsf-label">Monthly Rate</label>
+            <input class="qsf-input" type="text" id="qsf-rate-${l.id}" placeholder="e.g. $89/mo">
+          </div>
+          <div>
+            <label class="qsf-label">Carrier / Company</label>
+            <input class="qsf-input" type="text" id="qsf-carrier-${l.id}" placeholder="e.g. Progressive">
+          </div>
+        </div>
+        <div class="qsf-full">
+          <label class="qsf-label">Your Selling Point (optional)</label>
+          <input class="qsf-input" type="text" id="qsf-point-${l.id}" placeholder="Why should they choose you? e.g. Same-day coverage, no down payment">
+        </div>
+        <button class="qsf-submit-btn" onclick="submitAgentQuote('${l.id}',this)">Submit Quote →</button>
+      </div>`;
+    }
+
+    return `<div class="qr-card">
+      <div class="qr-card-header">
+        <div>
+          <div class="qr-card-title">${TYPE_EMOJIS[l.insuranceType]||'📋'} ${l.insuranceType}</div>
+          <div class="qr-card-meta">Age ${l.age||'—'} · ZIP ${l.zip} · ${l.coverageLevel||'Standard'} coverage · ${timeAgo(l.submittedAt)}</div>
+        </div>
+        ${timerHtml}
+      </div>
+      ${detailPills ? `<div class="qr-details">${detailPills}</div>` : ''}
+      ${formOrStatus}
+    </div>`;
+  }).join('');
+}
+
+function renderSubmittedQuotes(leads) {
+  const container = document.getElementById('qrSubmittedList');
+  if(!container) return;
+  if(!leads.length) {
+    container.innerHTML = `<div class="qr-empty"><div class="qr-empty-icon">📋</div><div class="qr-empty-text">No submitted quotes yet.<br>When you submit quotes on active requests, they'll appear here.</div></div>`;
+    return;
+  }
+  container.innerHTML = leads.map(l => {
+    const q = l.quotes[currentAgent.id];
+    const selected = l.selectedQuote === currentAgent.id;
+    return `<div class="qr-card" style="${selected ? 'border-color:rgba(201,151,58,0.5);' : ''}">
+      <div class="qr-card-header">
+        <div>
+          <div class="qr-card-title">${TYPE_EMOJIS[l.insuranceType]||'📋'} ${l.insuranceType}</div>
+          <div class="qr-card-meta">Age ${l.age||'—'} · ZIP ${l.zip} · ${timeAgo(l.submittedAt)}</div>
+        </div>
+        ${selected
+          ? `<span class="qr-selected-badge">🏆 Selected!</span>`
+          : (l.selectedQuote && l.selectedQuote !== currentAgent.id
+              ? `<span style="background:var(--cream-dark);color:var(--text-muted);font-size:0.78rem;font-weight:700;padding:0.25rem 0.65rem;border-radius:100px;">Not Selected</span>`
+              : `<span class="qr-submitted-badge">✅ Submitted</span>`)}
+      </div>
+      <div class="qr-my-quote">
+        <div class="qr-my-quote-row"><span>Rate:</span><strong>${q.rate}</strong></div>
+        <div class="qr-my-quote-row"><span>Carrier:</span><strong>${q.carrier}</strong></div>
+        ${q.sellingPoint ? `<div class="qr-my-quote-row"><span>Selling Point:</span><span>${q.sellingPoint}</span></div>` : ''}
+        <div class="qr-my-quote-row"><span>Submitted:</span><span>${timeAgo(q.submittedAt)}</span></div>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+async function submitAgentQuote(leadId, btn) {
+  const rate      = document.getElementById('qsf-rate-' + leadId)?.value.trim();
+  const carrier   = document.getElementById('qsf-carrier-' + leadId)?.value.trim();
+  const sellingPoint = document.getElementById('qsf-point-' + leadId)?.value.trim();
+
+  if(!rate || !carrier) {
+    alert('Please enter both a rate and a carrier to submit your quote.');
+    return;
+  }
+
+  btn.disabled = true;
+  btn.textContent = 'Submitting…';
+
+  const quote = {
+    agentId:     currentAgent.id,
+    agentName:   currentAgent.firstName + ' ' + currentAgent.lastName,
+    agentAgency: currentAgent.agency || '',
+    agentEmail:  currentAgent.email,
+    rate,
+    carrier,
+    sellingPoint: sellingPoint || '',
+    submittedAt: new Date().toISOString()
+  };
+
+  try {
+    // Save quote to Firebase
+    await db.ref('leads/' + leadId + '/quotes/' + currentAgent.id).set(quote);
+
+    // Get fresh lead data to check dispatch conditions
+    const snap = await db.ref('leads/' + leadId).once('value');
+    const lead = snap.val();
+    if(!lead) throw new Error('Lead not found');
+
+    // Send confirmation email to this agent
+    fetch(WORKER_URL, {
+      method: 'POST',
+      headers: {'Content-Type':'application/json'},
+      body: JSON.stringify({
+        type: 'quote_submitted',
+        agentEmail: currentAgent.email,
+        agentName: currentAgent.firstName + ' ' + currentAgent.lastName,
+        leadId,
+        insuranceType: lead.insuranceType,
+        rate,
+        carrier
+      })
+    }).catch(()=>{});
+
+    // Check dispatch conditions:
+    // 1. 5+ quotes submitted within 30 minutes, OR
+    // 2. 2+ hours have passed since lead was submitted
+    const quotes = lead.quotes ? Object.values(lead.quotes) : [];
+    const leadAge = Date.now() - new Date(lead.submittedAt).getTime();
+    const recentQuotes = quotes.filter(q => Date.now() - new Date(q.submittedAt).getTime() < 30 * 60 * 1000);
+    const shouldDispatch = !lead.quotesEmailSent && (recentQuotes.length >= 5 || leadAge >= 2 * 60 * 60 * 1000);
+
+    if(shouldDispatch) {
+      // Mark as dispatched
+      await db.ref('leads/' + leadId).update({
+        quotesEmailSent: true,
+        status: 'quotes_sent'
+      });
+
+      // Build quote list for consumer email
+      const quoteList = quotes.map(q => ({
+        agentId:     q.agentId,
+        agentName:   q.agentName,
+        agentAgency: q.agentAgency || '',
+        rate:        q.rate,
+        carrier:     q.carrier,
+        sellingPoint: q.sellingPoint || ''
+      }));
+
+      // Email consumer
+      fetch(WORKER_URL, {
+        method: 'POST',
+        headers: {'Content-Type':'application/json'},
+        body: JSON.stringify({
+          type: 'quotes_ready_consumer',
+          lead: { id: leadId, firstName: lead.firstName, email: lead.email, insuranceType: lead.insuranceType },
+          quotes: quoteList
+        })
+      }).catch(()=>{});
+    }
+
+    btn.textContent = '✅ Quote Submitted!';
+    btn.style.background = 'var(--green)';
+    btn.style.color = '#fff';
+
+    // Refresh the tab after a short delay
+    setTimeout(() => { if(_allLeadsData) loadQuoteRequests(null); }, 1500);
+
+  } catch(err) {
+    btn.disabled = false;
+    btn.textContent = 'Submit Quote →';
+    alert('Error submitting quote. Please try again.\n' + err.message);
+  }
 }
 </script>
 </body>
