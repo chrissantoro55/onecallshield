@@ -1623,12 +1623,19 @@ function submitQuoteRequest() {
     body: JSON.stringify(lead)
   }).catch(function(err) { console.error('Firebase error:', err); });
 
-  // Send to Cloudflare Worker
+  // Send to Cloudflare Worker — admin notification
   fetch('https://onecallshield-emails.chris-santoro55.workers.dev', {
     method: 'POST',
     headers: {'Content-Type': 'application/json'},
     body: JSON.stringify({ type: 'new_lead', lead: lead })
   }).catch(function(err) { console.error('Worker error:', err); });
+
+  // Notify matching agents about this quote request
+  fetch('https://onecallshield-emails.chris-santoro55.workers.dev', {
+    method: 'POST',
+    headers: {'Content-Type': 'application/json'},
+    body: JSON.stringify({ type: 'quote_request_agents', lead: lead })
+  }).catch(function(err) { console.error('Worker quote_request_agents error:', err); });
 
   // Google Ads conversion
   if (typeof gtag === 'function') {
