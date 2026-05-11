@@ -1537,10 +1537,11 @@ function showStep2() {
   setTimeout(function() {
     var card = document.getElementById('quoteRequestCard');
     if(card) {
-      card.scrollIntoView({behavior:'smooth', block:'start'});
-      window.scrollBy({top: -20, behavior:'smooth'});
+      var navHeight = document.querySelector('nav') ? document.querySelector('nav').offsetHeight : 70;
+      var cardTop = card.getBoundingClientRect().top + window.pageYOffset - navHeight - 16;
+      window.scrollTo({top: cardTop, behavior: 'smooth'});
     }
-  }, 100);
+  }, 150);
 }
 
 // ─── handleContactTime ────────────────────────────────────────────────────────
@@ -1645,10 +1646,11 @@ function submitQuoteRequest() {
   setTimeout(function() {
     var card = document.getElementById('quoteRequestCard');
     if(card) {
-      card.scrollIntoView({behavior:'smooth', block:'start'});
-      window.scrollBy({top: -20, behavior:'smooth'});
+      var navHeight = document.querySelector('nav') ? document.querySelector('nav').offsetHeight : 70;
+      var cardTop = card.getBoundingClientRect().top + window.pageYOffset - navHeight - 16;
+      window.scrollTo({top: cardTop, behavior: 'smooth'});
     }
-  }, 100);
+  }, 150);
 }
 
 // ─── showSuccessState ─────────────────────────────────────────────────────────
@@ -1811,6 +1813,15 @@ function submitOptionalFields() {
 
   document.getElementById('optionalFields').classList.remove('visible');
   document.getElementById('optDoneMsg').classList.add('visible');
+
+  setTimeout(function() {
+    var card = document.getElementById('quoteRequestCard');
+    if(card) {
+      var navHeight = document.querySelector('nav') ? document.querySelector('nav').offsetHeight : 70;
+      var cardTop = card.getBoundingClientRect().top + window.pageYOffset - navHeight - 16;
+      window.scrollTo({top: cardTop, behavior: 'smooth'});
+    }
+  }, 150);
 }
 
 function skipOptionalFields() {
