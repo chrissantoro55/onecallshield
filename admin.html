@@ -1385,7 +1385,21 @@ function openMatchModal(leadId){
     ${lead.phone?`<br><a href="tel:${lead.phone}" style="color:var(--gold);font-weight:700;">${lead.phone}</a>`:''}
   `;
   const approved=allAgents().filter(a=>a.status==='approved');
-  const compatible=approved.filter(a=>(a.insuranceTypes||[]).some(t=>t===lead.insuranceType||lead.insuranceType.includes(t.split(' ')[0])));
+  const leadMatchState = lead.state || getStateFromZip(lead.zip) || '';
+  const compatible=approved.filter(a=>{
+    // Check insurance type
+    const agentTypes = a.insuranceTypes || [];
+    const coversType = agentTypes.length === 0 ||
+      agentTypes.includes(lead.insuranceType) ||
+      agentTypes.some(t => lead.insuranceType.toLowerCase().includes(t.toLowerCase().split(' ')[0]));
+    if(!coversType) return false;
+    // Check state license
+    const agentStates = a.states || [];
+    const licensedInState = agentStates.length === 0 ||
+      agentStates.includes(leadMatchState) ||
+      agentStates.includes('All States');
+    return licensedInState;
+  });
   const list=compatible.length?compatible:approved;
   document.getElementById('matchAgentList').innerHTML=!list.length
     ?'<p style="color:var(--text-muted);font-size:0.85rem;padding:1rem 0;">No approved agents yet. Approve agents first.</p>'
@@ -1514,8 +1528,20 @@ function renderQuoteRequests() {
 
     const approvedAgents = allAgents().filter(a => a.status === 'approved');
     const notifiedAgents = approvedAgents.filter(a => {
-      if(!a.insuranceTypes || a.insuranceTypes.length === 0) return true;
-      return a.insuranceTypes.some(t => t.toLowerCase().includes(l.insuranceType.toLowerCase()) || l.insuranceType.toLowerCase().includes(t.toLowerCase()));
+      // Check insurance type
+      const agentTypes = a.insuranceTypes || [];
+      const coversType = agentTypes.length === 0 ||
+        agentTypes.includes(l.insuranceType) ||
+        agentTypes.some(t => l.insuranceType.toLowerCase().includes(t.toLowerCase().split(' ')[0]));
+      if(!coversType) return false;
+
+      // Check state license
+      const agentStates = a.states || [];
+      const leadState = l.state || '';
+      const licensedInState = agentStates.length === 0 ||
+        agentStates.includes(leadState) ||
+        agentStates.includes('All States');
+      return licensedInState;
     });
     const agentPills = notifiedAgents.length
       ? notifiedAgents.map(a => {

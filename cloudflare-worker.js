@@ -187,28 +187,69 @@ async function handleQuoteRequestAgents(body, env) {
   if (!agentsData) return { sent: 0 };
 
   const agents = Object.values(agentsData);
-  const matching = agents.filter(a =>
-    a.status === 'approved' &&
-    a.email &&
-    (a.insuranceTypes || []).some(t =>
-      t.toLowerCase().includes(lead.insuranceType?.toLowerCase?.() || '') ||
-      lead.insuranceType?.toLowerCase?.().includes(t.toLowerCase())
-    )
-  );
+
+  // Get lead state from lead object
+  const leadState = lead.state || '';
+  const leadType = lead.insuranceType || '';
+
+  // Filter agents by BOTH state license AND insurance type
+  const qualifiedAgents = agents.filter(a => {
+    if(a.status !== 'approved') return false;
+    if(!a.email) return false;
+
+    // Check state license
+    const agentStates = a.states || [];
+    const licensedInState = agentStates.length === 0 ||
+      agentStates.includes(leadState) ||
+      agentStates.includes('All States');
+    if(!licensedInState) return false;
+
+    // Check insurance type
+    const agentTypes = a.insuranceTypes || [];
+    const coversType = agentTypes.length === 0 ||
+      agentTypes.includes(leadType) ||
+      agentTypes.some(t => leadType.toLowerCase().includes(t.toLowerCase().split(' ')[0]));
+    if(!coversType) return false;
+
+    return true;
+  });
+
+  // If no qualified agents found, notify admin
+  if(qualifiedAgents.length === 0) {
+    await sendEmail(env, {
+      to: ADMIN_EMAIL,
+      subject: '⚠️ No Qualified Agents — Manual Match Needed',
+      html: emailBase(`
+        <h1>⚠️ No Qualified Agents Found</h1>
+        <p>A new <strong>${leadType}</strong> quote request came in from <strong>${leadState || 'unknown state'}</strong> but no licensed agents are available to quote.</p>
+        <div class="row">
+          <div class="pill"><div class="pill-label">Lead ID</div><div class="pill-value">${lead.id}</div></div>
+          <div class="pill"><div class="pill-label">Insurance Type</div><div class="pill-value">${leadType}</div></div>
+        </div>
+        <div class="row">
+          <div class="pill"><div class="pill-label">State</div><div class="pill-value">${leadState || '—'}</div></div>
+          <div class="pill"><div class="pill-label">ZIP</div><div class="pill-value">${lead.zip}</div></div>
+        </div>
+        <p>Please add a licensed agent for this state/type or manually match this lead.</p>
+        <a href="https://onecallshield.com/admin.html" class="btn">Go to Admin Dashboard →</a>
+      `)
+    });
+    return { success: false, reason: 'no_qualified_agents', count: 0 };
+  }
 
   const fee = LEAD_FEES[lead.insuranceType] || 100;
   const deadline = new Date(Date.now() + 2 * 60 * 60 * 1000).toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit', hour12: true });
 
-  const sends = matching.map(agent =>
+  const sends = qualifiedAgents.map(agent =>
     sendEmail(env, {
       to: agent.email,
-      subject: `🔔 Quote Opportunity — ${lead.insuranceType} · ${lead.zip} · $${fee} lead`,
+      subject: `🔔 Quote Opportunity — ${leadType} · ${lead.zip} · $${fee} lead`,
       html: quoteRequestAgentEmail({ lead, agent, fee, deadline })
     })
   );
   await Promise.allSettled(sends);
 
-  return { sent: matching.length, agents: matching.map(a => a.email) };
+  return { success: true, agentCount: qualifiedAgents.length, agents: qualifiedAgents.map(a => a.email) };
 }
 
 // Triggered when an agent submits a quote — confirms receipt to the agent.
