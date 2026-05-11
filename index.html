@@ -671,6 +671,13 @@
   }
   .fade-in-section { opacity: 0; transform: translateY(28px); transition: opacity 0.65s ease, transform 0.65s ease; }
   .fade-in-section.visible { opacity: 1; transform: translateY(0); }
+  @keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+  }
+  .quote-field-input{width:100%;padding:12px 14px;border:1.5px solid var(--cream-dark);border-radius:10px;font-family:'DM Sans',sans-serif;font-size:0.88rem;color:var(--text);background:#fff;box-sizing:border-box;outline:none;-webkit-appearance:none;appearance:none;min-height:48px;}
+  .quote-field-input:focus{border-color:var(--gold);}
+  .quote-field-input option{color:var(--text);}
 
   /* ═══════════ RESPONSIVE ═══════════ */
   @media (max-width: 1024px) {
@@ -856,7 +863,20 @@
 
           <!-- STEP 2 -->
           <div class="qc-body" id="step2">
-            <p class="qc-step-label">Step 2 of 2 — Where should we send your quotes?</p>
+            <p class="qc-step-label">Step 2 of 2 — Your details + contact info</p>
+            <div style="font-size:0.72rem;color:var(--text-muted);margin-top:4px;margin-bottom:1rem;">Agents need these details to quote accurately</div>
+
+            <div id="insuranceDetailsSection" style="margin-bottom:20px;">
+              <div style="background:rgba(201,151,58,0.08);border:1px solid rgba(201,151,58,0.2);border-radius:12px;padding:14px 16px;margin-bottom:16px;">
+                <div style="font-family:'Fraunces',serif;font-size:0.95rem;color:var(--navy);margin-bottom:4px;">📋 Help agents give you accurate quotes</div>
+                <div style="font-size:0.78rem;color:var(--text-muted);line-height:1.6;">Agents need these details to submit their real best rate — not a ballpark. Takes 60 seconds.</div>
+              </div>
+              <div id="insuranceSpecificFields"></div>
+            </div>
+
+            <div style="border-top:1.5px solid var(--cream-dark);margin:20px 0 16px;"></div>
+            <div style="font-family:'Fraunces',serif;font-size:0.95rem;color:var(--navy);margin-bottom:4px;">📞 Where should we send your quotes?</div>
+            <div style="font-size:0.78rem;color:var(--text-muted);margin-bottom:16px;line-height:1.6;">Agents only contact you after you select their quote. Your info is never shared without your permission.</div>
 
             <div class="form-group" style="margin-bottom:0.85rem">
               <label class="form-label" for="qFirstName">First Name</label>
@@ -911,6 +931,17 @@
           <div class="check-circle">✅</div>
           <p class="success-title" id="successTitle">You're all set! 🎉</p>
           <p class="success-subtitle" id="successSubtitle">We've notified licensed agents in your area. They're preparing their best quotes now.</p>
+
+          <div style="background:linear-gradient(135deg,rgba(13,31,60,0.95),rgba(26,52,96,0.95));border:2px solid var(--gold);border-radius:16px;padding:20px 22px;margin:16px 0;text-align:center;animation:fadeIn 0.5s ease 0.3s both;">
+            <div style="font-size:1.6rem;margin-bottom:8px;">🛡️</div>
+            <div style="font-family:'Fraunces',serif;font-size:1.05rem;font-weight:700;color:var(--gold);margin-bottom:10px;">Your Phone Is Protected</div>
+            <div style="font-size:0.88rem;color:rgba(255,255,255,0.85);line-height:1.7;">
+              No agent can contact you until <strong style="color:var(--gold);">you choose</strong> their quote.<br>
+              We're doing the shopping for you right now — sit back.<br>
+              When your quotes arrive, <strong style="color:#fff;">you decide</strong> who gets to call you.<br>
+              <span style="color:rgba(255,255,255,0.5);font-size:0.78rem;">Your phone stays quiet until you say so. That's The One Call Guarantee.</span>
+            </div>
+          </div>
 
           <div class="status-tracker">
             <div class="tracker-step done">
@@ -1370,6 +1401,7 @@ var _insType = '';
 var _insTypeKey = '';
 var _coverageLevel = '';
 var _currentLeadId = '';
+var _selectedInsType = '';
 
 // ─── RMQ Data ─────────────────────────────────────────────────────────────────
 const RMQ_DATA = {
@@ -1419,6 +1451,7 @@ function getStateFromZip(zip) {
 function selectInsType(btn, fullName, key) {
   _insType = fullName;
   _insTypeKey = key;
+  _selectedInsType = fullName;
   _coverageLevel = '';
 
   // Deselect all, select clicked
@@ -1499,8 +1532,15 @@ function showStep2() {
   document.getElementById('step2').classList.add('visible');
   document.getElementById('progressFill').style.width = '100%';
 
-  // Smooth scroll card into view
-  document.getElementById('quoteRequestCard').scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+  buildInsuranceFields(_selectedInsType);
+
+  setTimeout(function() {
+    var card = document.getElementById('quoteRequestCard');
+    if(card) {
+      card.scrollIntoView({behavior:'smooth', block:'start'});
+      window.scrollBy({top: -20, behavior:'smooth'});
+    }
+  }, 100);
 }
 
 // ─── handleContactTime ────────────────────────────────────────────────────────
@@ -1542,6 +1582,13 @@ function submitQuoteRequest() {
   var leadId = 'L-' + Date.now();
   _currentLeadId = leadId;
 
+  var insuranceDetails = {};
+  document.querySelectorAll('.quote-field-input[data-label]').forEach(function(el) {
+    if(el.value && el.value.trim()) {
+      insuranceDetails[el.getAttribute('data-label')] = el.value.trim();
+    }
+  });
+
   var lead = {
     id: leadId,
     submittedAt: new Date().toISOString(),
@@ -1563,7 +1610,9 @@ function submitQuoteRequest() {
     selectedQuote: null,
     selectedAgentId: null,
     matchedAt: null,
-    source: 'homepage-v2'
+    source: 'homepage-v2',
+    insuranceDetails: insuranceDetails,
+    hasDetailedInfo: Object.keys(insuranceDetails).length > 0
   };
 
   // Save to Firebase
@@ -1592,6 +1641,14 @@ function submitQuoteRequest() {
 
   // Show success state
   showSuccessState(firstName, email, leadId);
+
+  setTimeout(function() {
+    var card = document.getElementById('quoteRequestCard');
+    if(card) {
+      card.scrollIntoView({behavior:'smooth', block:'start'});
+      window.scrollBy({top: -20, behavior:'smooth'});
+    }
+  }, 100);
 }
 
 // ─── showSuccessState ─────────────────────────────────────────────────────────
@@ -1605,6 +1662,80 @@ function showSuccessState(firstName, email, leadId) {
   document.getElementById('successTrackLink').href = '/status.html?id=' + leadId;
 
   document.getElementById('successState').classList.add('visible');
+}
+
+// ─── buildInsuranceFields ─────────────────────────────────────────────────────
+function buildInsuranceFields(type) {
+  var fields = {};
+
+  if(type === 'Auto Insurance') {
+    fields = {
+      'Vehicle Year': {type:'select', options:['Select year...','2024','2023','2022','2021','2020','2019','2018','2017','2016','2015','2014','2013','2012','2011','2010','Before 2010']},
+      'Vehicle Make': {type:'text', placeholder:'e.g. Toyota'},
+      'Vehicle Model': {type:'text', placeholder:'e.g. Camry'},
+      'Drivers on Policy': {type:'select', options:['Select...','1 driver','2 drivers','3 drivers','4+ drivers']},
+      'Violations Last 3 Years': {type:'select', options:['Select...','None','1 violation','2+ violations']},
+      'Current Insurer': {type:'select', options:['Select...','GEICO','State Farm','Progressive','Allstate','Liberty Mutual','Farmers','USAA','Other','No current insurance']}
+    };
+  } else if(type === 'Homeowners Insurance') {
+    fields = {
+      'Year Home Built': {type:'select', options:['Select...','2010 or newer','2000-2009','1990-1999','1980-1989','Before 1980']},
+      'Square Footage': {type:'select', options:['Select...','Under 1,000 sq ft','1,000-2,000 sq ft','2,000-3,500 sq ft','Over 3,500 sq ft']},
+      'Construction Type': {type:'select', options:['Select...','Wood Frame','Brick/Masonry','Stucco','Other']},
+      'Claims Last 5 Years': {type:'select', options:['Select...','No claims','1 claim','2+ claims']},
+      'Current Insurer': {type:'select', options:['Select...','State Farm','Allstate','Liberty Mutual','Travelers','USAA','Farmers','Other','No current insurance']}
+    };
+  } else if(type === 'Life Insurance') {
+    fields = {
+      'Coverage Type': {type:'select', options:['Select...','Term Life','Whole Life','Not sure yet']},
+      'Coverage Amount': {type:'select', options:['Select...','Under $100k','$100k - $250k','$250k - $500k','$500k - $1M','Over $1M']},
+      'Tobacco Use': {type:'select', options:['Select...','Non-smoker','Current smoker','Former smoker']},
+      'Major Health Conditions': {type:'select', options:['Select...','No major conditions','Yes, I have conditions']},
+      'Existing Coverage': {type:'select', options:['Select...','No current coverage','Have coverage, want more','Replacing existing policy']}
+    };
+  } else if(type === 'Medicare Supplement') {
+    fields = {
+      'Medicare Status': {type:'select', options:['Select...','Not yet — turning 65 soon','Currently enrolled — reviewing plan','New to Medicare']},
+      'Plan Type Interest': {type:'select', options:['Select...','Medicare Supplement (Medigap)','Medicare Advantage','Not sure — need guidance']},
+      'Must-Keep Doctors': {type:'text', placeholder:'Doctor names (optional)'},
+      'Current Prescriptions': {type:'text', placeholder:'List medications (optional)'}
+    };
+  } else if(type === 'Health Insurance') {
+    fields = {
+      'Coverage For': {type:'select', options:['Select...','Just myself','Me and my spouse','Me and children','Entire family']},
+      'Current Coverage': {type:'select', options:['Select...','No current coverage','Employer plan ending','On COBRA','Marketplace plan','Other']},
+      'Household Income Range': {type:'select', options:['Select...','Under $30k','$30k-$50k','$50k-$75k','$75k-$100k','Over $100k']},
+      'Pre-existing Conditions': {type:'select', options:['Select...','No major conditions','Yes, I have conditions']},
+      'Preferred Deductible': {type:'select', options:['Select...','Low deductible — higher monthly','High deductible — lower monthly','No preference']}
+    };
+  } else if(type === 'Renters Insurance') {
+    fields = {
+      'Property Type': {type:'select', options:['Select...','Apartment','House','Condo','Townhouse','Other']},
+      'Value of Belongings': {type:'select', options:['Select...','Under $10k','$10k - $25k','$25k - $50k','Over $50k']},
+      'High Value Items': {type:'select', options:['Select...','No special items','Yes — jewelry','Yes — electronics','Yes — art/collectibles','Multiple high-value items']},
+      'Current Insurer': {type:'select', options:['Select...','No current insurance','Switching from another carrier','Other']}
+    };
+  }
+
+  var html = '';
+  Object.keys(fields).forEach(function(label) {
+    var f = fields[label];
+    html += '<div style="margin-bottom:14px;">';
+    html += '<div style="font-size:0.75rem;font-weight:600;text-transform:uppercase;letter-spacing:0.07em;color:var(--text-muted);margin-bottom:5px;">' + label + '</div>';
+    if(f.type === 'select') {
+      html += '<select class="quote-field-input" data-label="' + label + '">';
+      f.options.forEach(function(o, i) {
+        html += '<option value="' + (i === 0 ? '' : o) + '">' + o + '</option>';
+      });
+      html += '</select>';
+    } else {
+      html += '<input type="text" class="quote-field-input" data-label="' + label + '" placeholder="' + (f.placeholder || label) + '">';
+    }
+    html += '</div>';
+  });
+
+  var container = document.getElementById('insuranceSpecificFields');
+  if(container) container.innerHTML = html;
 }
 
 // ─── Optional Fields ──────────────────────────────────────────────────────────
