@@ -836,7 +836,11 @@ function renderLeadsTable(tbId,leads,compact){
     <td onclick="event.stopPropagation()">
       ${l.status==='unmatched'
         ?`<button class="action-btn btn-match" onclick="openMatchModal('${l.id}')">🎯 Match</button>`
-        :`<span style="color:var(--green);font-size:0.78rem;font-weight:700;">✓ Matched</span>`}
+        :l.status==='quote_requested'
+          ?`<button class="action-btn" style="background:rgba(217,119,6,0.12);color:var(--amber);border:1px solid rgba(217,119,6,0.3);font-size:0.78rem;" onclick="viewQuotes('${l.id}')">💬 View Quotes</button>`
+          :l.status==='quotes_sent'
+            ?`<button class="action-btn" style="background:rgba(37,99,235,0.1);color:#2563eb;border:1px solid rgba(37,99,235,0.25);font-size:0.78rem;" onclick="viewQuotes('${l.id}')">📧 View Quotes</button>`
+            :`<span style="color:var(--green);font-size:0.78rem;font-weight:700;">✓ Matched</span>`}
     </td>
   </tr>`;}).join('');
 }
@@ -881,7 +885,11 @@ function renderLeadsCards(containerId,leads){
       <div class="m-card-footer">
         ${l.status==='unmatched'
           ?`<button class="action-btn btn-match" onclick="openMatchModal('${l.id}')">🎯 Match to Agent</button>`
-          :`<div style="background:var(--green-light);color:var(--green);border-radius:12px;padding:0.75rem;font-size:0.85rem;font-weight:700;text-align:center;flex:1;">✅ Already Matched</div>`}
+          :l.status==='quote_requested'
+            ?`<button class="action-btn" style="background:rgba(217,119,6,0.12);color:var(--amber);border:1px solid rgba(217,119,6,0.3);font-size:0.85rem;flex:1;" onclick="event.stopPropagation();viewQuotes('${l.id}')">💬 View Quotes</button>`
+            :l.status==='quotes_sent'
+              ?`<button class="action-btn" style="background:rgba(37,99,235,0.1);color:#2563eb;border:1px solid rgba(37,99,235,0.25);font-size:0.85rem;flex:1;" onclick="event.stopPropagation();viewQuotes('${l.id}')">📧 View Quotes</button>`
+              :`<div style="background:var(--green-light);color:var(--green);border-radius:12px;padding:0.75rem;font-size:0.85rem;font-weight:700;text-align:center;flex:1;">✅ Already Matched</div>`}
       </div>
     </div>`;
   }).join('');
@@ -1138,7 +1146,7 @@ function openLeadDetail(leadId){
     </div>
 
     <!-- Info Grid -->
-    <div style="display:grid;grid-template-columns:1fr 1fr;gap:0.8rem;margin-bottom:1.5rem;">
+    <div id="infoGrid" style="display:grid;grid-template-columns:1fr 1fr;gap:0.8rem;margin-bottom:1.5rem;">
       <div style="background:var(--cream);border-radius:12px;padding:1rem;">
         <div style="font-size:0.68rem;color:var(--text-muted);text-transform:uppercase;letter-spacing:0.07em;font-weight:700;margin-bottom:0.3rem;">📞 Phone</div>
         <div style="font-size:1rem;color:var(--gold);font-weight:700;"><a href="tel:${lead.phone}" style="color:var(--gold);text-decoration:none;">${lead.phone}</a></div>
@@ -1219,10 +1227,31 @@ function openLeadDetail(leadId){
 
     <!-- Actions -->
     <div style="display:flex;gap:0.6rem;flex-wrap:wrap;">
-      ${lead.status==='unmatched'?`<button class="action-btn btn-match" style="padding:0.8rem 1.2rem;border-radius:10px;font-size:0.9rem;" onclick="closeModal('leadDetailModal');openMatchModal('${lead.id}')">🎯 Match to Agent</button>`:''}
+      ${lead.status==='unmatched'
+        ?`<button class="action-btn btn-match" style="padding:0.8rem 1.2rem;border-radius:10px;font-size:0.9rem;" onclick="closeModal('leadDetailModal');openMatchModal('${lead.id}')">🎯 Match to Agent</button>`
+        :lead.status==='quote_requested'
+          ?`<button class="action-btn" style="background:rgba(217,119,6,0.12);color:var(--amber);border:1px solid rgba(217,119,6,0.3);padding:0.8rem 1.2rem;border-radius:10px;font-size:0.9rem;" onclick="closeModal('leadDetailModal');viewQuotes('${lead.id}')">💬 View Quotes</button>`
+          :lead.status==='quotes_sent'
+            ?`<button class="action-btn" style="background:rgba(37,99,235,0.1);color:#2563eb;border:1px solid rgba(37,99,235,0.25);padding:0.8rem 1.2rem;border-radius:10px;font-size:0.9rem;" onclick="closeModal('leadDetailModal');viewQuotes('${lead.id}')">📧 View Quotes</button>`
+            :''}
       <button onclick="closeModal('leadDetailModal')" style="flex:1;padding:0.8rem;border-radius:10px;border:none;background:var(--cream-dark);color:var(--text);font-size:0.9rem;font-weight:600;cursor:pointer;font-family:'DM Sans',sans-serif;">Close</button>
     </div>
   `;
+
+  // Inject insuranceDetails pills into info grid if present
+  if(lead.insuranceDetails && Object.keys(lead.insuranceDetails).length > 0) {
+    const grid = document.getElementById('infoGrid');
+    if(grid) {
+      const detailHtml = Object.entries(lead.insuranceDetails).map(([k,v]) =>
+        `<div style="background:var(--cream);border-radius:12px;padding:1rem;">
+          <div style="font-size:0.68rem;color:var(--text-muted);text-transform:uppercase;letter-spacing:0.07em;font-weight:700;margin-bottom:0.3rem;">${k.replace(/([A-Z])/g,' $1').replace(/^./,s=>s.toUpperCase())}</div>
+          <div style="font-size:0.88rem;color:var(--navy);font-weight:600;">${v}</div>
+        </div>`
+      ).join('');
+      grid.innerHTML += detailHtml;
+    }
+  }
+
   document.getElementById('leadDetailModal').classList.add('open');
 }
 
@@ -1483,18 +1512,39 @@ function renderQuoteRequests() {
       ? `<button onclick="event.stopPropagation();viewQuotes('${l.id}')" class="action-btn btn-view">👁 View Quotes (${quotes.length})</button>`
       : '';
 
-    return `<div style="background:var(--white);border-radius:14px;padding:1rem 1.2rem;border:1px solid rgba(217,119,6,0.25);margin-bottom:0.7rem;display:flex;align-items:center;justify-content:space-between;gap:0.8rem;flex-wrap:wrap;cursor:pointer;" onclick="openLeadDetail('${l.id}')">
-      <div style="flex:1;min-width:0;">
-        <div style="display:flex;align-items:center;gap:0.5rem;flex-wrap:wrap;margin-bottom:0.2rem;">
-          <strong style="font-size:0.92rem;color:var(--navy);">${l.firstName} ${l.lastName}</strong>
-          ${statusBadge(l.status)}
-          ${quoteCountBadge}
+    const approvedAgents = allAgents().filter(a => a.status === 'approved');
+    const notifiedAgents = approvedAgents.filter(a => {
+      if(!a.insuranceTypes || a.insuranceTypes.length === 0) return true;
+      return a.insuranceTypes.some(t => t.toLowerCase().includes(l.insuranceType.toLowerCase()) || l.insuranceType.toLowerCase().includes(t.toLowerCase()));
+    });
+    const agentPills = notifiedAgents.length
+      ? notifiedAgents.map(a => {
+          const q = l.quotes && l.quotes[a.id];
+          const pill = q
+            ? `<span style="display:inline-flex;align-items:center;gap:0.3rem;background:rgba(37,99,235,0.1);color:#2563eb;font-size:0.72rem;font-weight:700;padding:0.2rem 0.55rem;border-radius:100px;border:1px solid rgba(37,99,235,0.25);">${a.firstName} ${a.lastName} · $${q.rate}/mo</span>`
+            : `<span style="display:inline-flex;align-items:center;gap:0.3rem;background:var(--cream);color:var(--text-muted);font-size:0.72rem;font-weight:600;padding:0.2rem 0.55rem;border-radius:100px;border:1px solid var(--border);">${a.firstName} ${a.lastName} · ⏳ Pending</span>`;
+          return pill;
+        }).join(' ')
+      : `<span style="font-size:0.78rem;color:var(--text-muted);font-style:italic;">No matching agents approved yet</span>`;
+
+    return `<div style="background:var(--white);border-radius:14px;padding:1rem 1.2rem;border:1px solid rgba(217,119,6,0.25);margin-bottom:0.7rem;cursor:pointer;" onclick="openLeadDetail('${l.id}')">
+      <div style="display:flex;align-items:center;justify-content:space-between;gap:0.8rem;flex-wrap:wrap;margin-bottom:0.6rem;">
+        <div style="flex:1;min-width:0;">
+          <div style="display:flex;align-items:center;gap:0.5rem;flex-wrap:wrap;margin-bottom:0.2rem;">
+            <strong style="font-size:0.92rem;color:var(--navy);">${l.firstName} ${l.lastName}</strong>
+            ${statusBadge(l.status)}
+            ${quoteCountBadge}
+          </div>
+          <div style="font-size:0.8rem;color:var(--text-muted);">${l.insuranceType} · ${l.zip} · ${timeAgo(l.submittedAt)}</div>
         </div>
-        <div style="font-size:0.8rem;color:var(--text-muted);">${l.insuranceType} · ${l.zip} · ${timeAgo(l.submittedAt)}</div>
+        <div style="display:flex;gap:0.4rem;flex-shrink:0;" onclick="event.stopPropagation()">
+          ${viewQuotesBtn}
+          ${dispatchBtn}
+        </div>
       </div>
-      <div style="display:flex;gap:0.4rem;flex-shrink:0;" onclick="event.stopPropagation()">
-        ${viewQuotesBtn}
-        ${dispatchBtn}
+      <div style="border-top:1px solid var(--border);padding-top:0.55rem;">
+        <div style="font-size:0.68rem;color:var(--text-muted);text-transform:uppercase;letter-spacing:0.07em;font-weight:700;margin-bottom:0.35rem;">Agents Notified (${notifiedAgents.length})</div>
+        <div style="display:flex;flex-wrap:wrap;gap:0.35rem;">${agentPills}</div>
       </div>
     </div>`;
   }).join('');
