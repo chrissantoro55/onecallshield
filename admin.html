@@ -1613,7 +1613,7 @@ async function sendQuotesNow(leadId) {
       id: lead.id,
       firstName: lead.firstName || '',
       lastName: lead.lastName || '',
-      email: lead.email,
+      email: lead.email || '',
       phone: lead.phone || '',
       insuranceType: lead.insuranceType || '',
       coverageLevel: lead.coverageLevel || 'Standard',
