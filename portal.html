@@ -1918,15 +1918,15 @@ function loadQuoteRequests(rawData) {
   if(!_allLeadsData || !currentAgent) return;
 
   const now = Date.now();
-  const cutoff24h = now - 24 * 60 * 60 * 1000;
+  const cutoff72h = now - 72 * 60 * 60 * 1000;
   const cutoff2h  = now - 2  * 60 * 60 * 1000;
 
   const allLeads = Object.values(_allLeadsData);
 
-  // Active: status=quote_requested, submitted within 24h
+  // Active: status=quote_requested, submitted within 72h
   const active = allLeads.filter(l =>
     l.status === 'quote_requested' &&
-    new Date(l.submittedAt).getTime() > cutoff24h
+    new Date(l.submittedAt).getTime() > cutoff72h
   );
 
   // My submitted quotes (I have an entry in leads/{id}/quotes/{myId})
@@ -1955,7 +1955,7 @@ function renderActiveRequests(leads, cutoff2h) {
 
   container.innerHTML = leads.map(l => {
     const submittedAt = new Date(l.submittedAt).getTime();
-    const deadline = submittedAt + 2 * 60 * 60 * 1000;
+    const deadline = submittedAt + 4 * 60 * 60 * 1000;
     const msLeft = deadline - Date.now();
     const expired = msLeft <= 0;
     const myQuote = l.quotes && l.quotes[currentAgent.id];
@@ -2001,9 +2001,11 @@ function renderActiveRequests(leads, cutoff2h) {
         </div>
         <button class="qsf-submit-btn" onclick="submitAgentQuote('${l.id}',this)">Submit Quote →</button>
       </div>`;
+    } else {
+      formOrStatus = `<div style="margin-top:1rem;border-top:1px solid var(--border);padding-top:0.9rem;text-align:center;font-size:0.85rem;font-weight:600;color:var(--text-muted);">⛔ Quote window closed — this request expired</div>`;
     }
 
-    return `<div class="qr-card">
+    return `<div class="qr-card" style="${expired && !myQuote ? 'opacity:0.6;' : ''}">
       <div class="qr-card-header">
         <div>
           <div class="qr-card-title">${TYPE_EMOJIS[l.insuranceType]||'📋'} ${l.insuranceType}</div>
