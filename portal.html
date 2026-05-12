@@ -835,6 +835,8 @@ function startPortal(agent) {
   document.getElementById('loginScreen').style.display = 'none';
   document.getElementById('mainPortal').style.display = 'block';
   loadPortal();
+  // Ensure quote requests render with currentAgent now set
+  loadQuoteRequests(_allLeadsData);
 }
 
 // Auto-login if valid session exists — runs after page fully loads
@@ -1915,7 +1917,11 @@ var _allLeadsData = null; // cached raw Firebase snapshot
 
 function loadQuoteRequests(rawData) {
   if(rawData) _allLeadsData = rawData;
-  if(!_allLeadsData || !currentAgent) return;
+  if(!_allLeadsData || !currentAgent) {
+    // currentAgent not ready yet — retry in 1 second
+    setTimeout(function() { loadQuoteRequests(null); }, 1000);
+    return;
+  }
 
   const now = Date.now();
   const cutoff72h = now - 72 * 60 * 60 * 1000;
