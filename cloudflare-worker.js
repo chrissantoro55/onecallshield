@@ -1,3 +1,4 @@
+// OneCallShield Worker v2 — auto-deploy enabled
 // OneCallShield — Cloudflare Worker (Email + KV handler)
 // Deploy via: wrangler deploy
 // Env vars needed: RESEND_API_KEY, FIREBASE_SECRET (optional, for server-side reads)
