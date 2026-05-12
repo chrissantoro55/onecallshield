@@ -1577,24 +1577,75 @@ function renderQuoteRequests() {
 }
 
 async function sendQuotesNow(leadId) {
-  if(!confirm('Send all submitted quotes to the consumer now?')) return;
-  const lead = getLeads().find(l => l.id === leadId);
+  const leads = getLeads();
+  const lead = leads.find(l => l.id === leadId);
   if(!lead) return;
-  const quotes = lead.quotes ? Object.values(lead.quotes) : [];
-  if(!quotes.length) { alert('No quotes to send yet.'); return; }
 
-  await db.ref('leads/' + leadId).update({ quotesEmailSent: true, status: 'quotes_sent' });
+  const quotesObj = lead.quotes || {};
+  const quotes = Object.values(quotesObj);
 
-  workerPost({
+  if(!quotes.length) {
+    alert('No quotes submitted yet. Agents need to submit quotes first.');
+    return;
+  }
+
+  if(!lead.email) {
+    alert('No consumer email on file for this lead.');
+    return;
+  }
+
+  // Build properly structured quotes array
+  const structuredQuotes = quotes.map(q => ({
+    agentId: q.agentId || '',
+    agentFirstName: q.agentFirstName || q.agentName || 'Agent',
+    agentLastName: q.agentLastName || '',
+    agentAgency: q.agentAgency || 'Independent Agent',
+    agentEmail: q.agentEmail || '',
+    carrier: q.carrier || 'N/A',
+    rate: q.rate || q.monthlyRate || 0,
+    sellingPoint: q.sellingPoint || q.sellingpoint || ''
+  }));
+
+  // Send COMPLETE lead object — not a slim subset
+  const payload = {
     type: 'quotes_ready_consumer',
-    lead: { id: leadId, firstName: lead.firstName, email: lead.email, insuranceType: lead.insuranceType },
-    quotes: quotes.map(q => ({
-      agentId: q.agentId, agentName: q.agentName, agentAgency: q.agentAgency || '',
-      rate: q.rate, carrier: q.carrier, sellingPoint: q.sellingPoint || ''
-    }))
-  }).catch(() => {});
+    lead: {
+      id: lead.id,
+      firstName: lead.firstName || '',
+      lastName: lead.lastName || '',
+      email: lead.email,
+      phone: lead.phone || '',
+      insuranceType: lead.insuranceType || '',
+      coverageLevel: lead.coverageLevel || 'Standard',
+      zip: lead.zip || '',
+      state: lead.state || '',
+      age: lead.age || '',
+      currentPremium: lead.currentPremium || '',
+      marketRangeLow: lead.marketRangeLow || '',
+      marketRangeHigh: lead.marketRangeHigh || '',
+      contactTime: lead.contactTime || 'Anytime',
+      submittedAt: lead.submittedAt || ''
+    },
+    quotes: structuredQuotes
+  };
 
-  alert('✅ Quotes sent to ' + lead.firstName + '!');
+  try {
+    const res = await workerPost(payload);
+    console.log('Worker response:', res);
+
+    // Mark as sent in Firebase
+    await db.ref('leads/' + leadId).update({
+      quotesEmailSent: true,
+      status: 'quotes_sent',
+      quotesSentAt: new Date().toISOString()
+    });
+
+    alert('✅ Quotes email sent to ' + lead.email);
+    renderAll();
+  } catch(err) {
+    console.error('sendQuotesNow error:', err);
+    alert('❌ Failed to send quotes email. Check console for details.');
+  }
 }
 
 function viewQuotes(leadId) {
