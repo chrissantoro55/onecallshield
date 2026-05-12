@@ -188,53 +188,59 @@ async function handleQuoteRequestAgents(body, env) {
 
   const agents = Object.values(agentsData);
 
-  // Get lead state from lead object
-  const leadState = lead.state || '';
   const leadType = lead.insuranceType || '';
 
-  // Filter agents by BOTH state license AND insurance type
   const qualifiedAgents = agents.filter(a => {
+    // Must be approved
     if(a.status !== 'approved') return false;
+
+    // Must have email
     if(!a.email) return false;
 
-    // Check state license
-    const agentStates = a.states || [];
-    const licensedInState = agentStates.length === 0 ||
-      agentStates.includes(leadState) ||
-      agentStates.includes('All States');
-    if(!licensedInState) return false;
-
-    // Check insurance type
+    // Check insurance type match
     const agentTypes = a.insuranceTypes || [];
     const coversType = agentTypes.length === 0 ||
-      agentTypes.includes(leadType) ||
-      agentTypes.some(t => leadType.toLowerCase().includes(t.toLowerCase().split(' ')[0]));
+      agentTypes.some(function(t) {
+        return t === leadType ||
+          leadType.toLowerCase().includes(t.toLowerCase().split(' ')[0]);
+      });
     if(!coversType) return false;
 
-    return true;
+    // Check state license — require explicit state listing
+    const agentStates = a.states || [];
+    const leadState = (lead.state || '').toUpperCase().trim();
+
+    // If agent has no states listed DO NOT assume they cover all
+    // Exception: if they listed 'All' or 'All States'
+    if(agentStates.length === 0) return false;
+
+    const licensedInState = agentStates.some(function(s) {
+      var st = (s || '').toUpperCase().trim();
+      return st === leadState ||
+             st === 'ALL' ||
+             st === 'ALL STATES' ||
+             st === 'NATIONWIDE';
+    });
+
+    return licensedInState;
   });
 
-  // If no qualified agents found, notify admin
+  // Log for debugging
+  console.log('Quote request for ' + leadType +
+    ' in ' + lead.state + ' — ' +
+    qualifiedAgents.length + ' qualified agents found');
+
+  // If no qualified agents — notify admin
   if(qualifiedAgents.length === 0) {
     await sendEmail(env, {
-      to: ADMIN_EMAIL,
-      subject: '⚠️ No Qualified Agents — Manual Match Needed',
-      html: emailBase(`
-        <h1>⚠️ No Qualified Agents Found</h1>
-        <p>A new <strong>${leadType}</strong> quote request came in from <strong>${leadState || 'unknown state'}</strong> but no licensed agents are available to quote.</p>
-        <div class="row">
-          <div class="pill"><div class="pill-label">Lead ID</div><div class="pill-value">${lead.id}</div></div>
-          <div class="pill"><div class="pill-label">Insurance Type</div><div class="pill-value">${leadType}</div></div>
-        </div>
-        <div class="row">
-          <div class="pill"><div class="pill-label">State</div><div class="pill-value">${leadState || '—'}</div></div>
-          <div class="pill"><div class="pill-label">ZIP</div><div class="pill-value">${lead.zip}</div></div>
-        </div>
-        <p>Please add a licensed agent for this state/type or manually match this lead.</p>
-        <a href="https://onecallshield.com/admin.html" class="btn">Go to Admin Dashboard →</a>
-      `)
+      to: 'chris@onecallshield.com',
+      subject: '⚠️ No Qualified Agents — ' + leadType + ' in ' + lead.state,
+      html: '<p>A new ' + leadType + ' quote request came in from ' +
+            lead.state + ' (ZIP: ' + lead.zip + ') but no licensed agents are available.</p>' +
+            '<p><strong>Lead ID:</strong> ' + lead.id + '</p>' +
+            '<p><a href="https://onecallshield.com/admin.html">Go to Admin →</a></p>'
     });
-    return { success: false, reason: 'no_qualified_agents', count: 0 };
+    return { success: false, reason: 'no_qualified_agents', leadState: lead.state, leadType: leadType };
   }
 
   const fee = LEAD_FEES[lead.insuranceType] || 100;

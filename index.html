@@ -1748,18 +1748,79 @@ function showSuccessState(firstName, email, leadId) {
   document.getElementById('successState').classList.add('visible');
 }
 
+// ─── Vehicle models data ───────────────────────────────────────────────────────
+const VEHICLE_MODELS = {
+  'Acura':['ILX','MDX','RDX','RLX','TLX','NSX','Integra','Other'],
+  'Audi':['A3','A4','A5','A6','A7','A8','Q3','Q5','Q7','Q8','e-tron','RS5','RS7','TT','Other'],
+  'BMW':['2 Series','3 Series','4 Series','5 Series','6 Series','7 Series','8 Series','X1','X2','X3','X4','X5','X6','X7','Z4','M3','M4','M5','Other'],
+  'Buick':['Enclave','Encore','Envision','LaCrosse','Other'],
+  'Cadillac':['CT4','CT5','Escalade','XT4','XT5','XT6','Other'],
+  'Chevrolet':['Blazer','Camaro','Colorado','Corvette','Equinox','Express','Impala','Malibu','Silverado','Suburban','Tahoe','Trailblazer','Traverse','Trax','Other'],
+  'Chrysler':['300','Pacifica','Voyager','Other'],
+  'Dodge':['Challenger','Charger','Durango','Grand Caravan','Journey','Ram','Other'],
+  'Ferrari':['296','488','812','F8','Roma','SF90','Portofino','Other'],
+  'Ford':['Bronco','Edge','Escape','Expedition','Explorer','F-150','F-250','F-350','Fusion','Maverick','Mustang','Ranger','Transit','Other'],
+  'GMC':['Acadia','Canyon','Envoy','Sierra','Terrain','Yukon','Other'],
+  'Genesis':['G70','G80','G90','GV70','GV80','Other'],
+  'Honda':['Accord','CR-V','Civic','HR-V','Insight','Odyssey','Passport','Pilot','Ridgeline','Other'],
+  'Hyundai':['Elantra','Ioniq','Kona','Palisade','Santa Cruz','Santa Fe','Sonata','Tucson','Venue','Other'],
+  'Infiniti':['Q50','Q60','QX50','QX55','QX60','QX80','Other'],
+  'Jeep':['Cherokee','Compass','Gladiator','Grand Cherokee','Renegade','Wrangler','Other'],
+  'Kia':['Carnival','EV6','Forte','K5','Niro','Seltos','Sorento','Soul','Sportage','Stinger','Telluride','Other'],
+  'Land Rover':['Defender','Discovery','Discovery Sport','Range Rover','Range Rover Evoque','Range Rover Sport','Other'],
+  'Lexus':['ES','GS','GX','IS','LC','LS','LX','NX','RX','UX','Other'],
+  'Lincoln':['Aviator','Corsair','MKZ','Nautilus','Navigator','Other'],
+  'Mazda':['CX-3','CX-30','CX-5','CX-9','Mazda3','Mazda6','MX-5 Miata','Other'],
+  'Mercedes-Benz':['A-Class','C-Class','CLA','CLS','E-Class','G-Class','GLA','GLB','GLC','GLE','GLS','S-Class','SL','AMG GT','EQS','Other'],
+  'Mitsubishi':['Eclipse Cross','Mirage','Outlander','Outlander Sport','Other'],
+  'Nissan':['Altima','Armada','Frontier','GT-R','Kicks','Leaf','Maxima','Murano','Pathfinder','Rogue','Sentra','Titan','Versa','Other'],
+  'Porsche':['718','911','Cayenne','Macan','Panamera','Taycan','Other'],
+  'RAM':['1500','2500','3500','ProMaster','Other'],
+  'Subaru':['Ascent','BRZ','Crosstrek','Forester','Impreza','Legacy','Outback','WRX','Other'],
+  'Tesla':['Model 3','Model S','Model X','Model Y','Cybertruck','Other'],
+  'Toyota':['4Runner','Avalon','C-HR','Camry','Corolla','GR86','Highlander','Land Cruiser','Prius','RAV4','Sequoia','Sienna','Tacoma','Tundra','Venza','Other'],
+  'Volkswagen':['Atlas','Golf','ID.4','Jetta','Passat','Tiguan','Touareg','Other'],
+  'Volvo':['S60','S90','V60','V90','XC40','XC60','XC90','Other'],
+  'Other':['Other']
+};
+
+function onVehicleMakeChange(makeSelect) {
+  var make = makeSelect.value;
+  var modelSelect = document.getElementById('vehicleModelSelect');
+  if(!modelSelect) return;
+  if(!make || !VEHICLE_MODELS[make]) {
+    modelSelect.innerHTML = '<option value="">Select make first...</option>';
+    modelSelect.disabled = true;
+    modelSelect.style.opacity = '0.5';
+    return;
+  }
+  var models = VEHICLE_MODELS[make];
+  modelSelect.innerHTML = '<option value="">Select model...</option>' +
+    models.map(function(m) {
+      return '<option value="' + m + '">' + m + '</option>';
+    }).join('');
+  modelSelect.disabled = false;
+  modelSelect.style.opacity = '1';
+}
+
 // ─── buildInsuranceFields ─────────────────────────────────────────────────────
 function buildInsuranceFields(type) {
   var fields = {};
 
   if(type === 'Auto Insurance') {
+    var makeOptions = ['Select make...','Acura','Audi','BMW',
+      'Buick','Cadillac','Chevrolet','Chrysler','Dodge',
+      'Ferrari','Ford','GMC','Genesis','Honda','Hyundai',
+      'Infiniti','Jeep','Kia','Land Rover','Lexus','Lincoln',
+      'Mazda','Mercedes-Benz','Mitsubishi','Nissan','Porsche',
+      'RAM','Subaru','Tesla','Toyota','Volkswagen','Volvo','Other'];
     fields = {
-      'Vehicle Year': {type:'select', options:['Select year...','2024','2023','2022','2021','2020','2019','2018','2017','2016','2015','2014','2013','2012','2011','2010','Before 2010']},
-      'Vehicle Make': {type:'text', placeholder:'e.g. Toyota'},
-      'Vehicle Model': {type:'text', placeholder:'e.g. Camry'},
+      'Vehicle Year': {type:'select', options:['Select year...','2025','2024','2023','2022','2021','2020','2019','2018','2017','2016','2015','2014','2013','2012','2011','2010','Before 2010']},
+      'Vehicle Make': {type:'select', options: makeOptions, onchange:'onVehicleMakeChange(this)'},
+      'Vehicle Model': {type:'dependent', dependsOn:'Vehicle Make', placeholder:'Select make first...'},
       'Drivers on Policy': {type:'select', options:['Select...','1 driver','2 drivers','3 drivers','4+ drivers']},
       'Violations Last 3 Years': {type:'select', options:['Select...','None','1 violation','2+ violations']},
-      'Current Insurer': {type:'select', options:['Select...','GEICO','State Farm','Progressive','Allstate','Liberty Mutual','Farmers','USAA','Other','No current insurance']}
+      'Current Insurer': {type:'select', options:['Select...','GEICO','State Farm','Progressive','Allstate','Liberty Mutual','Farmers','USAA','Travelers','Nationwide','Other','No current insurance']}
     };
   } else if(type === 'Homeowners Insurance') {
     fields = {
@@ -1807,10 +1868,15 @@ function buildInsuranceFields(type) {
     html += '<div style="margin-bottom:14px;">';
     html += '<div style="font-size:0.75rem;font-weight:600;text-transform:uppercase;letter-spacing:0.07em;color:var(--text-muted);margin-bottom:5px;">' + label + '</div>';
     if(f.type === 'select') {
-      html += '<select class="quote-field-input" data-label="' + label + '">';
+      var onchangeAttr = f.onchange ? ' onchange="' + f.onchange + '"' : '';
+      html += '<select class="quote-field-input" data-label="' + label + '"' + onchangeAttr + '>';
       f.options.forEach(function(o, i) {
         html += '<option value="' + (i === 0 ? '' : o) + '">' + o + '</option>';
       });
+      html += '</select>';
+    } else if(f.type === 'dependent') {
+      html += '<select class="quote-field-input" data-label="' + label + '" id="vehicleModelSelect" disabled style="opacity:0.5;">';
+      html += '<option value="">Select make first...</option>';
       html += '</select>';
     } else {
       html += '<input type="text" class="quote-field-input" data-label="' + label + '" placeholder="' + (f.placeholder || label) + '">';
