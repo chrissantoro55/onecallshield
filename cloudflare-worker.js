@@ -271,10 +271,13 @@ async function handleQuotesReadyConsumer(body, env) {
   if (!lead?.email) return { skipped: 'no consumer email' };
   if (!quotes || !quotes.length) return { skipped: 'no quotes' };
 
+  // Sort quotes ascending by rate (lowest first = Best Rate badge)
+  const sorted = [...quotes].sort((a, b) => parseFloat(a.rate) - parseFloat(b.rate));
+
   await sendEmail(env, {
     to: lead.email,
     subject: `🎉 Your ${lead.insuranceType} Quotes Are Ready — Pick Your Agent`,
-    html: quotesReadyConsumerEmail({ lead, quotes })
+    html: quotesReadyEmail(lead, sorted)
   });
   return { sent: lead.email };
 }
@@ -526,43 +529,80 @@ function quoteSubmittedEmail({ agentName, leadId, insuranceType, rate, carrier }
   `);
 }
 
-// ── Consumer: quotes ready (all quotes as cards) ────────────────────────────
-function quotesReadyConsumerEmail({ lead, quotes }) {
+// ── Consumer: quotes ready (world-class standalone email) ───────────────────
+function quotesReadyEmail(lead, quotes) {
   const quoteCards = quotes.map((q, i) => {
-    const selectUrl = `${SITE_URL}/select-quote.html?lead=${lead.id}&quote=${q.agentId}`;
+    const agentFirstName = q.agentFirstName || (q.agentName || '').split(' ')[0] || 'Licensed';
+    const agentLastName  = q.agentLastName  || (q.agentName || '').split(' ').slice(1).join(' ') || 'Agent';
+    const rateDisplay = typeof q.rate === 'number' ? '$' + q.rate : q.rate;
     return `
-    <div class="quote-card">
-      <div class="quote-card-header">
+    <div style="background:#ffffff;border-radius:16px;padding:24px;margin-bottom:16px;border:2px solid ${i===0?'#c9973a':'#ede7dc'};box-shadow:0 2px 12px rgba(13,31,60,0.08);">
+      ${i===0?'<div style="background:#c9973a;color:#0d1f3c;font-size:0.72rem;font-weight:700;text-transform:uppercase;letter-spacing:0.08em;padding:4px 12px;border-radius:100px;display:inline-block;margin-bottom:12px;">⭐ Best Rate</div>':''}
+      <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:16px;">
         <div>
-          <div class="quote-agent">${q.agentName || 'Licensed Agent'}</div>
-          <div class="quote-carrier">${q.carrier} · ${q.agentAgency || 'Independent'}</div>
+          <div style="font-family:Georgia,serif;font-size:1.1rem;font-weight:700;color:#0d1f3c;margin-bottom:2px;">${agentFirstName} ${agentLastName}</div>
+          <div style="font-size:0.82rem;color:#5a6480;">${q.agentAgency||'Independent Agent'}</div>
+          <div style="font-size:0.78rem;color:#5a6480;margin-top:2px;">📋 ${q.carrier}</div>
         </div>
         <div style="text-align:right;">
-          <div class="quote-rate">${q.rate}</div>
+          <div style="font-family:Georgia,serif;font-size:2rem;font-weight:700;color:#0d1f3c;line-height:1;">${rateDisplay}</div>
           <div style="font-size:0.72rem;color:#5a6480;">per month</div>
         </div>
       </div>
-      ${q.sellingPoint ? `<div class="quote-point">💬 "${q.sellingPoint}"</div>` : ''}
-      <a href="${selectUrl}" class="select-btn">Select This Quote →</a>
+      ${q.sellingPoint?`<div style="background:#f8f4ee;border-radius:10px;padding:10px 14px;margin-bottom:16px;font-size:0.82rem;color:#1a1a2e;font-style:italic;">"${q.sellingPoint}"</div>`:''}
+      <a href="${SITE_URL}/select-quote.html?lead=${lead.id}&quote=${q.agentId}"
+         style="display:block;text-align:center;background:#0d1f3c;color:#ffffff;text-decoration:none;padding:14px 24px;border-radius:12px;font-family:Georgia,serif;font-size:1rem;font-weight:700;">
+        Select This Quote →
+      </a>
     </div>`;
   }).join('');
 
-  return emailBase(`
-    <h1>🎉 Your ${lead.insuranceType} Quotes Are Ready!</h1>
-    <p>Hi ${lead.firstName}, we collected quotes from ${quotes.length} licensed agent${quotes.length !== 1 ? 's' : ''} for your <strong>${lead.insuranceType}</strong> coverage. Review and select the one that's right for you.</p>
+  return `<!DOCTYPE html>
+<html>
+<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0"></head>
+<body style="margin:0;padding:0;background:#f8f4ee;font-family:'DM Sans',Arial,sans-serif;">
+<div style="max-width:560px;margin:0 auto;padding:20px 16px;">
 
-    <div class="alert">
-      <p><strong>🛡️ How this works:</strong> Once you select a quote, only that agent receives your contact information. No spam, no call centers.</p>
+  <div style="background:linear-gradient(135deg,#0d1f3c,#1a3460);border-radius:20px 20px 0 0;padding:28px 28px 20px;text-align:center;">
+    <div style="font-size:1.8rem;margin-bottom:8px;">🛡️</div>
+    <div style="font-family:Georgia,serif;font-size:1.4rem;font-weight:700;color:#ffffff;margin-bottom:4px;">Your Quotes Are Ready, ${lead.firstName}!</div>
+    <div style="font-size:0.85rem;color:rgba(255,255,255,0.55);">Licensed agents have submitted their best rates for you</div>
+  </div>
+
+  <div style="background:#c9973a;padding:14px 24px;text-align:center;">
+    <div style="font-size:0.82rem;font-weight:700;color:#0d1f3c;">🛡️ Your phone stays quiet until YOU choose a quote — that's The One Call Guarantee</div>
+  </div>
+
+  <div style="background:#ffffff;padding:20px 24px;border-bottom:1px solid #ede7dc;">
+    <div style="font-size:0.75rem;font-weight:700;text-transform:uppercase;letter-spacing:0.08em;color:#5a6480;margin-bottom:12px;">Your Request Summary</div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;font-size:0.82rem;">
+      <div><span style="color:#5a6480;">Insurance:</span> <strong>${lead.insuranceType}</strong></div>
+      <div><span style="color:#5a6480;">Coverage:</span> <strong>${lead.coverageLevel||'Standard'}</strong></div>
+      <div><span style="color:#5a6480;">Your Area:</span> <strong>${lead.zip}${lead.state?' · '+lead.state:''}</strong></div>
+      <div><span style="color:#5a6480;">Quotes:</span> <strong>${quotes.length} agent${quotes.length!==1?'s':''}</strong></div>
     </div>
+  </div>
 
-    <div class="divider"></div>
-    <p style="font-size:0.8rem;font-weight:700;text-transform:uppercase;letter-spacing:0.07em;color:#5a6480;margin-bottom:12px;">Your Quotes — Choose One</p>
-
+  <div style="background:#f8f4ee;padding:20px 16px;">
+    <div style="font-family:Georgia,serif;font-size:1.1rem;font-weight:700;color:#0d1f3c;margin-bottom:4px;text-align:center;">Compare Your Quotes</div>
+    <div style="font-size:0.78rem;color:#5a6480;text-align:center;margin-bottom:20px;">Click "Select This Quote" next to the rate you want — that agent will call you once.</div>
     ${quoteCards}
+  </div>
 
-    <div class="divider"></div>
-    <p style="font-size:0.83rem;color:#5a6480;">Quotes are valid for 48 hours. If you have questions, email <a href="mailto:info@onecallshield.com" style="color:#c9973a;">info@onecallshield.com</a>.</p>
-  `);
+  <div style="background:#ffffff;padding:20px 24px;text-align:center;">
+    <div style="font-size:0.85rem;color:#5a6480;margin-bottom:8px;">Not happy with any of these quotes?</div>
+    <a href="mailto:chris@onecallshield.com?subject=Need more quotes — ${lead.id}" style="color:#c9973a;font-weight:700;font-size:0.85rem;">Reply here and we'll find more options →</a>
+  </div>
+
+  <div style="background:linear-gradient(135deg,#0d1f3c,#1a3460);border-radius:0 0 20px 20px;padding:24px;text-align:center;">
+    <div style="font-family:Georgia,serif;font-size:1rem;font-weight:700;color:#c9973a;margin-bottom:6px;">🛡️ The One Call Guarantee</div>
+    <div style="font-size:0.75rem;color:rgba(255,255,255,0.5);line-height:1.6;margin-bottom:16px;">Select a quote — that agent contacts you once. If anyone else calls you,<br>email chris@onecallshield.com immediately and we make it right.</div>
+    <div style="font-size:0.72rem;color:rgba(255,255,255,0.3);">OneCallShield LLC · Poughkeepsie, NY · chris@onecallshield.com · (845) 242-4389</div>
+  </div>
+
+</div>
+</body>
+</html>`;
 }
 
 // ── Winning agent: full consumer contact info + payment notice ──────────────

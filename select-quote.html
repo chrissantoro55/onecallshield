@@ -83,6 +83,31 @@ nav{background:var(--navy);height:64px;padding:0 5%;display:flex;align-items:cen
   .summary-grid{grid-template-columns:1fr;}
   .agent-rate{font-size:1.5rem;}
 }
+/* CONFETTI */
+.confetti-piece{position:fixed;width:10px;height:10px;border-radius:2px;pointer-events:none;z-index:9999;animation:confettiFall linear forwards;}
+@keyframes confettiFall{0%{transform:translateY(-20px) rotate(0deg);opacity:1;}100%{transform:translateY(110vh) rotate(720deg);opacity:0;}}
+@keyframes bounceIn{0%{transform:scale(0.3);opacity:0;}50%{transform:scale(1.15);}70%{transform:scale(0.92);}100%{transform:scale(1);opacity:1;}}
+/* CELEBRATION */
+.celeb-state{text-align:center;padding:2.5rem 2rem 2rem;}
+.celeb-emoji{font-size:4rem;display:block;animation:bounceIn 0.7s cubic-bezier(0.215,0.61,0.355,1) both;margin-bottom:0.8rem;}
+.celeb-title{font-family:'Fraunces',serif;font-size:1.6rem;color:var(--navy);font-weight:700;margin-bottom:0.4rem;}
+.celeb-sub{color:var(--text-muted);font-size:0.92rem;line-height:1.6;margin-bottom:1.8rem;}
+.celeb-agent-card{background:linear-gradient(135deg,var(--navy),var(--navy-mid));border-radius:16px;padding:1.4rem 1.6rem;margin-bottom:1.4rem;text-align:left;border:1px solid rgba(201,151,58,0.35);}
+.celeb-agent-label{font-size:0.68rem;font-weight:700;text-transform:uppercase;letter-spacing:0.08em;color:rgba(255,255,255,0.4);margin-bottom:0.5rem;}
+.celeb-agent-name{font-family:'Fraunces',serif;font-size:1.2rem;color:#fff;font-weight:700;margin-bottom:0.15rem;}
+.celeb-agent-agency{font-size:0.82rem;color:rgba(255,255,255,0.5);margin-bottom:1rem;}
+.celeb-rate-row{display:flex;align-items:baseline;gap:0.4rem;}
+.celeb-rate{font-family:'Fraunces',serif;font-size:2rem;color:var(--gold);font-weight:700;}
+.celeb-rate-mo{font-size:0.82rem;color:rgba(255,255,255,0.4);}
+.celeb-carrier{display:inline-block;background:rgba(201,151,58,0.15);color:var(--gold);font-size:0.78rem;font-weight:700;padding:0.25rem 0.65rem;border-radius:100px;margin-top:0.5rem;}
+.celeb-steps{background:var(--cream);border-radius:14px;padding:1.2rem 1.4rem;margin-bottom:1.4rem;text-align:left;}
+.celeb-steps-title{font-size:0.78rem;font-weight:700;color:var(--navy);text-transform:uppercase;letter-spacing:0.06em;margin-bottom:0.9rem;}
+.celeb-step{display:flex;align-items:flex-start;gap:0.7rem;margin-bottom:0.7rem;font-size:0.88rem;color:var(--text-muted);line-height:1.5;}
+.celeb-step:last-child{margin-bottom:0;}
+.celeb-step-num{width:22px;height:22px;border-radius:50%;background:var(--navy);color:var(--gold);font-size:0.7rem;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-top:1px;}
+.celeb-privacy{background:linear-gradient(135deg,#0a1828,var(--navy));border:1px solid rgba(201,151,58,0.25);border-radius:14px;padding:1.1rem 1.4rem;margin-bottom:1.6rem;text-align:left;}
+.celeb-privacy-title{color:var(--gold);font-size:0.82rem;font-weight:700;margin-bottom:0.35rem;}
+.celeb-privacy-text{color:rgba(255,255,255,0.55);font-size:0.82rem;line-height:1.55;}
 </style>
 </head>
 <body>
@@ -318,42 +343,68 @@ function confirmSelection() {
   });
 }
 
+// ─── CONFETTI ──────────────────────────────────────────────────────────────────
+function launchConfetti() {
+  var colors = ['#c9973a','#f5d285','#e8b96a','#2d7a4f','#0d1f3c','#fff','#f87171'];
+  var shapes = ['2px','4px','6px','50%'];
+  for (var i = 0; i < 120; i++) {
+    (function(i) {
+      setTimeout(function() {
+        var el = document.createElement('div');
+        el.className = 'confetti-piece';
+        var color = colors[Math.floor(Math.random() * colors.length)];
+        var size = (6 + Math.random() * 8) + 'px';
+        var br = shapes[Math.floor(Math.random() * shapes.length)];
+        var left = Math.random() * 100;
+        var dur = 1.8 + Math.random() * 2;
+        var delay = Math.random() * 0.5;
+        el.style.cssText = 'left:'+left+'vw;width:'+size+';height:'+size+';background:'+color+';border-radius:'+br+';animation-duration:'+dur+'s;animation-delay:'+delay+'s;top:-20px;';
+        document.body.appendChild(el);
+        setTimeout(function() { el.remove(); }, (dur + delay + 0.5) * 1000);
+      }, i * 18);
+    })(i);
+  }
+}
+
 // ─── SUCCESS STATE ─────────────────────────────────────────────────────────────
 function showSuccess() {
+  launchConfetti();
+  var rateDisplay = typeof _quote.rate === 'number' ? '$' + _quote.rate.toFixed(2) : _quote.rate;
   var card = document.getElementById('mainCard');
   card.innerHTML = `
     <div class="card-body">
-      <div class="success-state">
-        <div class="success-icon">✅</div>
-        <div class="success-title">You're All Set, ${_lead.firstName}!</div>
-        <div class="success-sub">
-          You've selected <strong>${_agent.firstName} ${_agent.lastName}</strong> as your agent.<br>
-          They'll be calling you soon to finalize your <strong>${_lead.insuranceType}</strong> coverage.
+      <div class="celeb-state">
+        <span class="celeb-emoji">🎉</span>
+        <div class="celeb-title">You're locked in, ${_lead.firstName}!</div>
+        <div class="celeb-sub">
+          Your agent has been notified and will call you at your preferred time.<br>
+          One agent. One call. No spam — ever.
         </div>
 
-        <div class="success-agent-box">
-          <div class="label">Your Agent</div>
-          <div class="value">${_agent.firstName} ${_agent.lastName}</div>
-          <div style="font-size:0.82rem;color:var(--text-muted);margin-top:0.2rem;">${_agent.agency || 'Independent Agent'}</div>
-          <div style="margin-top:0.7rem;"><div class="label">Quoted Rate</div><div style="font-family:'Fraunces',serif;font-size:1.2rem;color:var(--gold);font-weight:700;">${_quote.rate}<span style="font-family:'DM Sans',sans-serif;font-size:0.78rem;color:var(--text-muted);font-weight:400;"> /month</span></div></div>
-          <div style="margin-top:0.5rem;"><div class="label">Carrier</div><div class="value" style="font-size:0.9rem;">${_quote.carrier}</div></div>
-        </div>
-
-        <div class="protection-box">
-          <div class="protection-box-title">🛡️ Your Number Is Protected</div>
-          <p>Only ${_agent.firstName} has your contact information. Your number will never be sold to call centers or other agents. OneCallShield takes your privacy seriously.</p>
-        </div>
-
-        <div style="background:var(--cream);border-radius:12px;padding:1rem;margin-bottom:1.2rem;text-align:left;">
-          <div style="font-size:0.78rem;font-weight:700;color:var(--navy);margin-bottom:0.6rem;">What to Have Ready When They Call:</div>
-          <div style="font-size:0.85rem;color:var(--text-muted);line-height:1.8;">
-            ✓ Your current policy info (if any)<br>
-            ✓ Questions about coverage or pricing<br>
-            ✓ Payment method if you want same-day coverage
+        <div class="celeb-agent-card">
+          <div class="celeb-agent-label">Your Chosen Agent</div>
+          <div class="celeb-agent-name">${_agent.firstName} ${_agent.lastName}</div>
+          <div class="celeb-agent-agency">${_agent.agency || 'Independent Agent'}</div>
+          <div class="celeb-rate-row">
+            <span class="celeb-rate">${rateDisplay}</span>
+            <span class="celeb-rate-mo">/month</span>
           </div>
+          <div class="celeb-carrier">${_quote.carrier}</div>
         </div>
 
-        <a href="/" style="display:block;width:100%;background:var(--navy);color:#fff;padding:0.85rem;border-radius:12px;font-weight:700;font-size:0.92rem;text-align:center;text-decoration:none;">Return to OneCallShield →</a>
+        <div class="celeb-steps">
+          <div class="celeb-steps-title">What Happens Next</div>
+          <div class="celeb-step"><div class="celeb-step-num">1</div><span><strong>${_agent.firstName}</strong> receives your selection and your contact details right now.</span></div>
+          <div class="celeb-step"><div class="celeb-step-num">2</div><span>They'll call you at your preferred time to finalize your <strong>${_lead.insuranceType}</strong> coverage.</span></div>
+          <div class="celeb-step"><div class="celeb-step-num">3</div><span>Have your current policy handy — they can often beat it on the spot.</span></div>
+        </div>
+
+        <div class="celeb-privacy">
+          <div class="celeb-privacy-title">🛡️ Your Privacy Guarantee</div>
+          <div class="celeb-privacy-text">Only ${_agent.firstName} has your phone number. It will never be shared with other agents, sold to call centers, or used for any other purpose. One agent. That's the promise.</div>
+        </div>
+
+        <a href="/" style="display:block;width:100%;background:var(--gold);color:var(--navy);padding:1rem;border-radius:14px;font-weight:700;font-size:0.95rem;text-align:center;text-decoration:none;font-family:'DM Sans',sans-serif;">Back to OneCallShield →</a>
       </div>
     </div>
   `;

@@ -15,7 +15,7 @@
 <title>Your Request Status — OneCallShield</title>
 <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,600;0,9..144,700&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
 <style>
-:root{--navy:#0d1f3c;--navy-mid:#1a3460;--gold:#c9973a;--gold-light:#e8b96a;--cream:#f8f4ee;--cream-dark:#ede7dc;--white:#fff;--text:#1a1a2e;--text-muted:#5a6480;--green:#2d7a4f;--green-light:#e8f5ee;--red:#c0392b;}
+:root{--navy:#0d1f3c;--navy-mid:#1a3460;--gold:#c9973a;--gold-light:#e8b96a;--cream:#f8f4ee;--cream-dark:#ede7dc;--white:#fff;--text:#1a1a2e;--text-muted:#5a6480;--green:#2d7a4f;--green-light:#e8f5ee;--red:#c0392b;--amber:#d97706;}
 *{margin:0;padding:0;box-sizing:border-box;}
 body{font-family:'DM Sans',sans-serif;background:var(--cream);color:var(--text);min-height:100vh;}
 
@@ -115,6 +115,23 @@ body{font-family:'DM Sans',sans-serif;background:var(--cream);color:var(--text);
   .status-footer{padding:16px 20px;}
   .guarantee-item{padding:0 10px;}
 }
+
+/* QUOTE TRACKER */
+.quote-tracker{margin:0 28px 28px;}
+.qt-title{font-size:0.72rem;font-weight:700;color:var(--amber);text-transform:uppercase;letter-spacing:0.08em;margin-bottom:12px;}
+.qt-count-row{display:flex;align-items:center;gap:16px;margin-bottom:14px;}
+.qt-count-bubble{width:64px;height:64px;border-radius:50%;background:linear-gradient(135deg,var(--amber),#f59e0b);display:flex;align-items:center;justify-content:center;font-family:'Fraunces',serif;font-size:1.8rem;font-weight:700;color:var(--navy);flex-shrink:0;box-shadow:0 4px 16px rgba(217,119,6,0.3);}
+.qt-count-label{font-size:0.9rem;color:var(--text-muted);line-height:1.5;}
+.qt-count-label strong{display:block;font-size:1rem;color:var(--navy);margin-bottom:2px;}
+.qt-timer-bar-wrap{background:var(--cream-dark);border-radius:100px;height:8px;overflow:hidden;margin-bottom:8px;}
+.qt-timer-bar{height:100%;border-radius:100px;background:linear-gradient(90deg,var(--amber),#f59e0b);transition:width 1s linear;}
+.qt-timer-label{font-size:0.78rem;color:var(--text-muted);text-align:right;}
+.qt-email-note{margin-top:12px;background:rgba(217,119,6,0.06);border:1px solid rgba(217,119,6,0.2);border-radius:10px;padding:12px 14px;font-size:0.82rem;color:var(--amber);font-weight:500;}
+.qt-quotes-ready{background:rgba(45,122,79,0.06);border:1px solid rgba(45,122,79,0.2);border-radius:12px;padding:16px 18px;}
+.qt-ready-title{font-family:'Fraunces',serif;font-size:1rem;font-weight:700;color:var(--green);margin-bottom:6px;}
+.qt-ready-desc{font-size:0.85rem;color:var(--text-muted);line-height:1.5;}
+.qt-ready-cta{display:block;margin-top:12px;background:var(--green);color:#fff;text-decoration:none;padding:12px 20px;border-radius:10px;font-weight:600;font-size:0.9rem;text-align:center;}
+@media(max-width:600px){.quote-tracker{margin:0 20px 20px;}}
 </style>
 </head>
 <body>
@@ -166,6 +183,9 @@ body{font-family:'DM Sans',sans-serif;background:var(--cream);color:var(--text);
       <!-- Status Steps -->
       <div class="status-steps" id="statusSteps"></div>
 
+      <!-- Quote Tracker (shown when quote_requested or quotes_sent) -->
+      <div class="quote-tracker" id="quoteTracker" style="display:none;"></div>
+
       <!-- Matched Agent (shown when matched) -->
       <div class="agent-card" id="agentCard" style="display:none;"></div>
 
@@ -189,13 +209,34 @@ body{font-family:'DM Sans',sans-serif;background:var(--cream);color:var(--text);
   </div>
 </div>
 
+<script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-database-compat.js"></script>
 <script>
+const FIREBASE_CONFIG = { databaseURL: 'https://onecallshield-default-rtdb.firebaseio.com' };
+if (!firebase.apps.length) firebase.initializeApp(FIREBASE_CONFIG);
+const _db = firebase.database();
+
+var _quoteListener = null; // store ref for cleanup
+var _countdownTimer = null;
+
 const STEPS = {
   unmatched: [
     { icon: '✓', status: 'complete', title: 'Request Received', desc: 'We\'ve received your insurance request and it\'s in our system.', showTime: true },
     { icon: '🔍', status: 'active', title: 'Reviewing Your Request', desc: 'Our team is personally reviewing your needs and selecting the best agent for you.' },
     { icon: '🤝', status: 'pending', title: 'Agent Matched', desc: 'Your agent will be assigned shortly.' },
     { icon: '📞', status: 'pending', title: 'Your Agent Will Call', desc: 'One call. Real quotes. No pressure.' }
+  ],
+  quote_requested: [
+    { icon: '✓', status: 'complete', title: 'Request Received', desc: 'We received your insurance request.', showTime: true },
+    { icon: '💬', status: 'active', title: 'Collecting Agent Quotes', desc: 'Licensed agents are competing to offer you the best rate. This takes up to 4 hours.' },
+    { icon: '📧', status: 'pending', title: 'Review Your Quotes', desc: 'You\'ll get an email with all quotes to compare side-by-side.' },
+    { icon: '🤝', status: 'pending', title: 'Select Your Agent', desc: 'Pick the best quote. Your agent calls you — one time.' }
+  ],
+  quotes_sent: [
+    { icon: '✓', status: 'complete', title: 'Request Received', desc: 'We received your insurance request.', showTime: true },
+    { icon: '✓', status: 'complete', title: 'Quotes Collected', desc: 'Licensed agents submitted their best rates.' },
+    { icon: '📧', status: 'active', title: 'Check Your Email', desc: 'Your quote comparison email has been sent. Review and select your agent.' },
+    { icon: '🤝', status: 'pending', title: 'Select Your Agent', desc: 'Pick the best quote. Your agent calls you — one time.' }
   ],
   matched: [
     { icon: '✓', status: 'complete', title: 'Request Received', desc: 'We received your insurance request.', showTime: true },
@@ -272,14 +313,27 @@ async function loadStatusAsync(leadId) {
   document.getElementById('consumerMeta').textContent = lead.insuranceType + ' · ZIP ' + lead.zip;
   document.getElementById('consumerId').textContent = 'Request ID: ' + lead.id;
 
-  const isMatched = lead.status === 'matched';
+  const status = lead.status || 'unmatched';
+  const isMatched = status === 'matched';
+  const isQuoteRequested = status === 'quote_requested';
+  const isQuotesSent = status === 'quotes_sent';
 
   // Header
-  document.getElementById('headerTitle').textContent = isMatched ? 'Your Agent Has Been Matched! 🎉' : 'We\'ve Got You Covered';
-  document.getElementById('headerSub').textContent = isMatched ? 'Your agent will be in touch soon' : 'Your request is being personally reviewed';
+  const headerTitles = {
+    matched: 'Your Agent Has Been Matched! 🎉',
+    quote_requested: 'Agents Are Competing For You ⚡',
+    quotes_sent: 'Your Quotes Are Ready! 📧'
+  };
+  const headerSubs = {
+    matched: 'Your agent will be in touch soon',
+    quote_requested: 'Sit tight — your quote comparison is being built',
+    quotes_sent: 'Check your email and pick your agent'
+  };
+  document.getElementById('headerTitle').textContent = headerTitles[status] || 'We\'ve Got You Covered';
+  document.getElementById('headerSub').textContent = headerSubs[status] || 'Your request is being personally reviewed';
 
   // Steps
-  const steps = isMatched ? STEPS.matched : STEPS.unmatched;
+  const steps = STEPS[status] || STEPS.unmatched;
   document.getElementById('statusSteps').innerHTML = steps.map(s => `
     <div class="step ${s.status}">
       <div class="step-icon">${s.status === 'complete' ? '✓' : s.icon}</div>
@@ -291,9 +345,55 @@ async function loadStatusAsync(leadId) {
       </div>
     </div>`).join('');
 
+  // Quote tracker — real-time Firebase listener
+  if (isQuoteRequested || isQuotesSent) {
+    const tracker = document.getElementById('quoteTracker');
+    tracker.style.display = 'block';
+
+    if (isQuotesSent) {
+      tracker.innerHTML = `
+        <div class="qt-title">📧 Quote Comparison Sent</div>
+        <div class="qt-quotes-ready">
+          <div class="qt-ready-title">Your quotes are in your inbox!</div>
+          <div class="qt-ready-desc">We sent you a side-by-side comparison of every agent quote. Open the email, review the rates, and click the quote you want — your chosen agent will call you directly.</div>
+          <a href="mailto:" class="qt-ready-cta">Open Email App →</a>
+        </div>`;
+    } else {
+      // quote_requested — show real-time count + countdown
+      const deadline = new Date(lead.submittedAt).getTime() + 4 * 60 * 60 * 1000;
+
+      function renderTracker(count) {
+        const msLeft = Math.max(0, deadline - Date.now());
+        const pct = Math.max(0, Math.min(100, (msLeft / (4 * 3600 * 1000)) * 100));
+        tracker.innerHTML = `
+          <div class="qt-title">💬 Live Quote Tracker</div>
+          <div class="qt-count-row">
+            <div class="qt-count-bubble" id="qtCountBubble">${count}</div>
+            <div class="qt-count-label">
+              <strong>${count === 0 ? 'Waiting for first quote' : count === 1 ? '1 agent has quoted' : count + ' agents have quoted'}</strong>
+              Agents in your area are competing to offer you the best rate.
+            </div>
+          </div>
+          <div class="qt-timer-bar-wrap">
+            <div class="qt-timer-bar" id="qtTimerBar" style="width:${pct}%"></div>
+          </div>
+          <div class="qt-timer-label" id="qtTimerLabel"></div>
+          <div class="qt-email-note">📬 When the window closes, we'll email you a side-by-side comparison of every quote.</div>`;
+        startCountdown(deadline);
+      }
+
+      // Clean up prior listener
+      if (_quoteListener) { _quoteListener.off(); _quoteListener = null; }
+      _quoteListener = _db.ref('leads/' + lead.id + '/quotes');
+      _quoteListener.on('value', function(snap) {
+        const quotes = snap.val() || {};
+        renderTracker(Object.keys(quotes).length);
+      });
+    }
+  }
+
   // Agent card — use KV data if available, fall back to localStorage
   if (isMatched) {
-    // KV stores agent info directly on the lead
     const agentFromKV = lead.agentFirstName ? {
       firstName: lead.agentFirstName,
       lastName: lead.agentLastName,
@@ -324,6 +424,30 @@ async function loadStatusAsync(leadId) {
         <div class="agent-calltime">📞 Expect your call: ${lead.contactTime || 'Anytime'}</div>`;
     }
   }
+}
+
+function startCountdown(deadline) {
+  if (_countdownTimer) clearInterval(_countdownTimer);
+  function tick() {
+    const msLeft = Math.max(0, deadline - Date.now());
+    const totalMs = 4 * 60 * 60 * 1000;
+    const pct = Math.max(0, Math.min(100, (msLeft / totalMs) * 100));
+    const bar = document.getElementById('qtTimerBar');
+    const lbl = document.getElementById('qtTimerLabel');
+    if (!bar || !lbl) { clearInterval(_countdownTimer); return; }
+    bar.style.width = pct + '%';
+    if (msLeft <= 0) {
+      lbl.textContent = 'Quote window closed — preparing your comparison…';
+      clearInterval(_countdownTimer);
+    } else {
+      const hrs = Math.floor(msLeft / 3600000);
+      const mins = Math.floor((msLeft % 3600000) / 60000);
+      const secs = Math.floor((msLeft % 60000) / 1000);
+      lbl.textContent = `${hrs}h ${mins}m ${secs}s remaining`;
+    }
+  }
+  tick();
+  _countdownTimer = setInterval(tick, 1000);
 }
 
 function showNotFound() {

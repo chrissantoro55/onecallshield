@@ -261,25 +261,41 @@ tr.lead-row:hover td{background:rgba(201,151,58,0.04);}
 @keyframes pulse{0%,100%{transform:scale(1);opacity:1;}50%{transform:scale(1.08);opacity:0.8;}}
 .sync-indicator{font-size:0.72rem;color:var(--text-muted);text-align:right;margin-top:0.3rem;}
 /* ── QUOTE REQUESTS TAB ── */
-.qr-card{background:var(--white);border-radius:16px;padding:1.5rem;border:1px solid var(--border);margin-bottom:1.2rem;box-shadow:0 2px 8px rgba(13,31,60,0.04);}
-.qr-card-header{display:flex;align-items:flex-start;justify-content:space-between;gap:0.8rem;margin-bottom:1rem;flex-wrap:wrap;}
-.qr-card-title{font-family:'Fraunces',serif;font-size:1rem;color:var(--navy);font-weight:700;}
-.qr-card-meta{font-size:0.78rem;color:var(--text-muted);margin-top:0.2rem;}
-.qr-timer{background:rgba(217,119,6,0.12);color:var(--amber);font-size:0.78rem;font-weight:700;padding:0.25rem 0.7rem;border-radius:100px;white-space:nowrap;}
-.qr-timer.expired{background:rgba(192,57,43,0.1);color:var(--red);}
-.qr-details{display:flex;flex-wrap:wrap;gap:0.5rem;margin-bottom:1rem;}
-.qr-detail-pill{background:var(--cream);border-radius:8px;padding:0.35rem 0.7rem;font-size:0.78rem;color:var(--navy);font-weight:600;}
-.qr-detail-pill span{color:var(--text-muted);font-weight:400;margin-right:0.25rem;}
-.qsf-label{display:block;font-size:0.72rem;font-weight:700;color:var(--text-muted);text-transform:uppercase;letter-spacing:0.06em;margin-bottom:0.3rem;}
-.qsf-input{width:100%;background:var(--cream);border:1.5px solid rgba(13,31,60,0.1);border-radius:8px;padding:0.7rem 0.9rem;font-size:0.92rem;font-family:'DM Sans',sans-serif;color:var(--navy);outline:none;transition:border-color 0.2s;box-sizing:border-box;}
-.qsf-input:focus{border-color:var(--gold);}
-.qsf-row{display:grid;grid-template-columns:1fr 1fr;gap:0.7rem;margin-bottom:0.7rem;}
-.qsf-full{margin-bottom:0.7rem;}
-.qsf-submit-btn{width:100%;background:var(--gold);color:var(--navy);border:none;padding:0.85rem;border-radius:10px;font-size:0.95rem;font-weight:700;cursor:pointer;font-family:'DM Sans',sans-serif;margin-top:0.5rem;transition:background 0.2s;}
-.qsf-submit-btn:hover{background:var(--gold-light);}
-.qsf-submit-btn:disabled{background:var(--cream-dark);color:var(--text-muted);cursor:not-allowed;}
-.qr-submitted-badge{background:var(--green-light);color:var(--green);font-size:0.8rem;font-weight:700;padding:0.3rem 0.8rem;border-radius:100px;display:inline-flex;align-items:center;gap:0.3rem;}
-.qr-submitted-detail{font-size:0.85rem;color:var(--text-muted);margin-top:0.5rem;}
+.qr-card{background:#fff;border-radius:16px;margin-bottom:16px;overflow:hidden;box-shadow:0 2px 12px rgba(13,31,60,0.08);border:1.5px solid var(--cream-dark);}
+.qr-card.qr-expired{opacity:0.6;}
+.qr-card-top{display:flex;justify-content:space-between;align-items:center;padding:14px 16px;background:var(--navy);border-bottom:2px solid var(--gold);}
+.qr-card-type{display:flex;align-items:center;gap:8px;}
+.qr-type-emoji{font-size:1.3rem;}
+.qr-type-name{font-family:'Fraunces',serif;font-size:1rem;font-weight:700;color:#fff;}
+.qr-timer-badge{font-size:0.75rem;font-weight:700;padding:4px 10px;border-radius:100px;background:rgba(255,255,255,0.1);color:rgba(255,255,255,0.7);}
+.qr-timer-badge.urgent{background:rgba(192,57,43,0.2);color:#f87171;}
+.qr-timer-badge.expired{background:rgba(255,255,255,0.05);color:rgba(255,255,255,0.3);}
+.qr-key-info{display:flex;flex-wrap:wrap;gap:6px;padding:14px 16px;border-bottom:1px solid var(--cream-dark);}
+.qr-info-pill{font-size:0.78rem;padding:4px 10px;border-radius:100px;background:var(--cream);color:var(--text);font-weight:500;}
+.qr-info-pill.qr-premium{background:rgba(192,57,43,0.08);color:#c0392b;}
+.qr-info-pill.qr-range{background:rgba(45,122,79,0.08);color:#2d7a4f;}
+.qr-detail-pills{display:flex;flex-wrap:wrap;gap:6px;padding:10px 16px;border-bottom:1px solid var(--cream-dark);}
+.qr-detail-pill{font-size:0.72rem;padding:3px 8px;border-radius:6px;background:#f0f0f0;color:var(--text-muted);}
+.qr-detail-pill span{font-weight:600;color:var(--navy);margin-right:3px;}
+.qr-submitted{display:flex;align-items:center;gap:12px;padding:16px;background:var(--green-light);border-top:1px solid var(--green);}
+.qr-submitted-icon{font-size:1.4rem;}
+.qr-submitted-text{display:flex;flex-direction:column;font-size:0.85rem;}
+.qr-submitted-text strong{color:var(--green);font-weight:700;}
+.qr-submitted-text span{color:var(--text-muted);margin-top:2px;}
+.qr-expired-msg{padding:16px;text-align:center;font-size:0.85rem;color:var(--text-muted);}
+.qr-submit-section{padding:16px;}
+.qr-submit-label{font-size:0.75rem;font-weight:600;text-transform:uppercase;letter-spacing:0.07em;color:var(--text-muted);margin-bottom:6px;}
+.qr-rate-input-wrap{display:flex;align-items:center;gap:8px;margin-bottom:4px;}
+.qr-dollar{font-size:1.4rem;font-weight:700;color:var(--text-muted);}
+.qr-rate-input{flex:1;font-family:'Fraunces',serif;font-size:2rem;font-weight:700;color:var(--navy);border:none;border-bottom:2.5px solid var(--cream-dark);border-radius:0;padding:4px 0;outline:none;width:100%;background:transparent;}
+.qr-rate-input:focus{border-bottom-color:var(--gold);}
+.qr-per-mo{font-size:0.88rem;color:var(--text-muted);white-space:nowrap;}
+.qr-carrier-select{width:100%;padding:12px 14px;border:1.5px solid var(--cream-dark);border-radius:10px;font-family:'DM Sans',sans-serif;font-size:0.95rem;color:var(--text);background:#fff;-webkit-appearance:none;outline:none;min-height:48px;}
+.qr-carrier-select:focus{border-color:var(--gold);}
+.qr-point-input{width:100%;padding:12px 14px;border:1.5px solid var(--cream-dark);border-radius:10px;font-family:'DM Sans',sans-serif;font-size:0.88rem;color:var(--text);background:#fff;outline:none;box-sizing:border-box;min-height:48px;}
+.qr-point-input:focus{border-color:var(--gold);}
+.qr-submit-btn{width:100%;padding:16px;background:var(--gold);color:var(--navy);border:none;border-radius:12px;font-family:'Fraunces',serif;font-size:1.05rem;font-weight:700;cursor:pointer;margin-top:14px;min-height:56px;}
+.qr-fee-note{text-align:center;font-size:0.72rem;color:var(--text-muted);margin-top:8px;}
 .qr-section-title{font-family:'Fraunces',serif;font-size:1.1rem;color:var(--navy);font-weight:700;margin-bottom:1rem;}
 .qr-empty{text-align:center;padding:3rem 1rem;background:var(--white);border-radius:16px;border:1px solid var(--border);}
 .qr-empty-icon{font-size:3rem;margin-bottom:0.8rem;}
@@ -288,6 +304,7 @@ tr.lead-row:hover td{background:rgba(201,151,58,0.04);}
 .qr-my-quote-label{font-size:0.7rem;font-weight:700;color:var(--text-muted);text-transform:uppercase;letter-spacing:0.06em;margin-bottom:0.5rem;}
 .qr-my-quote-row{display:flex;justify-content:space-between;font-size:0.87rem;padding:0.2rem 0;color:var(--navy);}
 .qr-my-quote-row span:first-child{color:var(--text-muted);}
+.qr-submitted-badge{background:var(--green-light);color:var(--green);font-size:0.8rem;font-weight:700;padding:0.3rem 0.8rem;border-radius:100px;display:inline-flex;align-items:center;gap:0.3rem;}
 .qr-selected-badge{background:rgba(201,151,58,0.12);color:var(--gold);font-size:0.78rem;font-weight:700;padding:0.25rem 0.65rem;border-radius:100px;}
 .login-screen{background:linear-gradient(135deg,#0d1f3c 0%,#1a3460 50%,#0d1f3c 100%);background-size:400% 400%;animation:gradientShift 8s ease infinite;}
 @keyframes gradientShift{0%{background-position:0% 50%;}50%{background-position:100% 50%;}100%{background-position:0% 50%;}}
@@ -1926,6 +1943,15 @@ function timeAgo(dateStr) {
 
 var _allLeadsData = null; // cached raw Firebase snapshot
 
+function getInsTypeEmoji(type) {
+  var map = {'Auto Insurance':'🚗','Homeowners Insurance':'🏠','Life Insurance':'❤️','Medicare':'💊','Health Insurance':'🏥','Renters Insurance':'🏢'};
+  return map[type] || '📋';
+}
+function getLeadFee(type) {
+  var fees = {'Auto Insurance':150,'Homeowners Insurance':200,'Life Insurance':200,'Medicare':200,'Health Insurance':175,'Renters Insurance':75};
+  return fees[type] || 150;
+}
+
 function loadQuoteRequests(rawData) {
   if(rawData) _allLeadsData = rawData;
   if(!_allLeadsData || !currentAgent) {
@@ -1977,60 +2003,79 @@ function renderActiveRequests(leads, cutoff2h) {
     const expired = msLeft <= 0;
     const myQuote = l.quotes && l.quotes[currentAgent.id];
     const details = l.insuranceDetails || {};
-    const detailPills = Object.entries(details).filter(([,v])=>v).map(([k,v]) =>
-      `<div class="qr-detail-pill"><span>${k}:</span>${v}</div>`
-    ).join('');
+    const fee = getLeadFee(l.insuranceType);
 
-    let timerHtml = '';
-    if(!expired && !myQuote) {
+    // Timer badge
+    let timerText = '';
+    let timerClass = 'qr-timer-badge';
+    if(myQuote) {
+      timerText = '✅ Submitted';
+    } else if(expired) {
+      timerText = '⛔ Expired';
+      timerClass += ' expired';
+    } else {
       const hrs = Math.floor(msLeft / 3600000);
       const mins = Math.floor((msLeft % 3600000) / 60000);
-      timerHtml = `<span class="qr-timer">⏰ ${hrs}h ${mins}m left</span>`;
-    } else if(expired && !myQuote) {
-      timerHtml = `<span class="qr-timer expired">⛔ Expired</span>`;
+      timerText = `⏰ ${hrs}h ${mins}m left`;
+      if(msLeft < 3600000) timerClass += ' urgent';
     }
 
+    // Key info pills
+    const infoPills = [
+      l.zip ? `<span class="qr-info-pill">📍 ${l.zip}${l.state ? ', '+l.state : ''}</span>` : '',
+      l.age  ? `<span class="qr-info-pill">👤 Age ${l.age}</span>` : '',
+      l.coverageLevel ? `<span class="qr-info-pill">🛡️ ${l.coverageLevel}</span>` : '',
+      l.currentPremium ? `<span class="qr-info-pill qr-premium">💸 Paying ${l.currentPremium}/mo</span>` : '',
+    ].filter(Boolean).join('');
+
+    // Detail pills from insuranceDetails
+    const detailPills = Object.entries(details).filter(([,v])=>v).map(([k,v]) =>
+      `<span class="qr-detail-pill"><span class="qr-detail-key">${k.replace(/([A-Z])/g,' $1').replace(/^./,s=>s.toUpperCase())}:</span>${v}</span>`
+    ).join('');
+
+    // Form / submitted / expired state
     let formOrStatus = '';
     if(myQuote) {
-      formOrStatus = `<div class="qr-my-quote">
-        <div class="qr-my-quote-label">✅ Your Quote Submitted</div>
-        <div class="qr-my-quote-row"><span>Rate:</span><strong>${myQuote.rate}</strong></div>
-        <div class="qr-my-quote-row"><span>Carrier:</span><strong>${myQuote.carrier}</strong></div>
-        ${myQuote.sellingPoint ? `<div class="qr-my-quote-row"><span>Selling Point:</span><span>${myQuote.sellingPoint}</span></div>` : ''}
-        ${l.selectedQuote === currentAgent.id ? `<div style="margin-top:0.7rem;"><span class="qr-selected-badge">🏆 Consumer Selected Your Quote!</span></div>` : ''}
+      formOrStatus = `<div class="qr-submitted">
+        <div class="qr-submitted-icon">✅</div>
+        <div class="qr-submitted-text">
+          <strong>Quote Submitted</strong>
+          <span>$${myQuote.rate}/mo · ${myQuote.carrier}</span>
+          ${myQuote.sellingPoint ? `<span style="font-size:0.78rem;color:var(--text-muted)">${myQuote.sellingPoint}</span>` : ''}
+          ${l.selectedQuote === currentAgent.id ? `<span class="qr-selected-badge">🏆 Consumer Selected Your Quote!</span>` : ''}
+        </div>
       </div>`;
     } else if(!expired) {
-      formOrStatus = `<div style="margin-top:1rem;border-top:1px solid var(--border);padding-top:1rem;">
-        <div style="font-size:0.8rem;font-weight:700;color:var(--navy);margin-bottom:0.7rem;">Submit Your Quote</div>
-        <div class="qsf-row">
-          <div>
-            <label class="qsf-label">Monthly Rate</label>
-            <input class="qsf-input" type="text" id="qsf-rate-${l.id}" placeholder="e.g. $89/mo">
-          </div>
-          <div>
-            <label class="qsf-label">Carrier / Company</label>
-            <input class="qsf-input" type="text" id="qsf-carrier-${l.id}" placeholder="e.g. Progressive">
-          </div>
+      const carriers = ['Progressive','State Farm','Allstate','Geico','Nationwide','Farmers','Liberty Mutual','Travelers','USAA','Other'];
+      formOrStatus = `<div class="qr-submit-section">
+        <div class="qr-submit-label">Submit Your Quote — earn $${fee} if selected</div>
+        <div class="qr-rate-input-wrap">
+          <span class="qr-dollar">$</span>
+          <input class="qr-rate-input" type="number" id="qsf-rate-${l.id}" placeholder="0" min="0" step="0.01">
+          <span class="qr-per-mo">/mo</span>
         </div>
-        <div class="qsf-full">
-          <label class="qsf-label">Your Selling Point (optional)</label>
-          <input class="qsf-input" type="text" id="qsf-point-${l.id}" placeholder="Why should they choose you? e.g. Same-day coverage, no down payment">
-        </div>
-        <button class="qsf-submit-btn" onclick="submitAgentQuote('${l.id}',this)">Submit Quote →</button>
+        <select class="qr-carrier-select" id="qsf-carrier-${l.id}">
+          <option value="">Select carrier…</option>
+          ${carriers.map(c=>`<option value="${c}">${c}</option>`).join('')}
+        </select>
+        <input class="qr-point-input" type="text" id="qsf-point-${l.id}" placeholder="Selling point — same-day coverage, no down payment…">
+        <button class="qr-submit-btn" onclick="submitAgentQuote('${l.id}',this)">Submit Quote →</button>
+        <div class="qr-fee-note">You only pay when a consumer selects your quote</div>
       </div>`;
     } else {
-      formOrStatus = `<div style="margin-top:1rem;border-top:1px solid var(--border);padding-top:0.9rem;text-align:center;font-size:0.85rem;font-weight:600;color:var(--text-muted);">⛔ Quote window closed — this request expired</div>`;
+      formOrStatus = `<div class="qr-expired-msg">⛔ Quote window closed — this request expired</div>`;
     }
 
-    return `<div class="qr-card" style="${expired && !myQuote ? 'opacity:0.6;' : ''}">
-      <div class="qr-card-header">
-        <div>
-          <div class="qr-card-title">${TYPE_EMOJIS[l.insuranceType]||'📋'} ${l.insuranceType}</div>
-          <div class="qr-card-meta">Age ${l.age||'—'} · ZIP ${l.zip} · ${l.coverageLevel||'Standard'} coverage · ${timeAgo(l.submittedAt)}</div>
+    return `<div class="qr-card${expired && !myQuote ? ' qr-expired' : ''}" id="qrc_${l.id}">
+      <div class="qr-card-top">
+        <div class="qr-card-type">
+          <span class="qr-type-emoji">${getInsTypeEmoji(l.insuranceType)}</span>
+          <span class="qr-type-name">${l.insuranceType}</span>
         </div>
-        ${timerHtml}
+        <div class="${timerClass}">${timerText}</div>
       </div>
-      ${detailPills ? `<div class="qr-details">${detailPills}</div>` : ''}
+      <div class="qr-key-info">${infoPills}</div>
+      ${detailPills ? `<div class="qr-detail-pills">${detailPills}</div>` : ''}
       ${formOrStatus}
     </div>`;
   }).join('');
@@ -2069,12 +2114,13 @@ function renderSubmittedQuotes(leads) {
 }
 
 async function submitAgentQuote(leadId, btn) {
-  const rate      = document.getElementById('qsf-rate-' + leadId)?.value.trim();
+  const rateRaw   = document.getElementById('qsf-rate-' + leadId)?.value.trim();
+  const rate      = parseFloat(rateRaw);
   const carrier   = document.getElementById('qsf-carrier-' + leadId)?.value.trim();
   const sellingPoint = document.getElementById('qsf-point-' + leadId)?.value.trim();
 
-  if(!rate || !carrier) {
-    alert('Please enter both a rate and a carrier to submit your quote.');
+  if(!rateRaw || isNaN(rate) || rate <= 0 || !carrier) {
+    alert('Please enter a valid monthly rate and select a carrier.');
     return;
   }
 
