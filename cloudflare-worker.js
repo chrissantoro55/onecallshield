@@ -115,6 +115,18 @@ async function handleNewLead(body, env) {
     subject: `🎯 New Lead — ${lead.insuranceType} · ${lead.zip}`,
     html: adminNewLeadEmail(lead)
   });
+
+  // Send confirmation email to consumer
+  if(body.email || (body.lead && body.lead.email)) {
+    const consumerEmail = body.email || body.lead.email;
+    const leadData = body.lead || body;
+    await sendEmail(env, {
+      to: consumerEmail,
+      subject: `✅ Your ${leadData.insuranceType||'Insurance'} Quote Request — What Happens Next`,
+      html: consumerConfirmationEmail(leadData)
+    });
+  }
+
   return { sent: 'admin' };
 }
 
@@ -645,6 +657,187 @@ function quoteSelectedAgentEmail({ agent, lead, quote, fee }) {
 
     <a href="${PORTAL_URL}" class="btn">View Lead in Portal →</a>
   `);
+}
+
+// ── Consumer: initial confirmation after quote request submitted ────────────
+function consumerConfirmationEmail(lead) {
+  const deadline = new Date(new Date(lead.submittedAt).getTime() + 2 * 60 * 60 * 1000);
+  const deadlineStr = deadline.toLocaleTimeString('en-US', {hour:'numeric', minute:'2-digit', hour12:true});
+  const deadlineDateStr = deadline.toLocaleDateString('en-US', {weekday:'long', month:'long', day:'numeric'});
+
+  const detailRows = lead.insuranceDetails ? Object.entries(lead.insuranceDetails).filter(([k,v])=>v).map(([k,v]) => `
+    <tr>
+      <td style="padding:8px 0;font-size:0.82rem;color:#5a6480;border-bottom:1px solid #ede7dc;">${k}</td>
+      <td style="padding:8px 0;font-size:0.82rem;color:#1a1a2e;font-weight:600;border-bottom:1px solid #ede7dc;text-align:right;">${v}</td>
+    </tr>
+  `).join('') : '';
+
+  return `<!DOCTYPE html>
+<html>
+<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0"></head>
+<body style="margin:0;padding:0;background:#f8f4ee;font-family:Arial,sans-serif;">
+<div style="max-width:560px;margin:0 auto;padding:20px 16px;">
+
+  <!-- Header -->
+  <div style="background:linear-gradient(135deg,#0d1f3c,#1a3460);border-radius:20px 20px 0 0;padding:32px 28px;text-align:center;">
+    <div style="font-size:2rem;margin-bottom:10px;">🛡️</div>
+    <div style="font-family:Georgia,serif;font-size:1.5rem;font-weight:700;color:#ffffff;margin-bottom:6px;">
+      You're All Set, ${lead.firstName}!
+    </div>
+    <div style="font-size:0.88rem;color:rgba(255,255,255,0.6);">
+      Your quote request has been received — here's what happens next
+    </div>
+  </div>
+
+  <!-- Gold protection banner -->
+  <div style="background:#c9973a;padding:14px 24px;text-align:center;">
+    <div style="font-size:0.85rem;font-weight:700;color:#0d1f3c;">
+      🛡️ Your phone stays quiet until YOU select a quote — that's The One Call Guarantee
+    </div>
+  </div>
+
+  <!-- 2 Hour Clock Section -->
+  <div style="background:#ffffff;border-radius:0;padding:28px 24px;border-bottom:1px solid #ede7dc;">
+    <div style="text-align:center;margin-bottom:20px;">
+      <div style="font-family:Georgia,serif;font-size:1.1rem;font-weight:700;color:#0d1f3c;margin-bottom:6px;">
+        ⏰ Your Quote Window Is Open
+      </div>
+      <div style="font-size:0.85rem;color:#5a6480;line-height:1.6;">
+        Licensed agents in your area are reviewing your profile right now.
+        You'll receive your quotes by:
+      </div>
+    </div>
+
+    <!-- Deadline box -->
+    <div style="background:linear-gradient(135deg,#0d1f3c,#1a3460);border-radius:16px;padding:24px;text-align:center;margin-bottom:20px;">
+      <div style="font-size:0.75rem;text-transform:uppercase;letter-spacing:0.1em;color:rgba(255,255,255,0.4);margin-bottom:8px;">
+        Quotes Ready By
+      </div>
+      <div style="font-family:Georgia,serif;font-size:2.2rem;font-weight:700;color:#c9973a;line-height:1;margin-bottom:4px;">
+        ${deadlineStr}
+      </div>
+      <div style="font-size:0.82rem;color:rgba(255,255,255,0.5);">
+        ${deadlineDateStr}
+      </div>
+      <div style="margin-top:16px;padding-top:16px;border-top:1px solid rgba(255,255,255,0.1);">
+        <div style="font-size:0.78rem;color:rgba(255,255,255,0.4);">
+          We'll email you the moment your quotes are ready to compare
+        </div>
+      </div>
+    </div>
+
+    <!-- Timeline steps -->
+    <div style="display:flex;flex-direction:column;gap:0;">
+
+      <div style="display:flex;gap:16px;align-items:flex-start;padding:14px 0;border-bottom:1px solid #ede7dc;">
+        <div style="width:36px;height:36px;background:#2d7a4f;border-radius:50%;display:flex;align-items:center;justify-content:center;color:#fff;font-size:0.85rem;font-weight:700;flex-shrink:0;">✓</div>
+        <div>
+          <div style="font-weight:700;font-size:0.88rem;color:#2d7a4f;">Request Submitted</div>
+          <div style="font-size:0.78rem;color:#5a6480;margin-top:2px;">Your profile has been sent to licensed ${lead.insuranceType} agents in ${lead.state||'your area'}</div>
+        </div>
+      </div>
+
+      <div style="display:flex;gap:16px;align-items:flex-start;padding:14px 0;border-bottom:1px solid #ede7dc;">
+        <div style="width:36px;height:36px;background:#c9973a;border-radius:50%;display:flex;align-items:center;justify-content:center;color:#0d1f3c;font-size:0.85rem;font-weight:700;flex-shrink:0;">2</div>
+        <div>
+          <div style="font-weight:700;font-size:0.88rem;color:#d97706;">Agents Preparing Quotes — Now</div>
+          <div style="font-size:0.78rem;color:#5a6480;margin-top:2px;">Licensed agents are reviewing your profile and submitting their best rates. You'll be notified when ready.</div>
+        </div>
+      </div>
+
+      <div style="display:flex;gap:16px;align-items:flex-start;padding:14px 0;border-bottom:1px solid #ede7dc;">
+        <div style="width:36px;height:36px;background:#ede7dc;border-radius:50%;display:flex;align-items:center;justify-content:center;color:#5a6480;font-size:0.85rem;font-weight:700;flex-shrink:0;">3</div>
+        <div>
+          <div style="font-weight:700;font-size:0.88rem;color:#5a6480;">You Review & Pick Your Quote</div>
+          <div style="font-size:0.78rem;color:#5a6480;margin-top:2px;">We'll email you a clean comparison of all quotes. Pick the one you want — that agent calls you once.</div>
+        </div>
+      </div>
+
+      <div style="display:flex;gap:16px;align-items:flex-start;padding:14px 0;">
+        <div style="width:36px;height:36px;background:#ede7dc;border-radius:50%;display:flex;align-items:center;justify-content:center;color:#5a6480;font-size:0.85rem;font-weight:700;flex-shrink:0;">4</div>
+        <div>
+          <div style="font-weight:700;font-size:0.88rem;color:#5a6480;">One Agent Calls You</div>
+          <div style="font-size:0.78rem;color:#5a6480;margin-top:2px;">The agent you selected contacts you at your preferred time: <strong style="color:#1a1a2e;">${lead.contactTime||'Anytime'}</strong>. One call. That's it.</div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- Your Request Summary -->
+  <div style="background:#ffffff;padding:24px;border-bottom:1px solid #ede7dc;">
+    <div style="font-size:0.75rem;font-weight:700;text-transform:uppercase;letter-spacing:0.08em;color:#5a6480;margin-bottom:14px;">
+      Your Request Summary
+    </div>
+    <table style="width:100%;border-collapse:collapse;">
+      <tr>
+        <td style="padding:8px 0;font-size:0.82rem;color:#5a6480;border-bottom:1px solid #ede7dc;">Insurance Type</td>
+        <td style="padding:8px 0;font-size:0.82rem;color:#1a1a2e;font-weight:600;border-bottom:1px solid #ede7dc;text-align:right;">${lead.insuranceType}</td>
+      </tr>
+      <tr>
+        <td style="padding:8px 0;font-size:0.82rem;color:#5a6480;border-bottom:1px solid #ede7dc;">Coverage Level</td>
+        <td style="padding:8px 0;font-size:0.82rem;color:#1a1a2e;font-weight:600;border-bottom:1px solid #ede7dc;text-align:right;">${lead.coverageLevel||'Standard'}</td>
+      </tr>
+      <tr>
+        <td style="padding:8px 0;font-size:0.82rem;color:#5a6480;border-bottom:1px solid #ede7dc;">Your Area</td>
+        <td style="padding:8px 0;font-size:0.82rem;color:#1a1a2e;font-weight:600;border-bottom:1px solid #ede7dc;text-align:right;">${lead.zip} · ${lead.state||''}</td>
+      </tr>
+      <tr>
+        <td style="padding:8px 0;font-size:0.82rem;color:#5a6480;border-bottom:1px solid #ede7dc;">Preferred Call Time</td>
+        <td style="padding:8px 0;font-size:0.82rem;color:#1a1a2e;font-weight:600;border-bottom:1px solid #ede7dc;text-align:right;">${lead.contactTime||'Anytime'}</td>
+      </tr>
+      ${lead.currentPremium ? `
+      <tr>
+        <td style="padding:8px 0;font-size:0.82rem;color:#5a6480;border-bottom:1px solid #ede7dc;">Current Premium</td>
+        <td style="padding:8px 0;font-size:0.82rem;color:#1a1a2e;font-weight:600;border-bottom:1px solid #ede7dc;text-align:right;">$${lead.currentPremium}/mo</td>
+      </tr>` : ''}
+      ${detailRows}
+    </table>
+  </div>
+
+  <!-- Track status CTA -->
+  <div style="background:#ffffff;padding:24px;text-align:center;border-bottom:1px solid #ede7dc;">
+    <div style="font-size:0.85rem;color:#5a6480;margin-bottom:14px;">
+      Want to check the status of your quotes in real time?
+    </div>
+    <a href="https://onecallshield.com/status.html?id=${lead.id}"
+       style="display:inline-block;background:#0d1f3c;color:#ffffff;text-decoration:none;padding:14px 28px;border-radius:12px;font-family:Georgia,serif;font-weight:700;font-size:0.95rem;">
+      Track My Quote Status →
+    </a>
+    <div style="font-size:0.75rem;color:#5a6480;margin-top:10px;">
+      Updates in real time as agents submit quotes
+    </div>
+  </div>
+
+  <!-- Guarantee -->
+  <div style="background:#ffffff;padding:24px;border-bottom:1px solid #ede7dc;">
+    <div style="background:rgba(201,151,58,0.08);border:1px solid rgba(201,151,58,0.25);border-radius:14px;padding:18px;text-align:center;">
+      <div style="font-family:Georgia,serif;font-size:1rem;font-weight:700;color:#0d1f3c;margin-bottom:8px;">
+        🛡️ The One Call Guarantee
+      </div>
+      <div style="font-size:0.78rem;color:#5a6480;line-height:1.7;">
+        No agent can contact you until you select their quote.<br>
+        If more than one agent ever contacts you — email<br>
+        <a href="mailto:chris@onecallshield.com" style="color:#c9973a;font-weight:700;">chris@onecallshield.com</a>
+        and we make it right immediately.<br>
+        <strong style="color:#1a1a2e;">— Chris Santoro, Founder</strong>
+      </div>
+    </div>
+  </div>
+
+  <!-- Footer -->
+  <div style="background:linear-gradient(135deg,#0d1f3c,#1a3460);border-radius:0 0 20px 20px;padding:24px;text-align:center;">
+    <div style="font-size:0.72rem;color:rgba(255,255,255,0.3);line-height:1.8;">
+      OneCallShield LLC · Poughkeepsie, NY<br>
+      <a href="mailto:chris@onecallshield.com" style="color:rgba(255,255,255,0.4);">chris@onecallshield.com</a> ·
+      <a href="tel:8452424389" style="color:rgba(255,255,255,0.4);">(845) 242-4389</a><br>
+      <a href="https://onecallshield.com" style="color:#c9973a;">onecallshield.com</a>
+    </div>
+  </div>
+
+</div>
+</body>
+</html>`;
 }
 
 // ── Consumer: confirmation of agent selection ───────────────────────────────

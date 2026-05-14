@@ -931,7 +931,7 @@
         <div id="successState">
           <div class="check-circle">✅</div>
           <p class="success-title" id="successTitle">You're all set! 🎉</p>
-          <p class="success-subtitle" id="successSubtitle">We've notified licensed agents in your area. They're preparing their best quotes now.</p>
+          <p class="success-subtitle" id="successSubtitle">Check your email — we just sent you a full breakdown of what happens next, including your 2-hour quote window.</p>
 
           <div style="background:linear-gradient(135deg,rgba(13,31,60,0.95),rgba(26,52,96,0.95));border:2px solid var(--gold);border-radius:16px;padding:20px 22px;margin:16px 0;text-align:center;animation:fadeIn 0.5s ease 0.3s both;">
             <div style="font-size:1.6rem;margin-bottom:8px;">🛡️</div>
@@ -951,11 +951,15 @@
             </div>
             <div class="tracker-step active">
               <span class="tracker-step-icon tracker-pulse">⏳</span>
-              <span>Agents preparing quotes</span>
+              <span>Agents preparing quotes — now</span>
             </div>
             <div class="tracker-step pending">
               <span class="tracker-step-icon">⬜</span>
-              <span>You pick your quote</span>
+              <span>You review &amp; pick your quote</span>
+            </div>
+            <div class="tracker-step pending">
+              <span class="tracker-step-icon">⬜</span>
+              <span>One agent calls you</span>
             </div>
           </div>
 
@@ -1740,8 +1744,8 @@ function showSuccessState(firstName, email, leadId) {
   document.getElementById('formState').style.display = 'none';
 
   document.getElementById('successTitle').textContent = "You're all set, " + firstName + "! 🎉";
-  document.getElementById('successSubtitle').textContent = "We've notified licensed " + _insType + " agents in your area. They're preparing their best quotes now.";
-  document.getElementById('successEmailNote').textContent = "📧 We'll email you at " + email + " when your quotes are ready to compare — usually within 2 hours.";
+  document.getElementById('successSubtitle').textContent = "Check your email at " + email + " — we just sent you a full breakdown of what happens next, including your 2-hour quote window.";
+  document.getElementById('successEmailNote').textContent = "📧 Quotes are typically ready within 2 hours. We'll email you the moment they're ready to compare.";
   document.getElementById('successLeadId').textContent = leadId;
   document.getElementById('successTrackLink').href = '/status.html?id=' + leadId;
 
