@@ -473,7 +473,7 @@
   .diff-inner { max-width: 1000px; margin: 0 auto; }
   .diff .section-label { color: var(--gold-light); }
   .diff .section-h2 { color: var(--white); }
-  .diff-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 2rem; margin-top: 3rem; }
+  .diff-grid { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 1.5rem; margin-top: 3rem; }
   .diff-col { border-radius: 16px; overflow: hidden; }
   .diff-col-header { padding: 1.25rem 1.5rem; }
   .diff-col-header h3 { font-family: 'Fraunces', serif; font-size: 1.2rem; font-weight: 700; }
@@ -487,6 +487,12 @@
   .diff-col-body { padding: 1.4rem 1.5rem; }
   .diff-col-old .diff-col-body { background: rgba(192,57,43,0.04); border: 1px solid rgba(192,57,43,0.1); border-top: none; border-radius: 0 0 16px 16px; }
   .diff-col-new .diff-col-body { background: rgba(201,151,58,0.04); border: 1px solid rgba(201,151,58,0.18); border-top: none; border-radius: 0 0 16px 16px; }
+  .diff-col-gray .diff-col-header { background: #ece9e4; }
+  .diff-col-gray .diff-col-header h3 { color: #555; }
+  .diff-col-gray .diff-col-header p { color: rgba(80,80,80,0.6); }
+  .diff-col-gray .diff-col-body { background: rgba(0,0,0,0.02); border: 1px solid rgba(0,0,0,0.08); border-top: none; border-radius: 0 0 16px 16px; }
+  .diff-col-gray .diff-list li { color: rgba(70,70,70,0.82); }
+  .diff-col-gray .diff-bullet { color: #888; }
   .diff-list { list-style: none; display: flex; flex-direction: column; gap: 0.7rem; }
   .diff-list li { display: flex; align-items: flex-start; gap: 0.6rem; font-size: 0.9rem; line-height: 1.5; }
   .diff-col-old .diff-list li { color: rgba(192,57,43,0.82); }
@@ -746,7 +752,7 @@
       <li><a href="#how-it-works">How It Works</a></li>
       <li><a href="/agents.html">For Agents</a></li>
       <li><a href="#faq">FAQ</a></li>
-      <li><a href="#get-quotes" class="nav-cta">Get Free Quotes →</a></li>
+      <li><a href="#get-quotes" class="nav-cta">Shop My Rate Free →</a></li>
     </ul>
     <button class="hamburger" id="hamburgerBtn" aria-label="Open menu" onclick="toggleMobileMenu()">
       <span></span><span></span><span></span>
@@ -757,7 +763,7 @@
   <a href="#how-it-works" onclick="closeMobileMenu()">How It Works</a>
   <a href="/agents.html">For Agents</a>
   <a href="#faq" onclick="closeMobileMenu()">FAQ</a>
-  <a href="#get-quotes" class="mob-cta" onclick="closeMobileMenu()">Get Free Quotes →</a>
+  <a href="#get-quotes" class="mob-cta" onclick="closeMobileMenu()">Shop My Rate Free →</a>
 </div>
 
 <!-- ═══════════════════════════════ HERO ═══════════════════════════════ -->
@@ -768,18 +774,18 @@
 
     <!-- LEFT: Headline -->
     <div class="hero-left">
-      <div class="hero-badge">🆕 The Insurance Marketplace That Works For You</div>
-      <h1>Real Quotes.<br>You Pick.<br><em>One Agent Calls.</em></h1>
-      <p class="hero-sub">See actual rates from licensed agents in your area. Compare. Pick the best one. That agent calls you once. No spam. No selling your data. You're in control.</p>
+      <div class="hero-badge">Your Personal Insurance Shopper — Without The Spam</div>
+      <h1>We Shop Your Insurance.<br>You Pick The Best Rate.<br><em>One Agent Calls.</em></h1>
+      <p class="hero-sub">Stop wasting hours going carrier by carrier. Stop getting bombarded by spam calls after every quote request. OneCallShield does all the shopping for you — licensed agents compete for your business, you see their real rates, you pick the winner. One call. Done. Free.</p>
       <div class="hero-pills">
-        <span class="hero-pill">✅ 100% Free For Consumers</span>
-        <span class="hero-pill">🛡️ You Choose Who Calls You</span>
+        <span class="hero-pill">🛒 We Do The Shopping For You</span>
+        <span class="hero-pill">🛡️ You Pick Who Calls</span>
         <span class="hero-pill">📵 Zero Spam — Guaranteed</span>
       </div>
       <div class="founder-box" id="founderVideoBox" onclick="alert('Founder video coming soon!')">
         <div class="play-btn">▶</div>
         <div class="founder-box-text">
-          <strong>Why I Built This — Chris Santoro, Founder</strong>
+          <strong>Why I Built Your Personal Insurance Shopper</strong>
           <small>30 seconds</small>
         </div>
       </div>
@@ -789,10 +795,10 @@
     <div class="hero-right">
       <div class="quote-card" id="quoteRequestCard">
         <div class="qc-header">
-          <div class="qc-header-icon">🔍</div>
+          <div class="qc-header-icon">🛒</div>
           <div class="qc-header-text">
-            <h3>See Real Quotes In Your Area</h3>
-            <p>Free &middot; No commitment &middot; Takes 60 seconds</p>
+            <h3>Let Us Shop Your Rate</h3>
+            <p>We do the work &middot; You pick the winner &middot; 100% free</p>
           </div>
         </div>
         <div class="qc-progress-bar">
@@ -804,7 +810,7 @@
 
           <!-- STEP 1 -->
           <div class="qc-body" id="step1">
-            <p class="qc-step-label" id="stepLabel">Step 1 of 2 — Tell us about your insurance needs</p>
+            <p class="qc-step-label" id="stepLabel">Step 1 of 2 — Tell us what you need — we'll do the rest</p>
 
             <!-- Insurance Type -->
             <div class="ins-type-grid">
@@ -887,13 +893,13 @@
             <div class="form-group" style="margin-bottom:0.85rem">
               <label class="form-label" for="qPhone">Phone Number</label>
               <input type="tel" id="qPhone" class="form-input" placeholder="(555) 000-0000" autocomplete="tel">
-              <p class="step2-hint">Agents only call if you select their quote</p>
+              <p class="step2-hint">We never share your number until you choose your agent</p>
             </div>
 
             <div class="form-group" style="margin-bottom:0.85rem">
               <label class="form-label" for="qEmail">Email Address</label>
               <input type="email" id="qEmail" class="form-input" placeholder="you@example.com" autocomplete="email">
-              <p class="step2-hint">We'll notify you when your quotes are ready</p>
+              <p class="step2-hint">We'll email you every quote we find — usually within 2 hours</p>
             </div>
 
             <div class="form-group" style="margin-bottom:0.85rem">
@@ -913,16 +919,16 @@
 
             <label class="consent-box">
               <input type="checkbox" id="qConsent">
-              <span class="consent-text">I consent to receive insurance quotes from OneCallShield's network of licensed agents. I understand I will only be contacted by agents whose quotes I specifically select.</span>
+              <span class="consent-text">I understand that OneCallShield will shop my insurance on my behalf and present me with real quotes from licensed agents. I will only be contacted by the agent whose quote I select. My information will never be sold to multiple agents.</span>
             </label>
 
             <div class="ocg-box">
               <p class="ocg-box-title">🛡️ The One Call Guarantee</p>
-              <p class="ocg-box-body">You control who contacts you. Select a quote — that agent calls you once. If anyone else contacts you, email <strong style="color:var(--gold-light)">chris@onecallshield.com</strong> and we'll make it right — guaranteed.<br><em>— Chris Santoro, Founder</em></p>
+              <p class="ocg-box-body">We do the shopping. You make the choice. The agent you select calls you once — nobody else ever contacts you. If that ever changes, email <strong style="color:var(--gold-light)">chris@onecallshield.com</strong> and we make it right immediately.<br><em>— Chris Santoro, Founder</em></p>
             </div>
 
-            <button class="submit-btn" id="submitBtn" onclick="submitQuoteRequest()">🔍 Show Me Real Quotes From Agents →</button>
-            <p class="submit-below">⚡ Licensed agents in your area will submit their best rates. You'll be notified within 2 hours when quotes are ready to compare.</p>
+            <button class="submit-btn" id="submitBtn" onclick="submitQuoteRequest()">🛒 Start Shopping My Rate — It's Free →</button>
+            <p class="submit-below">⚡ We'll have licensed agents competing for your business within 2 hours. You compare. You pick. One agent calls.</p>
           </div>
 
         </div><!-- end #formState -->
@@ -947,15 +953,15 @@
           <div class="status-tracker">
             <div class="tracker-step done">
               <span class="tracker-step-icon">✅</span>
-              <span>Request submitted</span>
+              <span>Your request is in — we're on it</span>
             </div>
             <div class="tracker-step active">
               <span class="tracker-step-icon tracker-pulse">⏳</span>
-              <span>Agents preparing quotes — now</span>
+              <span>Agents competing for your business</span>
             </div>
             <div class="tracker-step pending">
               <span class="tracker-step-icon">⬜</span>
-              <span>You review &amp; pick your quote</span>
+              <span>You review quotes and pick your favorite</span>
             </div>
             <div class="tracker-step pending">
               <span class="tracker-step-icon">⬜</span>
@@ -968,9 +974,9 @@
           <a class="success-track-link" id="successTrackLink" href="#">Track your quote status →</a>
 
           <div class="wait-box">
-            <p class="wait-box-title">While you wait — help agents give you a more accurate quote</p>
-            <p>The more they know, the better they can prepare.</p>
-            <button class="wait-add-btn" onclick="showOptionalFields()">Yes, add more details →</button>
+            <p class="wait-box-title">Want more accurate quotes faster?</p>
+            <p>The more details we give agents, the more accurate and competitive your quotes will be. Takes 30 seconds — completely optional but highly recommended.</p>
+            <button class="wait-add-btn" onclick="showOptionalFields()">Yes — help us get you better quotes →</button>
             <span class="wait-skip" onclick="hideWaitBox()">No thanks, I'll wait for quotes</span>
           </div>
         </div><!-- end #successState -->
@@ -995,30 +1001,30 @@
 <!-- ═══════════════════════════════ HOW IT WORKS ═══════════════════════════════ -->
 <section class="hiw fade-in-section" id="how-it-works">
   <div class="hiw-inner">
-    <p class="section-label">How It Works</p>
-    <h2 class="section-h2">Insurance Shopping Finally Done Right</h2>
-    <p class="section-sub">Three simple steps. Real quotes. You're in control the whole time.</p>
+    <p class="section-label">How We Shop For You</p>
+    <h2 class="section-h2">Your Personal Insurance Shopper — Here's How It Works</h2>
+    <p class="section-sub">You give us 60 seconds. We do hours of shopping for you. You pick the best rate. One agent calls. That's it.</p>
 
     <div class="hiw-steps">
       <div class="hiw-step">
         <span class="hiw-step-num">1</span>
         <span class="hiw-step-icon">📋</span>
-        <h3>Tell Us What You Need</h3>
-        <p>Enter your insurance type, coverage level, and ZIP code. Takes 60 seconds. No phone number required for this step.</p>
+        <h3>Tell Us What You're Looking For</h3>
+        <p>Tell us your insurance type, coverage details, and ZIP code. 60 seconds. No phone number needed yet — we start shopping immediately.</p>
         <span class="hiw-tag">✅ No commitment</span>
       </div>
       <div class="hiw-step">
         <span class="hiw-step-num">2</span>
-        <span class="hiw-step-icon">💰</span>
-        <h3>See Real Quotes</h3>
-        <p>Licensed agents in your area review your profile and submit their best rates. You see real numbers from real people — not estimates.</p>
+        <span class="hiw-step-icon">🛒</span>
+        <h3>We Do The Shopping</h3>
+        <p>We send your profile to licensed agents in your area. They compete by submitting their real best rates. You don't call anyone. You don't wait on hold. We bring every quote straight to your inbox.</p>
         <span class="hiw-tag">⚡ Ready within 2 hours</span>
       </div>
       <div class="hiw-step">
         <span class="hiw-step-num">3</span>
         <span class="hiw-step-icon">📞</span>
-        <h3>Pick Your Quote. One Call.</h3>
-        <p>Choose the quote you want. That agent calls you once to finalize. Nobody else contacts you. Ever.</p>
+        <h3>You Pick. One Agent Calls.</h3>
+        <p>Review every quote we found. Pick the rate you want. That agent calls you once at your preferred time to finalize your policy. Nobody else ever contacts you. The One Call Guarantee.</p>
         <span class="hiw-tag">🛡️ Guaranteed</span>
       </div>
     </div>
@@ -1032,41 +1038,59 @@
 <!-- ═══════════════════════════════ THE DIFFERENCE ═══════════════════════════════ -->
 <section class="diff fade-in-section">
   <div class="diff-inner">
-    <p class="section-label">The OneCallShield Difference</p>
-    <h2 class="section-h2">Finally — An Insurance Marketplace That Works For You</h2>
+    <p class="section-label">Three Ways To Shop Insurance — Only One Makes Sense</p>
+    <h2 class="section-h2">We Replaced Hours Of Work And Days Of Spam Calls With 60 Seconds And One Call</h2>
 
     <div class="diff-grid">
-      <div class="diff-col diff-col-old">
+      <div class="diff-col diff-col-gray">
         <div class="diff-col-header">
-          <h3>❌ The Old Way</h3>
-          <p>Every other insurance site</p>
+          <h3>⏰ Carrier by Carrier</h3>
+          <p>The old fashioned way</p>
         </div>
         <div class="diff-col-body">
           <ul class="diff-list">
-            <li><span class="diff-bullet">✗</span> Fill out a form with your personal info</li>
-            <li><span class="diff-bullet">✗</span> Your data gets sold to 20+ agents immediately</li>
+            <li><span class="diff-bullet">—</span> Visit each carrier website separately</li>
+            <li><span class="diff-bullet">—</span> Fill out the same form 8 times</li>
+            <li><span class="diff-bullet">—</span> Wait for each quote individually</li>
+            <li><span class="diff-bullet">—</span> Hours of your time wasted</li>
+            <li><span class="diff-bullet">—</span> No spam calls at least</li>
+            <li><span class="diff-bullet">—</span> Still not sure you got the best rate</li>
+            <li><span class="diff-bullet">—</span> Exhausting and time consuming</li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="diff-col diff-col-old">
+        <div class="diff-col-header">
+          <h3>❌ Other Quote Sites</h3>
+          <p>SelectQuote, EverQuote, etc.</p>
+        </div>
+        <div class="diff-col-body">
+          <ul class="diff-list">
+            <li><span class="diff-bullet">✗</span> Fill out one form — easy</li>
+            <li><span class="diff-bullet">✗</span> Your data sold to 20+ agents immediately</li>
             <li><span class="diff-bullet">✗</span> Phone rings nonstop for days</li>
-            <li><span class="diff-bullet">✗</span> Agents compete for your attention</li>
-            <li><span class="diff-bullet">✗</span> Confusing quotes arrive out of nowhere</li>
-            <li><span class="diff-bullet">✗</span> You feel overwhelmed and give up</li>
-            <li><span class="diff-bullet">✗</span> Still not sure if you got the best rate</li>
+            <li><span class="diff-bullet">✗</span> Agents compete by calling you first</li>
+            <li><span class="diff-bullet">✗</span> Overwhelming and frustrating</li>
+            <li><span class="diff-bullet">✗</span> You eventually give up</li>
+            <li><span class="diff-bullet">✗</span> Still not sure you got the best rate</li>
           </ul>
         </div>
       </div>
 
       <div class="diff-col diff-col-new">
         <div class="diff-col-header">
-          <h3>✅ The OneCallShield Way</h3>
-          <p>Real quotes. You pick. One call.</p>
+          <h3>✅ OneCallShield</h3>
+          <p>Your personal insurance shopper</p>
         </div>
         <div class="diff-col-body">
           <ul class="diff-list">
-            <li><span class="diff-bullet">✓</span> See real quotes before giving your phone number</li>
-            <li><span class="diff-bullet">✓</span> Your data NEVER sold to multiple agents</li>
-            <li><span class="diff-bullet">✓</span> You pick the quote YOU want</li>
+            <li><span class="diff-bullet">✓</span> Tell us what you need — 60 seconds</li>
+            <li><span class="diff-bullet">✓</span> We shop every agent in your area for you</li>
+            <li><span class="diff-bullet">✓</span> Real quotes delivered to your inbox</li>
+            <li><span class="diff-bullet">✓</span> You compare and pick the best rate</li>
             <li><span class="diff-bullet">✓</span> One agent calls — the one you chose</li>
-            <li><span class="diff-bullet">✓</span> Clear transparent pricing upfront</li>
-            <li><span class="diff-bullet">✓</span> You're in control from start to finish</li>
+            <li><span class="diff-bullet">✓</span> Zero spam. Zero wasted time.</li>
             <li><span class="diff-bullet">✓</span> Confidence you got the best rate</li>
           </ul>
         </div>
@@ -1078,9 +1102,9 @@
 <!-- ═══════════════════════════════ INSURANCE TYPES ═══════════════════════════════ -->
 <section class="ins-types fade-in-section">
   <div class="ins-types-inner">
-    <p class="section-label">What We Cover</p>
-    <h2 class="section-h2">Real Quotes For Every Insurance Type</h2>
-    <p class="section-sub" style="margin-top:0.65rem">Licensed specialists for every coverage need</p>
+    <p class="section-label">We Shop All Major Insurance Types</p>
+    <h2 class="section-h2">Tell Us What You Need — We'll Find Your Best Rate</h2>
+    <p class="section-sub" style="margin-top:0.65rem">One request. We do the shopping across all carriers. You pick your rate.</p>
 
     <div class="ins-types-grid">
       <div class="ins-card" onclick="smoothScrollTo('get-quotes')">
@@ -1133,36 +1157,36 @@
 <section class="trust fade-in-section">
   <div class="trust-inner">
     <p class="section-label">Why Trust Us</p>
-    <h2 class="section-h2">Built Different. For Consumers First.</h2>
+    <h2 class="section-h2">Why We're Different From Every Other Insurance Site</h2>
     <p class="section-sub">We designed every part of this around your interests — not the industry's.</p>
 
     <div class="trust-grid">
       <div class="trust-block">
         <div class="trust-icon">🔒</div>
         <div>
-          <h3>Your Data Is Never Sold</h3>
-          <p>Every other platform profits by selling your information to the highest bidder. We profit when agents compete for your business fairly. Your data stays with us. Period.</p>
+          <h3>We Shop For You — Not Against You</h3>
+          <p>Other sites profit by selling your data to as many agents as possible. We profit when agents compete fairly for your business. Your information never gets sold. Ever.</p>
         </div>
       </div>
       <div class="trust-block">
         <div class="trust-icon">👁️</div>
         <div>
-          <h3>Full Transparency</h3>
-          <p>You see agent names, carrier names, and real rates before you decide anything. No mystery. No fine print. No surprises.</p>
+          <h3>Every Quote. Every Detail. Upfront.</h3>
+          <p>We show you every quote we find — agent name, carrier, real monthly rate, and why they think you should choose them. No mystery. No fine print. You make an informed decision.</p>
         </div>
       </div>
       <div class="trust-block">
         <div class="trust-icon">🎯</div>
         <div>
-          <h3>You Control Everything</h3>
-          <p>No agent can contact you unless you select their quote. You're not a lead to be chased. You're a customer to be earned.</p>
+          <h3>You're The Shopper. We're Your Assistant.</h3>
+          <p>We do the legwork. You make the decisions. No agent can contact you until you choose their quote. You're not a lead to be chased — you're a customer to be earned on your terms.</p>
         </div>
       </div>
       <div class="trust-block">
         <div class="trust-icon">🛡️</div>
         <div>
-          <h3>The One Call Guarantee</h3>
-          <p>Select a quote. That agent calls you once. If anyone else contacts you, email chris@onecallshield.com — we make it right immediately. Chris's personal promise.</p>
+          <h3>The One Call Guarantee™</h3>
+          <p>You pick your agent. They call you once. That's the deal. If anyone else ever contacts you, email chris@onecallshield.com and we make it right immediately. Not a policy — a personal promise from the founder.</p>
         </div>
       </div>
     </div>
@@ -1204,15 +1228,15 @@
 <section class="for-agents fade-in-section">
   <div class="agents-inner">
     <p class="section-label">For Licensed Agents</p>
-    <h2 class="section-h2">Only Pay For Leads That Choose You</h2>
+    <h2 class="section-h2">Join The Network That Sends You Pre-Sold Leads</h2>
 
     <div class="agents-grid">
       <div>
-        <p class="agents-body">No more paying $25-50 for shared leads that go to 20 other agents. On OneCallShield, you submit your best quote for free. You only pay when a consumer specifically selects your quote and wants to talk to you.</p>
+        <p class="agents-body">Forget shared leads where you compete with 20 other agents by calling first. On OneCallShield, consumers already see your rate and chose you before you ever pick up the phone. Submit quotes for free. Only pay when a consumer selects your rate. These aren't leads — they're pre-sold customers.</p>
         <ul class="agents-list">
-          <li>✅ Submit quotes at no cost</li>
-          <li>✅ Only pay when consumer selects you</li>
-          <li>✅ Pre-sold leads — they already said yes to your price</li>
+          <li>✅ Submit quotes completely free — zero risk</li>
+          <li>✅ Only pay when a consumer specifically picks your rate</li>
+          <li>✅ They already said yes — your close rate will be 3-4x higher than any other lead source</li>
         </ul>
         <a href="/agents.html" class="btn-gold">Apply As An Agent →</a>
       </div>
@@ -1248,9 +1272,9 @@
         <p class="section-label">Our Story</p>
         <h2 class="section-h2">Built By An Agent. For Consumers.</h2>
         <div class="founder-quote">
-          <p>I spent years in the insurance industry watching consumers get bombarded with spam calls the moment they requested a quote. It was wrong. I knew it. Everyone in the industry knew it.</p>
-          <p>So I asked — what if consumers could see real quotes first, then choose who they wanted to talk to? What if agents competed on price and service instead of who could call first?</p>
-          <p>That's OneCallShield. Real quotes. Full transparency. You pick. One call.</p>
+          <p>I spent 15 years as a licensed insurance agent. I watched consumers go through the same painful experience every time — fill out a form online, get bombarded by 20 agents all calling at once, get overwhelmed, and give up without ever finding a good rate.</p>
+          <p>I also watched from the other side — agents wasting money on shared leads, competing with each other to be first to call instead of competing on price and service.</p>
+          <p>Both sides were losing. So I built OneCallShield. We shop for consumers. Agents compete fairly. Everyone wins. That's the whole idea.</p>
           <p class="founder-sig">— Chris Santoro, Founder &amp; CEO</p>
         </div>
       </div>
@@ -1277,11 +1301,11 @@
     <div class="faq-panel active" id="faq-consumers">
       <div class="faq-item">
         <button class="faq-q" onclick="toggleFaq(this)">How is this different from other insurance sites? <span class="faq-arrow">▼</span></button>
-        <div class="faq-a"><div class="faq-a-inner">Most insurance sites sell your information to dozens of agents the moment you submit. You then get bombarded with calls. OneCallShield is different — you see real quotes first, pick the one you want, and only that agent contacts you. One call. Your choice. Your control.</div></div>
+        <div class="faq-a"><div class="faq-a-inner">Most insurance sites are lead generation businesses — they profit by selling your information to as many agents as possible. The moment you submit, your phone starts ringing. OneCallShield is different. We're your personal insurance shopper. We take your profile, send it to licensed agents in your area, collect their real best rates, and deliver them to your inbox. You compare. You pick. One agent calls. We never sell your data. Ever.</div></div>
       </div>
       <div class="faq-item">
         <button class="faq-q" onclick="toggleFaq(this)">Are the quotes real or just estimates? <span class="faq-arrow">▼</span></button>
-        <div class="faq-a"><div class="faq-a-inner">Real. Licensed agents in your area review your profile and submit their actual best rates. These aren't computer estimates — they're real numbers from real people who want your business.</div></div>
+        <div class="faq-a"><div class="faq-a-inner">Real quotes from real licensed agents. When you submit your request, we send your full profile — insurance type, coverage level, vehicle or property details, your area — to licensed agents. They review everything and submit their actual best rate, not a ballpark. What you see in your inbox is exactly what they'll honor on the call.</div></div>
       </div>
       <div class="faq-item">
         <button class="faq-q" onclick="toggleFaq(this)">What if I don't like any of the quotes? <span class="faq-arrow">▼</span></button>
@@ -1328,10 +1352,10 @@
 
 <!-- ═══════════════════════════════ FINAL CTA ═══════════════════════════════ -->
 <section class="final-cta">
-  <h2>Ready To See What You Should Actually Be Paying?</h2>
-  <p>Real quotes. Real agents. You pick. One call. Free.</p>
-  <a href="#get-quotes" class="btn-navy" onclick="smoothScrollTo('get-quotes')">Get My Free Quotes Now →</a>
-  <p class="final-trust-row">🔒 No spam &nbsp;·&nbsp; 📵 You control who calls &nbsp;·&nbsp; ✅ 100% free</p>
+  <h2>Ready To Have Someone Shop Your Insurance For You?</h2>
+  <p>60 seconds to tell us what you need. 2 hours for us to shop every agent in your area. You pick the best rate. One agent calls. Zero spam. Completely free.</p>
+  <a href="#get-quotes" class="btn-navy" onclick="smoothScrollTo('get-quotes')">🛒 Shop My Insurance For Free →</a>
+  <p class="final-trust-row">🛒 We do the shopping &nbsp;·&nbsp; 🛡️ You pick who calls &nbsp;·&nbsp; ✅ 100% free &nbsp;·&nbsp; ⚡ Quotes in 2 hours</p>
 </section>
 
 <!-- ═══════════════════════════════ FOOTER ═══════════════════════════════ -->
@@ -1354,7 +1378,7 @@
           </svg>
           <span class="footer-logo-text">One<span>Call</span>Shield</span>
         </div>
-        <p class="footer-tagline">Real Quotes. You Pick. One Call.</p>
+        <p class="footer-tagline">Your Personal Insurance Shopper — Without The Spam.</p>
         <div class="footer-contact">
           <a href="mailto:chris@onecallshield.com">📧 chris@onecallshield.com</a>
           <a href="tel:+18452424389">📞 (845) 242-4389</a>
@@ -1743,9 +1767,9 @@ function submitQuoteRequest() {
 function showSuccessState(firstName, email, leadId) {
   document.getElementById('formState').style.display = 'none';
 
-  document.getElementById('successTitle').textContent = "You're all set, " + firstName + "! 🎉";
-  document.getElementById('successSubtitle').textContent = "Check your email at " + email + " — we just sent you a full breakdown of what happens next, including your 2-hour quote window.";
-  document.getElementById('successEmailNote').textContent = "📧 Quotes are typically ready within 2 hours. We'll email you the moment they're ready to compare.";
+  document.getElementById('successTitle').textContent = "We're Shopping For You Now, " + firstName + "! 🛒";
+  document.getElementById('successSubtitle').textContent = "We've sent your profile to licensed " + _insType + " agents in your area. They're competing right now to give you their best rate. Check your email — we'll send you every quote we find.";
+  document.getElementById('successEmailNote').textContent = "📧 We're sending your profile to agents right now. We'll email every quote to " + email + " — usually within 2 hours. Then you pick your favorite. Simple.";
   document.getElementById('successLeadId').textContent = leadId;
   document.getElementById('successTrackLink').href = '/status.html?id=' + leadId;
 
