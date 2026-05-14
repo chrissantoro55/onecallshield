@@ -575,6 +575,9 @@ function quotesReadyEmail(lead, quotes) {
          style="display:block;text-align:center;background:#0d1f3c;color:#ffffff;text-decoration:none;padding:14px 24px;border-radius:12px;font-family:Georgia,serif;font-size:1rem;font-weight:700;">
         Select This Quote →
       </a>
+      <div style="text-align:center;margin-top:8px;font-size:0.72rem;color:#5a6480;">
+        ✋ No purchase required · Agent calls you to discuss options
+      </div>
     </div>`;
   }).join('');
 
@@ -607,6 +610,21 @@ function quotesReadyEmail(lead, quotes) {
   <div style="background:#f8f4ee;padding:20px 16px;">
     <div style="font-family:Georgia,serif;font-size:1.1rem;font-weight:700;color:#0d1f3c;margin-bottom:4px;text-align:center;">Compare Your Quotes</div>
     <div style="font-size:0.78rem;color:#5a6480;text-align:center;margin-bottom:20px;">Click "Select This Quote" next to the rate you want — that agent will call you once.</div>
+
+    <div style="background:#f0f7ff;border:1px solid #c8dff7;border-radius:14px;padding:18px 20px;margin-bottom:24px;text-align:center;">
+      <div style="font-size:1.1rem;margin-bottom:8px;">👆 How This Works</div>
+      <div style="font-family:Georgia,serif;font-size:1rem;font-weight:700;color:#0d1f3c;margin-bottom:8px;">
+        Selecting a quote does not purchase a policy
+      </div>
+      <div style="font-size:0.82rem;color:#5a6480;line-height:1.8;">
+        When you click "Select This Quote" you are simply choosing which licensed agent
+        you'd like to speak with. That agent will call you at your preferred time to
+        review your options, answer your questions, and finalize your coverage —
+        completely at your own pace, with zero pressure.<br><br>
+        <strong style="color:#0d1f3c;">Nothing is purchased until you say so.</strong>
+      </div>
+    </div>
+
     ${quoteCards}
   </div>
 

@@ -246,6 +246,19 @@ function showConfirmation(lead, agent, quote) {
         <div class="guarantee-item"><span class="guarantee-icon">💰</span><span>This service is <strong>completely free</strong> for consumers — agents pay, you don't</span></div>
       </div>
 
+      <div style="background:#f8f4ee;border-radius:14px;padding:18px;margin-bottom:20px;text-align:center;">
+        <div style="font-size:0.88rem;font-weight:700;color:#0d1f3c;margin-bottom:8px;">
+          ✋ Just to be clear — you are not purchasing anything yet
+        </div>
+        <div style="font-size:0.82rem;color:#5a6480;line-height:1.7;">
+          By confirming this selection you are simply letting
+          <strong style="color:#0d1f3c;">${agent.firstName}</strong> know you'd like to
+          speak with them. They will call you at your preferred time to go over your
+          options and answer any questions. You decide if and when to move forward
+          with a policy — completely on your terms, with zero pressure.
+        </div>
+      </div>
+
       <button class="confirm-btn" id="confirmBtn" onclick="confirmSelection()">
         ✅ Confirm — Connect Me with ${agent.firstName}
       </button>
