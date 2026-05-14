@@ -509,6 +509,8 @@ function quoteRequestAgentEmail({ lead, agent, fee, deadline }) {
       <div class="pill"><div class="pill-label">Insurance Type</div><div class="pill-value">${lead.insuranceType}</div></div>
       <div class="pill"><div class="pill-label">Age</div><div class="pill-value">${lead.age || '—'}</div></div>
     </div>
+    ${lead.dob ? `<div style="padding:6px 0;border-bottom:1px solid #ede7dc;display:flex;justify-content:space-between;"><span style="color:#5a6480;font-size:0.82rem;">Date of Birth</span><span style="font-weight:600;font-size:0.82rem;">${new Date(lead.dob).toLocaleDateString('en-US', {month:'long', day:'numeric', year:'numeric'})}</span></div>` : ''}
+    ${lead.insuranceDetails && lead.insuranceDetails['Second Driver Date of Birth'] ? `<div style="padding:6px 0;border-bottom:1px solid #ede7dc;display:flex;justify-content:space-between;"><span style="color:#5a6480;font-size:0.82rem;">2nd Driver DOB</span><span style="font-weight:600;font-size:0.82rem;">${lead.insuranceDetails['Second Driver Date of Birth']}</span></div>` : ''}
     <div class="row">
       <div class="pill"><div class="pill-label">ZIP Code</div><div class="pill-value">${lead.zip}</div></div>
       <div class="pill"><div class="pill-label">Coverage Level</div><div class="pill-value">${lead.coverageLevel || '—'}</div></div>

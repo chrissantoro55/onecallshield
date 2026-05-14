@@ -896,6 +896,16 @@
               <p class="step2-hint">We never share your number until you choose your agent</p>
             </div>
 
+            <div style="margin-bottom:14px;">
+              <div style="font-size:0.75rem;font-weight:600;text-transform:uppercase;letter-spacing:0.07em;color:var(--text-muted);margin-bottom:6px;">Date of Birth <span style="color:var(--gold);">*</span></div>
+              <input type="date" id="qDOB" class="quote-contact-input"
+              style="width:100%;padding:12px 14px;border:1.5px solid var(--cream-dark);border-radius:10px;font-family:'DM Sans',sans-serif;font-size:0.95rem;color:var(--text);background:#fff;box-sizing:border-box;outline:none;min-height:48px;-webkit-appearance:none;"
+              max="2006-01-01">
+              <div style="font-size:0.72rem;color:var(--text-muted);margin-top:4px;">
+                Agents need this to run accurate quotes for you
+              </div>
+            </div>
+
             <div class="form-group" style="margin-bottom:0.85rem">
               <label class="form-label" for="qEmail">Email Address</label>
               <input type="email" id="qEmail" class="form-input" placeholder="you@example.com" autocomplete="email">
@@ -1672,12 +1682,23 @@ function submitQuoteRequest() {
   if (!contactTime)   { alert('Please select a preferred contact time.'); return; }
   if (!consent)       { alert('Please check the consent box to continue.'); return; }
 
+  var dob = document.getElementById('qDOB') ? document.getElementById('qDOB').value : '';
+  if(!dob) {
+    alert('Please enter your date of birth — agents need this to give you accurate quotes.');
+    return;
+  }
+  var dobDate = new Date(dob);
+  var age = Math.floor((Date.now() - dobDate.getTime()) / (365.25 * 24 * 60 * 60 * 1000));
+  if(age < 16 || age > 100) {
+    alert('Please enter a valid date of birth.');
+    return;
+  }
+
   var btn = document.getElementById('submitBtn');
   btn.textContent = 'Submitting...';
   btn.disabled = true;
 
   var zip  = (document.getElementById('qZip').value || '').trim();
-  var age  = document.getElementById('qAge').value || '';
   var currentPremium = (document.getElementById('qCurrentPremium').value || '').trim();
   var rangeEl = document.getElementById('instantRange');
   var mktLo = rangeEl._lo || 0;
@@ -1701,7 +1722,8 @@ function submitQuoteRequest() {
     phone: phone,
     email: email,
     zip: zip,
-    age: age || 'Not provided',
+    dob: dob,
+    age: age.toString(),
     insuranceType: _insType || 'Not specified',
     coverageLevel: _coverageLevel || '',
     contactTime: contactTime + (specificTime ? ' — ' + specificTime : ''),
@@ -1847,6 +1869,7 @@ function buildInsuranceFields(type) {
       'Vehicle Make': {type:'select', options: makeOptions, onchange:'onVehicleMakeChange(this)'},
       'Vehicle Model': {type:'dependent', dependsOn:'Vehicle Make', placeholder:'Select make first...'},
       'Drivers on Policy': {type:'select', options:['Select...','1 driver','2 drivers','3 drivers','4+ drivers']},
+      'Second Driver Date of Birth': {type:'date', placeholder:'If applicable', required: false},
       'Violations Last 3 Years': {type:'select', options:['Select...','None','1 violation','2+ violations']},
       'Current Insurer': {type:'select', options:['Select...','GEICO','State Farm','Progressive','Allstate','Liberty Mutual','Farmers','USAA','Travelers','Nationwide','Other','No current insurance']}
     };
@@ -1906,6 +1929,9 @@ function buildInsuranceFields(type) {
       html += '<select class="quote-field-input" data-label="' + label + '" id="vehicleModelSelect" disabled style="opacity:0.5;">';
       html += '<option value="">Select make first...</option>';
       html += '</select>';
+    } else if(f.type === 'date') {
+      html += '<input type="date" class="quote-field-input" data-label="' + label + '" max="' + new Date().toISOString().split("T")[0] + '">';
+      html += '<div style="font-size:0.7rem;color:var(--text-muted);margin-top:3px;">(optional)</div>';
     } else {
       html += '<input type="text" class="quote-field-input" data-label="' + label + '" placeholder="' + (f.placeholder || label) + '">';
     }

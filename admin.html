@@ -1164,6 +1164,10 @@ function openLeadDetail(leadId){
         <div style="font-size:0.68rem;color:var(--text-muted);text-transform:uppercase;letter-spacing:0.07em;font-weight:700;margin-bottom:0.3rem;">👤 Age</div>
         <div style="font-size:0.95rem;color:var(--navy);font-weight:700;">${lead.age||'—'}</div>
       </div>
+      ${lead.dob ? `<div style="background:var(--cream);border-radius:12px;padding:1rem;">
+        <div style="font-size:0.68rem;color:var(--text-muted);text-transform:uppercase;letter-spacing:0.07em;font-weight:700;margin-bottom:0.3rem;">🎂 Date of Birth</div>
+        <div style="font-size:0.95rem;color:var(--navy);font-weight:700;">${new Date(lead.dob).toLocaleDateString('en-US', {month:'long', day:'numeric', year:'numeric'})}</div>
+      </div>` : ''}
       <div style="background:var(--cream);border-radius:12px;padding:1rem;">
         <div style="font-size:0.68rem;color:var(--text-muted);text-transform:uppercase;letter-spacing:0.07em;font-weight:700;margin-bottom:0.3rem;">📍 ZIP / State</div>
         <div style="font-size:0.95rem;color:var(--navy);font-weight:700;">${lead.zip}${(lead.state||getStateFromZip(lead.zip))?' · '+(lead.state||getStateFromZip(lead.zip)):''}</div>
@@ -1630,6 +1634,12 @@ async function sendQuotesNow(leadId) {
   };
 
   try {
+    console.log('Sending to worker:', JSON.stringify({
+      type: 'quotes_ready_consumer',
+      leadEmail: lead.email,
+      leadId: lead.id,
+      quotesCount: structuredQuotes.length
+    }));
     const res = await workerPost(payload);
     console.log('Worker response:', res);
 

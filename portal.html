@@ -2031,6 +2031,7 @@ function renderActiveRequests(leads, cutoff2h) {
     const infoPills = [
       l.zip ? `<span class="qr-info-pill">📍 ${l.zip}${l.state ? ', '+l.state : ''}</span>` : '',
       l.age  ? `<span class="qr-info-pill">👤 Age ${l.age}</span>` : '',
+      l.dob  ? `<span class="qr-info-pill">🎂 DOB: ${new Date(l.dob).toLocaleDateString('en-US', {month:'short', day:'numeric', year:'numeric'})}</span>` : '',
       l.coverageLevel ? `<span class="qr-info-pill">🛡️ ${l.coverageLevel}</span>` : '',
       l.currentPremium ? `<span class="qr-info-pill qr-premium">💸 Paying ${l.currentPremium}/mo</span>` : '',
     ].filter(Boolean).join('');
