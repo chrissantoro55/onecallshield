@@ -661,9 +661,22 @@ function quoteSelectedAgentEmail({ agent, lead, quote, fee }) {
 
 // ── Consumer: initial confirmation after quote request submitted ────────────
 function consumerConfirmationEmail(lead) {
-  const deadline = new Date(new Date(lead.submittedAt).getTime() + 2 * 60 * 60 * 1000);
-  const deadlineStr = deadline.toLocaleTimeString('en-US', {hour:'numeric', minute:'2-digit', hour12:true});
-  const deadlineDateStr = deadline.toLocaleDateString('en-US', {weekday:'long', month:'long', day:'numeric'});
+  const submittedAt = new Date(lead.submittedAt);
+  const deadlineUTC = new Date(submittedAt.getTime() + 2 * 60 * 60 * 1000);
+
+  const deadlineStr = deadlineUTC.toLocaleTimeString('en-US', {
+    hour: 'numeric',
+    minute: '2-digit',
+    hour12: true,
+    timeZone: 'America/New_York'
+  });
+
+  const deadlineDateStr = deadlineUTC.toLocaleDateString('en-US', {
+    weekday: 'long',
+    month: 'long',
+    day: 'numeric',
+    timeZone: 'America/New_York'
+  });
 
   const detailRows = lead.insuranceDetails ? Object.entries(lead.insuranceDetails).filter(([k,v])=>v).map(([k,v]) => `
     <tr>
@@ -714,7 +727,7 @@ function consumerConfirmationEmail(lead) {
         Quotes Ready By
       </div>
       <div style="font-family:Georgia,serif;font-size:2.2rem;font-weight:700;color:#c9973a;line-height:1;margin-bottom:4px;">
-        ${deadlineStr}
+        ${deadlineStr} ET
       </div>
       <div style="font-size:0.82rem;color:rgba(255,255,255,0.5);">
         ${deadlineDateStr}

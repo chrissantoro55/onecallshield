@@ -1966,11 +1966,18 @@ function loadQuoteRequests(rawData) {
 
   const allLeads = Object.values(_allLeadsData);
 
-  // Active: status=quote_requested, submitted within 72h
+  // Active: status=quote_requested, within 72h, not already dispatched, and quote window still open
   const active = allLeads.filter(l =>
     l.status === 'quote_requested' &&
-    new Date(l.submittedAt).getTime() > cutoff72h
-  );
+    new Date(l.submittedAt).getTime() > cutoff72h &&
+    !l.quotesEmailSent
+  ).filter(l => {
+    const deadline = new Date(l.submittedAt).getTime() + (4 * 60 * 60 * 1000);
+    return deadline > Date.now();
+  });
+  active.sort(function(a, b) {
+    return new Date(b.submittedAt) - new Date(a.submittedAt);
+  });
 
   // My submitted quotes (I have an entry in leads/{id}/quotes/{myId})
   const mySubmitted = allLeads.filter(l =>
@@ -2048,7 +2055,7 @@ function renderActiveRequests(leads, cutoff2h) {
     } else if(!expired) {
       const carriers = ['Progressive','State Farm','Allstate','Geico','Nationwide','Farmers','Liberty Mutual','Travelers','USAA','Other'];
       formOrStatus = `<div class="qr-submit-section">
-        <div class="qr-submit-label">Submit Your Quote — earn $${fee} if selected</div>
+        <div class="qr-submit-label">Submit Your Quote</div>
         <div class="qr-rate-input-wrap">
           <span class="qr-dollar">$</span>
           <input class="qr-rate-input" type="number" id="qsf-rate-${l.id}" placeholder="0" min="0" step="0.01">
@@ -2059,8 +2066,8 @@ function renderActiveRequests(leads, cutoff2h) {
           ${carriers.map(c=>`<option value="${c}">${c}</option>`).join('')}
         </select>
         <input class="qr-point-input" type="text" id="qsf-point-${l.id}" placeholder="Selling point — same-day coverage, no down payment…">
-        <button class="qr-submit-btn" onclick="submitAgentQuote('${l.id}',this)">Submit Quote →</button>
-        <div class="qr-fee-note">You only pay when a consumer selects your quote</div>
+        <button class="qr-submit-btn" onclick="submitAgentQuote('${l.id}',this)">Submit Quote — Free →</button>
+        <div class="qr-fee-note">No charge unless consumer selects your quote</div>
       </div>`;
     } else {
       formOrStatus = `<div class="qr-expired-msg">⛔ Quote window closed — this request expired</div>`;
